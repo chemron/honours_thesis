@@ -1,9 +1,55 @@
-\documentclass[12pt]{report}
+\documentclass[a4paper,10pt]{report}
+\usepackage{amsmath}
+\usepackage{bm}
+\usepackage{geometry}
+\usepackage{array}
+\usepackage{physics}
+\usepackage{amssymb}
+\usepackage{textcomp}
+\usepackage[T1]{fontenc}
+\usepackage{gensymb}
+\usepackage{tikz}
+\usetikzlibrary{shapes, shadows, positioning}
+\usepackage[detect-all]{siunitx}
+\usepackage{breqn}
+\usepackage{subfigure}
+\usepackage{geometry}
+\usepackage[nottoc,numbib]{tocbibind}
+\usepackage{listings}
+\usepackage{caption}
 \usepackage[utf8]{inputenc}
-\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{natbib}
+
+\geometry{a4paper, total={160mm,247mm}, left=25mm, top=25mm,} \graphicspath{
+ {figures/} }
+\renewcommand{\listfigurename}{Figures}
+
+
+\captionsetup{justification   = raggedright, singlelinecheck = false}
+
+\hypersetup{colorlinks, citecolor=black, filecolor=black, linkcolor=black,
+    urlcolor=black}
+
+\usepackage{titlesec}
+\renewcommand{\bibname}{References}
+
+
+\bibliographystyle{unsrtnat}
+\setcitestyle{authoryear,open={(},close={)}}
+
+
+\titleformat{\chapter}[hang]
+  {\normalfont\huge\bfseries}{\thechapter \ }{1em}{}
+
+
 %opening
 \title{Thesis}
-\author{Cameron Smith}
+\author{Cameron Smith\\
+Student ID: 28792912\\
+Supervisors: Andrew Casey, Alina Donea}
+\date{\today}
 
 \begin{document}
 
@@ -17,32 +63,35 @@
 
 \tableofcontents
 
-\chapter{Introduction}
-lit review
+\chapter{getting the stereo data}
+- figure showing positions and tragectory of stereo, sun earth, SDO and
+imaginary satelite for accoustic maps\\
+- figure (maybe the same one) showing plot of stereo position in \\
+- position data from http://www.srl.caltech.edu/STEREO/docs/position.html \\
+-  This is in Heliocentric Earth equatorial (HEEQ): This system has its Z axis
+parallel to the Sun's rotation axis (positive to the North) and its X axis
+towards the intersection of the solar equator and the solar central meridian as
+seen from the Earth. This system is sometimes known as heliocentric solar (HS)\\
+- we want active regions to be at the same point of the image.\\
+ - to do this, we have to compare stereo and accoustic maps taken at different
+ times. \\
+ - the sun has a period of T=27.2753 days according in carrington coordinates \\
+ - angle between spacecraft and solar farside is given by: \\
 
-\chapter{MHD waves}
-physics MHD waves, rays, how they interact.
+\begin{align}
+  \theta = \arctan{\frac{y/x}}
+\end{align}
+- this gives:
+\begin{align}
+  t_{stereo} = t_{farside} + \frac{\theta}{2\pi}T
+  \intertext{or equivalently}:
+  t_{farside} = t_{stereo} - \frac{\theta}{2\pi}T
+\end{align}
+- using this, for each point in stereo time, i calculated the equivalent farside
+time \\
+- from this I download the FITS STEREO images that corresponded to the farside
+images \\
+ - (farside are created every 12 hours between 2010 and now)
 
-\chapter{Generative adversarial networks}
-how GANs work, CNNs in general.
-- filters
-- back propagation
-etc.
-\chapter{The Sun and observation}
-Instruments (SDO, STEREO), near side, far side. magnetograms, uv images.
-sunspots and solarflares
-why we need farside magnetograms
-How to generate far side magnetograms.
-why this only works short term
+ \end{document}
 
-\chapter{Using Acoustic power maps to generate far side magnetograms}
-data cube dopplergram projection
-integrated acoustic power maps
-farside (low resolution) acoustic power maps
-vs nearside with reduced resolution
-
-\chapter{Conclusion}
-
-
-
-\end{document}
