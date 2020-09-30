@@ -1,5 +1,7 @@
 \documentclass[a4paper,10pt]{report}
 \usepackage{amsmath}
+\usepackage{mathtools}
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
 \usepackage{bm}
 \usepackage{geometry}
 \usepackage{array}
@@ -21,8 +23,10 @@
 \usepackage{hyperref}
 \usepackage{titlesec}
 \usepackage{natbib}
+\usepackage{upgreek}
 
-\geometry{a4paper, total={160mm,247mm}, left=25mm, top=25mm,} \graphicspath{
+\geometry{a4paper, total={160mm,247mm}, left=25mm, top=25mm,}
+\graphicspath{
  {figures/} }
 \renewcommand{\listfigurename}{Figures}
 
@@ -35,14 +39,11 @@
 \usepackage{titlesec}
 \renewcommand{\bibname}{References}
 
-
-\bibliographystyle{unsrtnat}
 \setcitestyle{authoryear,open={(},close={)}}
 
 
 \titleformat{\chapter}[hang]
   {\normalfont\huge\bfseries}{\thechapter \ }{1em}{}
-
 
 %opening
 \title{Thesis}
@@ -63,7 +64,7 @@ Supervisors: Andrew Casey, Alina Donea}
 
 \tableofcontents
 
-\chapter{getting the stereo data}
+\section{getting the stereo data}
 - figure showing positions and tragectory of stereo, sun earth, SDO and
 imaginary satelite for accoustic maps\\
 - figure (maybe the same one) showing plot of stereo position in \\
@@ -85,7 +86,7 @@ seen from the Earth. This system is sometimes known as heliocentric solar (HS)\\
 - this gives:
 \begin{align}
   t_{stereo} = t_{farside} + \frac{\theta}{2\pi}T
-  \intertext{or equivalently}:
+  \intertext{or equivalently:}
   t_{farside} = t_{stereo} - \frac{\theta}{2\pi}T
 \end{align}
 - using this, for each point in stereo time, i calculated the equivalent farside
@@ -93,6 +94,54 @@ time \\
 - from this I download the FITS STEREO images that corresponded to the farside
 images \\
  - (farside are created every 12 hours between 2010 and now)
+
+
+
+\section{Data pre-processing}
+- download the raw fits files of AIA and HMI from jsoc \\
+- The FITS meta-data allows us to translate between pixel space and
+helioprojective coordinate space.
+- using this information, we can rotate the image such that the north pole is at
+the highest point of the image, and then crop the image such that the edges of
+the sun are at the edge of the image (see figure % From get_aia_png.ipynb
+) \\
+
+ - However the 304\AA \ channel of SDO AIA is degrading over time
+ \cite{boerner_photometric_2014}, effectively reducing the exposure of the
+ image. Figure \ref{fig:aia_degradation} shows a comparison in the exposures of
+ images taken in 2011, 2015 and 2019 respectively. To account for this
+ degradation, the image was clipped to the 95th percentile of the pixel
+ intensity and normalised. 
+
+
+ \begin{figure}[t]%
+  \centering
+  \subfigure[]{%
+    \label{fig:aia_2011}%
+    \includegraphics[height=1.5in]{AIA_2011.01.01_00:00:00.png}% 
+  }%
+  \qquad
+  \subfigure[]{%
+    \includegraphics[height=1.5in]{AIA_2015.01.01_00:00:00.png}%
+    \label{fig:aia_2015}%
+  }%
+  \qquad
+  \subfigure[]{%
+    \includegraphics[height=1.5in]{AIA_2019.01.01_00:00:00.png}%
+    \label{fig:aia_2019}%
+  }%
+  \label{fig:aia_degradation}
+  \caption[]{
+    Images taken by SDO AIA 304\AA \ on the first of January in
+    2011 \subref{fig:aia_2011}, 2012 \subref{fig:aia_2015} and 2019
+    \subref{fig:aia_2019}. Due to the degradation of the instrument, the
+    exposure reduces over time. \textit{Images courtesy of NASA.}}
+\end{figure}
+
+
+\bibliographystyle{unsrtnat}
+
+\bibliography{Bibliography}
 
  \end{document}
 
