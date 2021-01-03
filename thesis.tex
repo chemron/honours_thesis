@@ -10,13 +10,19 @@
 \usepackage{textcomp}
 \usepackage[T1]{fontenc}
 \usepackage{gensymb}
+
 \usepackage{tikz}
-\usetikzlibrary{shapes, shadows, positioning}
+\usetikzlibrary{shapes.geometric, arrows, calc}
+\usepackage[nottoc, numbib]{tocbibind}
+\tikzstyle{cool} = [rectangle, rounded corners, minimum width=3cm, minimum
+height=1cm, text centered, draw=black, fill=gray!30, text width=3cm]
+\tikzstyle{arrow} = [thick, ->, >=stealth]
+\tikzstyle{line} = [thick, -, >=stealth]
+
 \usepackage[detect-all]{siunitx}
 \usepackage{breqn}
 \usepackage{subfigure}
 \usepackage{geometry}
-\usepackage[nottoc,numbib]{tocbibind}
 \usepackage{listings}
 \usepackage{caption}
 \usepackage[utf8]{inputenc}
@@ -24,6 +30,11 @@
 \usepackage{titlesec}
 \usepackage{natbib}
 \usepackage{upgreek}
+\usepackage{aas_macros}
+\usepackage{doi}
+\usepackage{siunitx}
+\usepackage{textgreek}
+
 
 \geometry{a4paper, total={160mm,247mm}, left=25mm, top=25mm,}
 \graphicspath{
@@ -36,14 +47,36 @@
 \hypersetup{colorlinks, citecolor=black, filecolor=black, linkcolor=black,
     urlcolor=black}
 
-\usepackage{titlesec}
 \renewcommand{\bibname}{References}
 
-\setcitestyle{authoryear,open={(},close={)}}
+\bibpunct{(}{)}{;}{a}{}{,}
+
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black
+}
 
 
-\titleformat{\chapter}[hang]
-  {\normalfont\huge\bfseries}{\thechapter \ }{1em}{}
+\newcommand*\chem[1]{\ensuremath{\mathrm{#1}}}
+
+\newcommand{\threevdots}{%
+  \vbox{\baselineskip1ex\lineskiplimit0pt%
+  \hbox{.}\hbox{.}\hbox{.}}}
+
+
+
+% diagnose: Label(s) may have changed. Rerun to get cross-references right.
+% \def\@testdef #1#2#3{%
+%   \def\reserved@a{#3}\expandafter \ifx \csname #1@#2\endcsname
+%  \reserved@a  \else
+% \typeout{^^Jlabel #2 changed:^^J%
+% \meaning\reserved@a^^J%
+% \expandafter\meaning\csname #1@#2\endcsname^^J}%
+% \@tempswatrue \fi}
+
 
 %opening
 \title{Thesis}
@@ -51,6 +84,8 @@
 Student ID: 28792912\\
 Supervisors: Andrew Casey, Alina Donea}
 \date{\today}
+
+
 
 \begin{document}
 
@@ -139,7 +174,7 @@ the sun are at the edge of the image (see figure % From get_aia_png.ipynb
 \end{figure}
 
 
-\bibliographystyle{unsrtnat}
+\bibliographystyle{mnras.bst}
 
 \bibliography{Bibliography}
 

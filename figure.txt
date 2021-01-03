@@ -1,0 +1,19 @@
+\begin{figure}[t]%
+    \centering
+    \subfigure[]{%
+      \label{fig:}%
+      \includegraphics[height=2in]{}% 
+    }%
+    \qquad
+    \subfigure[]{%
+      \includegraphics[height=2in]{}%
+      \label{fig:}%
+    }%
+    \caption[]{
+      \par
+      \subref{fig: }\par
+      \subref{fig:}
+      }
+\end{figure}
+  
+  
