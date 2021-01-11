@@ -99,6 +99,8 @@ Supervisors: Andrew Casey, Alina Donea}
 
 \tableofcontents
 
+\chapter{just getting things down quickly}
+
 \section{getting the stereo data}
 - figure showing positions and tragectory of stereo, sun earth, SDO and
 imaginary satelite for accoustic maps\\
@@ -143,7 +145,7 @@ the sun are at the edge of the image (see figure % From get_aia_png.ipynb
 
  - However the 304\AA \ channel of SDO AIA is degrading over time
  \cite{boerner_photometric_2014}, effectively reducing the exposure of the
- image. Figure \ref{fig:aia_degradation} shows a comparison in the exposures of
+ image. Figures \ref{fig:aia_degradation} show a comparison in the exposures of
  images taken in 2011, 2015 and 2019 respectively. To account for this
  degradation, the image was clipped to the 95th percentile of the pixel
  intensity and normalised. 
@@ -165,14 +167,34 @@ the sun are at the edge of the image (see figure % From get_aia_png.ipynb
     \includegraphics[height=1.5in]{AIA_2019.01.01_00:00:00.png}%
     \label{fig:aia_2019}%
   }%
-  \label{fig:aia_degradation}
   \caption[]{
     Images taken by SDO AIA 304\AA \ on the first of January in
     2011 \subref{fig:aia_2011}, 2012 \subref{fig:aia_2015} and 2019
     \subref{fig:aia_2019}. Due to the degradation of the instrument, the
     exposure reduces over time. \textit{Images courtesy of NASA.}}
+  \label{fig:aia_degradation}
 \end{figure}
 
+
+\section{STEREO Magnetogram GAN}
+- for the gan the input magnetograms and the seismic maps images needed to have
+the same dimensions
+- while the seismic maps were 180 by 180 pixels, the magnetograms were 1024 by
+1024 pixels.
+
+% currently thinking of upsampling seismic maps then downsampling magnetograms,
+% but commented out paragraph shows my initial idea
+
+% - to make them the same dimension, the magnetograms were resampled using bicubic
+% interpolation to the size of the seismic maps. This interpolation method was
+% chosen as it results in a smoother resampling with fewer interpolation artifacts
+% \citep{keys_cubic_1981}.
+
+
+- to make them the same dimension, the seismic maps were resampled using bicubic
+interpolation to the size of the magnetograms. This interpolation method was
+chosen as it results in a smoother resampling with fewer interpolation artifacts
+\citep{keys_cubic_1981}.
 
 \bibliographystyle{mnras.bst}
 
