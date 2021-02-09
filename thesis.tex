@@ -1,15 +1,19 @@
-\documentclass[a4paper,10pt]{report}
+\documentclass[11pt,a4paper,onecolumn]{report}
 \usepackage{amsmath}
 \usepackage{mathtools}
+\usepackage{lmodern}
 \DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
 \usepackage{bm}
-\usepackage{geometry}
+\usepackage[margin=2cm]{geometry}
 \usepackage{array}
 \usepackage{physics}
 \usepackage{amssymb}
 \usepackage{textcomp}
 \usepackage[T1]{fontenc}
 \usepackage{gensymb}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
 
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, arrows, calc}
@@ -28,7 +32,7 @@ height=1cm, text centered, draw=black, fill=gray!30, text width=3cm]
 \usepackage[utf8]{inputenc}
 \usepackage{hyperref}
 \usepackage{titlesec}
-\usepackage{natbib}
+\usepackage[square,numbers,comma,sort&compress]{natbib}
 \usepackage{upgreek}
 \usepackage{aas_macros}
 \usepackage{doi}
@@ -89,7 +93,41 @@ Supervisors: Andrew Casey, Alina Donea}
 
 \begin{document}
 
-\maketitle
+
+\begin{titlepage}
+  \begin{center}
+    \vspace*{2cm}
+    \Huge
+    \textbf{Title of your Thesis}
+
+    \vspace{2cm}
+    \LARGE
+    \textbf{Cameron Smith}
+
+    \vspace{0.8cm}
+    \Large
+    \textit{Supervisors:}\\
+    Andrew Casey\\
+    Alina Donea
+
+    \vfill
+    \large
+    An honours thesis presented for the degree of\\
+    Bachelor of Science Advanced - Research (Honours)
+
+    \vspace{0.3cm}
+    \includegraphics[width=0.2\linewidth]{"Monash_Logo"}\\
+    School of Physics and Astronomy\\
+    Faculty of Science\\
+    Monash University\\
+    Australia
+
+    \vspace{0.5cm}
+
+    \today
+
+  \end{center}
+\end{titlepage}
 
 \chapter*{Abstract}
 
@@ -99,7 +137,93 @@ Supervisors: Andrew Casey, Alina Donea}
 
 \tableofcontents
 
-\chapter{just getting things down quickly}
+
+\listoffigures
+
+
+
+
+
+
+
+
+\chapter{Introduction}
+
+
+
+
+%
+% Project outline from lit review
+%
+
+To train a cGAN to generate magnetograms from seismic maps, we require
+a training set consisting of seismic maps and the corresponding magnetograms.
+While the farside seismic maps are readily available\footnote{See
+\url{http://jsoc.stanford.edu/data/farside/}.}, corresponding magnetograms are
+not. However, not all hope is lost. The STEREO-A spacecraft is in a heliocentric
+orbit that traverses the Sun relative to the Earth, allowing it to observe the
+farside during some points of the orbit. While STEREO-A does not capture
+magnetograms of the Sun, it does take EUV images which can be used to create
+magnetograms by using a cGAN \citep{Kim2019}.\\
+
+A small complication is that no data is available from when STEREO-A was
+directly opposite the Earth (between March and July 2015), due to the
+interference from the Sun. This limits the ability to get magnetograms that
+exactly coincide with the farside seismic maps. To compensate for this, we can
+match farside seismic maps with images taken by STEREO-A at an earlier (later)
+time when it is behind (ahead of) the farside, such that the same `face' of the
+Sun is imaged due to it's rotation. After generating the magnetograms from the
+STEREO-A EUV images, we can create a dataset of seismic maps with the
+corresponding magnetogram (albeit with some time difference). This process is
+summarised in Figure \ref{fig:Project_summary}.\\
+
+
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}[node distance=5.5cm]
+      % \draw[help lines] (0,-5) grid (10,10);
+      \node (D) [cool, above=1.5cm] {SDO Dopplergram};
+      \node (P) [cool, right of=D] {Farside \quad \quad \quad \qquad  seismic map};
+      \node (E) [cool] {STEREO EUV image};
+      \node (M) [cool, right of=E, below=0.5cm] {STEREO Magnetogram};
+      \node (F) [cool, right of=M, above=1cm] {Farside\\ Magnetogram};
+      \node (S) [cool, below=1.5cm] {SDO Magnetogram};
+
+      \coordinate (FF) at ([xshift=-1.5cm]F.west); % we collect the edges in front of Q
+      \coordinate (MM) at ([xshift=-1.5cm]M.west); % we collect the edges in front of Q
+
+      \draw [arrow] (D) -- node[anchor=south, text width=2cm] {Helioseismic Holography} (P);
+      \draw [arrow] (MM) -- node[anchor=south] {cGAN} (M);
+      \draw [line] (P) -|  (FF);
+      \draw [line] (M) -|  (FF);
+      \draw [line] (S) -|  (MM);
+      \draw [line] (E) -|  (MM);
+      \draw [arrow] (FF) -- node[anchor=south] {cGAN} (F);
+
+  \end{tikzpicture}
+  \caption{Summary of the project. A cGAN is trained on SDO data to be able to
+  generate EUV images. This is applied to STEREO EUV images to generate STEREO
+  magnetograms. These are used in conjunction with farside seismic maps to train
+  a new cGAN to generate magnetograms from seismic maps, allowing constant
+  surveillance of the farside magnetic field.}
+  \label{fig:Project_summary}
+\end{figure}
+
+
+
+\chapter{Data Collection}
+\begin{itemize}
+  \item Data sources were:
+  \begin{itemize}
+    \item STEREO EUV images
+    \item AIA EUV images
+    \item AIA magnetograms
+    \item farside helioseismic holography maps
+  \end{itemize} 
+\end{itemize}
+
+
 
 \section{getting the stereo data}
 - figure showing positions and tragectory of stereo, sun earth, SDO and
@@ -176,6 +300,30 @@ the sun are at the edge of the image (see figure % From get_aia_png.ipynb
 \end{figure}
 
 
+
+
+
+\section{Projections}
+To train the GAN, features of the Sun need to be in the same position in both
+the input and output training images.
+The input image to the GAN, a seismic map, uses the projection
+
+
+\bibliographystyle{mnras.bst}
+
+\bibliography{Bibliography}
+
+
+\appendix
+
+\chapter{Coordinate Systems}
+For a description of solar coordinate systems, see \citet{thompson_w_t_coordinate_2006}.
+
+
+\chapter{just getting things down quickly}
+
+
+
 \section{STEREO Magnetogram GAN}
 - for the gan the input magnetograms and the seismic maps images needed to have
 the same dimensions
@@ -195,10 +343,6 @@ the same dimensions
 interpolation to the size of the magnetograms. This interpolation method was
 chosen as it results in a smoother resampling with fewer interpolation artifacts
 \citep{keys_cubic_1981}.
-
-\bibliographystyle{mnras.bst}
-
-\bibliography{Bibliography}
 
  \end{document}
 
