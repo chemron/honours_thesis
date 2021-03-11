@@ -20,8 +20,8 @@
 \usepackage[nottoc, numbib]{tocbibind}
 \tikzstyle{cool} = [rectangle, rounded corners, minimum width=3cm, minimum
 height=1cm, text centered, draw=black, fill=gray!30, text width=3cm]
-\tikzstyle{arrow} = [thick, ->, >=stealth]
-\tikzstyle{line} = [thick, -, >=stealth]
+\tikzstyle{arrow} = [thick, ->, >=stealth] \tikzstyle{line} = [thick, -,
+>=stealth]
 
 \usepackage[detect-all]{siunitx}
 \usepackage{breqn}
@@ -41,8 +41,7 @@ height=1cm, text centered, draw=black, fill=gray!30, text width=3cm]
 
 
 \geometry{a4paper, total={160mm,247mm}, left=25mm, top=25mm,}
-\graphicspath{
- {figures/} }
+\graphicspath{{figures/} }
 \renewcommand{\listfigurename}{Figures}
 
 
@@ -55,13 +54,8 @@ height=1cm, text centered, draw=black, fill=gray!30, text width=3cm]
 
 \bibpunct{(}{)}{;}{a}{}{,}
 
-\hypersetup{
-    colorlinks,
-    citecolor=black,
-    filecolor=black,
-    linkcolor=black,
-    urlcolor=black
-}
+\hypersetup{colorlinks, citecolor=black, filecolor=black, linkcolor=black,
+    urlcolor=black}
 
 
 \newcommand*\chem[1]{\ensuremath{\mathrm{#1}}}
@@ -73,12 +67,9 @@ height=1cm, text centered, draw=black, fill=gray!30, text width=3cm]
 
 
 % diagnose: Label(s) may have changed. Rerun to get cross-references right.
-% \def\@testdef #1#2#3{%
-%   \def\reserved@a{#3}\expandafter \ifx \csname #1@#2\endcsname
-%  \reserved@a  \else
-% \typeout{^^Jlabel #2 changed:^^J%
-% \meaning\reserved@a^^J%
-% \expandafter\meaning\csname #1@#2\endcsname^^J}%
+% \def\@testdef #1#2#3{% \def\reserved@a{#3}\expandafter \ifx \csname
+% #1@#2\endcsname \reserved@a  \else \typeout{^^Jlabel #2 changed:^^J%
+% \meaning\reserved@a^^J% \expandafter\meaning\csname #1@#2\endcsname^^J}%
 % \@tempswatrue \fi}
 
 
@@ -105,8 +96,7 @@ Supervisors: Andrew Casey, Alina Donea}
     \textbf{Cameron Smith}
 
     \vspace{0.8cm}
-    \Large
-    \textit{Supervisors:}\\
+    \Large \textit{Supervisors:}\\
     Andrew Casey\\
     Alina Donea
 
@@ -162,10 +152,10 @@ Supervisors: Andrew Casey, Alina Donea}
 % Project outline from lit review
 %
 
-To train a cGAN to generate magnetograms from seismic maps, we require
-a training set consisting of seismic maps and the corresponding magnetograms.
+To train a cGAN to generate magnetograms from seismic maps, we require a
+training set consisting of seismic maps and the corresponding magnetograms.
 While the farside seismic maps are readily available\footnote{See
-\url{http://jsoc.stanford.edu/data/farside/}.}, corresponding magnetograms are
+  \url{http://jsoc.stanford.edu/data/farside/}.}, corresponding magnetograms are
 not. However, not all hope is lost. The STEREO-A spacecraft is in a heliocentric
 orbit that traverses the Sun relative to the Earth, allowing it to observe the
 farside during some points of the orbit. While STEREO-A does not capture
@@ -188,31 +178,30 @@ summarised in Figure \ref{fig:Project_summary}.\\
 \begin{figure}
   \centering
   \begin{tikzpicture}[node distance=5.5cm]
-      % \draw[help lines] (0,-5) grid (10,10);
-      \node (D) [cool, above=1.5cm] {SDO Dopplergram};
-      \node (P) [cool, right of=D] {Farside \quad \quad \quad \qquad  seismic map};
-      \node (E) [cool] {STEREO EUV image};
-      \node (M) [cool, right of=E, below=0.5cm] {STEREO Magnetogram};
-      \node (F) [cool, right of=M, above=1cm] {Farside\\ Magnetogram};
-      \node (S) [cool, below=1.5cm] {SDO Magnetogram};
+    % \draw[help lines] (0,-5) grid (10,10);
+    \node (D) [cool, above=1.5cm] {SDO Dopplergram}; \node (P) [cool, right
+      of=D] {Farside \quad \quad \quad \qquad  seismic map}; \node (E) [cool]
+    {STEREO EUV image}; \node (M) [cool, right of=E, below=0.5cm] {STEREO
+      Magnetogram}; \node (F) [cool, right of=M, above=1cm] {Farside\\
+      Magnetogram}; \node (S) [cool, below=1.5cm] {SDO Magnetogram};
 
-      \coordinate (FF) at ([xshift=-1.5cm]F.west); % we collect the edges in front of Q
-      \coordinate (MM) at ([xshift=-1.5cm]M.west); % we collect the edges in front of Q
+    \coordinate (FF) at ([xshift=-1.5cm]F.west); % we collect the edges in
+    front of Q
+    \coordinate (MM) at ([xshift=-1.5cm]M.west); % we collect the edges in
+    front of Q
 
-      \draw [arrow] (D) -- node[anchor=south, text width=2cm] {Helioseismic Holography} (P);
-      \draw [arrow] (MM) -- node[anchor=south] {cGAN} (M);
-      \draw [line] (P) -|  (FF);
-      \draw [line] (M) -|  (FF);
-      \draw [line] (S) -|  (MM);
-      \draw [line] (E) -|  (MM);
-      \draw [arrow] (FF) -- node[anchor=south] {cGAN} (F);
+    \draw [arrow] (D) -- node[anchor=south, text width=2cm] {Helioseismic
+      Holography} (P); \draw [arrow] (MM) -- node[anchor=south] {cGAN} (M);
+    \draw [line] (P) -|  (FF); \draw [line] (M) -|  (FF); \draw [line] (S) -|
+    (MM); \draw [line] (E) -|  (MM); \draw [arrow] (FF) -- node[anchor=south]
+    {cGAN} (F);
 
   \end{tikzpicture}
-  \caption[Project Pipeline]{Summary of the project. A cGAN is trained on SDO data to be able to
-  generate EUV images. This is applied to STEREO EUV images to generate STEREO
-  magnetograms. These are used in conjunction with farside seismic maps to train
-  a new cGAN to generate magnetograms from seismic maps, allowing constant
-  surveillance of the farside magnetic field.}
+  \caption[Project Pipeline]{Summary of the project. A cGAN is trained on SDO
+    data to be able to generate EUV images. This is applied to STEREO EUV images
+    to generate STEREO magnetograms. These are used in conjunction with farside
+    seismic maps to train a new cGAN to generate magnetograms from seismic maps,
+    allowing constant surveillance of the farside magnetic field.}
   \label{fig:Project_summary}
 \end{figure}
 
@@ -229,12 +218,14 @@ summarised in Figure \ref{fig:Project_summary}.\\
 %
 \subsection{Helioseismology}
 %
+\label{sec:HSM}
 
 
 %
 % TODO: is this still a relavent title?
 \subsection{The Solar Magnetic field}
 %
+\label{sec:solar magnetic field}
 
 
 %
@@ -324,48 +315,71 @@ summarised in Figure \ref{fig:Project_summary}.\\
 \begin{itemize}
   \item Nearside vs Farside (i.e. why we need it)
   \item Data sources were:
-  \begin{itemize}
-    \item STEREO EUV images
-    \item AIA EUV images
-    \item AIA magnetograms
-    \item farside helioseismic holography maps
-  \end{itemize} 
+        \begin{itemize}
+          \item STEREO EUV images
+          \item AIA EUV images
+          \item AIA magnetograms
+          \item farside helioseismic holography maps
+        \end{itemize}
   \item figure showing positions and tragectory of stereo, sun earth, SDO and
-  imaginary satelite for accoustic maps
+        imaginary satelite for accoustic maps
   \item figure (maybe the same one) showing plot of stereo position in
   \item position data from http://www.srl.caltech.edu/STEREO/docs/position.html
-  \item This is in Heliocentric Earth equatorial (HEEQ): This system has its Z axis
-  parallel to the Sun's rotation axis (positive to the North) and its X axis
-  towards the intersection of the solar equator and the solar central meridian as
-  seen from the Earth. This system is sometimes known as heliocentric solar (HS)
+  \item This is in Heliocentric Earth equatorial (HEEQ): This system has its Z
+        axis parallel to the Sun's rotation axis (positive to the North) and its X
+        axis towards the intersection of the solar equator and the solar central
+        meridian as seen from the Earth. This system is sometimes known as
+        heliocentric solar (HS)
 \end{itemize}
 
-- 
+-
 
 \section{Data Collection}
 
 \subsection{Nearside Data}
 \begin{itemize}
-  \item as showin in figure \ref{fig:Project_summary}, we need to generate solar magnetograms from EUV \SI[]{304}[]{\angstrom} images
-  \item SDO captures these EUV images with a cadence of 12 seconds, and magnetograms every 45 seconds.
-  \item This huge image database allows us compare pairs of these images with very little time difference, making SDO the ideal candidate for this data.
-  \item To train GAN1, images were collected every 12 hours, same as \cite{Kim2019} - allowing us to get many images which are distinct enough for training
-  \item 
+  \item as shown in in figure \ref{fig:Project_summary}, we need to generate solar
+        magnetograms from EUV \SI[]{304}[]{\angstrom} images
+  \item SDO captures these EUV images with a cadence of 12 seconds, and
+        magnetograms every 45 seconds.
+  \item This huge image database allows us compare pairs of these images with
+        very little time difference, making SDO the ideal candidate for this data.
+  \item To train GAN1, images were collected every 12 hours, same as
+        \cite{Kim2019} - allowing us to get many images which are distinct enough for
+        training
+  \item these images were taken over solar cycle 24 between 2010, when the first
+        SDO data became available, and december 2019 (the end of the solar cycle).
+  \item as the global magnetic field flips every solar cycle (see Section
+        \ref{sec:solar magnetic field}), this gave consistent magnetograms across the
+        data set.
+  \item due to a combination of missing images, and images excluded due to poor
+        quality (see Section \ref{sec:Data prep}) resulted in a total of 4247
+        EUV/magnetogram pairs.
+
 \end{itemize}
 
 
 \subsection{Farside Data}
 \begin{itemize}
   \item need to compare EUV with seismic maps
-  \item while the seismic maps are always generated as if on the oposite side of the Sun compared Earth, the EUV images captured by STEREO do nto face the same direction due to the orbit of STEREO
+  \item while the seismic maps are always generated for the solar farside, the
+        EUV images captured by STEREO will only image the farside for some of
+        it's orbit, as can be seen in Figure \ref{fig:stereo_pos}. This is
+        further complicated by the fact that between August 2014 and January
+        2016 
+        % https://stereo-ssc.nascom.nasa.gov/solar_conjunction.shtml
+        
+        the do not face the same
+        direction due to the orbit of STEREO, i.e. STEREO's position changes
+        relative to earth, as can be seen in figure:
+
 \end{itemize}
 
-
 - we want active regions to be at the same point of the image.\\
- - to do this, we have to compare stereo and accoustic maps taken at different
- times. \\
- - the sun has a period of T=27.2753 days according in carrington coordinates \\
- - angle between spacecraft and solar farside is given by: \\
+- to do this, we have to compare stereo and accoustic maps taken at different
+times. \\
+- the sun has a period of T=27.2753 days according in carrington coordinates \\
+- angle between spacecraft and solar farside is given by: \\
 
 \begin{align}
   \theta = \arctan{\frac{y}{x}}
@@ -381,28 +395,37 @@ summarised in Figure \ref{fig:Project_summary}.\\
 time \\
 - from this I download the FITS STEREO images that corresponded to the farside
 images \\
- - (farside are created every 12 hours between 2010 and now)
+- (farside are created every 12 hours between 2010 and now)
 
-
+\begin{figure}[h]
+  \centering
+  \includegraphics{STEREO_pos.png}
+  \caption[STEREO A Trajectory]{Trajectory of STEREO A between October 2006 and January 2001 in the
+  Heliocentric Earth Equatorial coordinate system. In these coordinates, the Sun
+  is at the origin with the Earth fixed on X axis. \textit{Image generated using
+  data provided by Space Radiation Lab at California Institute of Technology}}
+  \label{fig:stereo_pos}
+\end{figure}
 
 \section{Data pre-processing}
+\label{sec:Data prep}
 - download the raw fits files of AIA and HMI from jsoc \\
 - The FITS meta-data allows us to translate between pixel space and
-helioprojective coordinate space.
-- using this information, we can rotate the image such that the north pole is at
-the highest point of the image, and then crop the image such that the edges of
-the sun are at the edge of the image (see figure % From get_aia_png.ipynb
+helioprojective coordinate space. - using this information, we can rotate the
+image such that the north pole is at the highest point of the image, and then
+crop the image such that the edges of the sun are at the edge of the image (see
+figure % From get_aia_png.ipynb
 ) \\
 
- - However the 304\AA \ channel of SDO AIA is degrading over time
- \cite{boerner_photometric_2014}, effectively reducing the exposure of the
- image. Figures \ref{fig:aia_degradation} show a comparison in the exposures of
- images taken in 2011, 2015 and 2019 respectively. To account for this
- degradation, the image was clipped to the 95th percentile of the pixel
- intensity and normalised. 
+- However the 304\AA \ channel of SDO AIA is degrading over time
+\cite{boerner_photometric_2014}, effectively reducing the exposure of the
+image. Figures \ref{fig:aia_degradation} show a comparison in the exposures of
+images taken in 2011, 2015 and 2019 respectively. To account for this
+degradation, the image was clipped to the 95th percentile of the pixel
+intensity and normalised.
 
 
- \begin{figure}[t]%
+\begin{figure}[t]%
   \centering
   \subfigure[]{%
     \label{fig:aia_2011}%
@@ -418,9 +441,8 @@ the sun are at the edge of the image (see figure % From get_aia_png.ipynb
     \includegraphics[height=1.5in]{AIA_2019.01.01_00:00:00.png}%
     \label{fig:aia_2019}%
   }%
-  \caption[]{
-    Images taken by SDO AIA 304\AA \ on the first of January in
-    2011 \subref{fig:aia_2011}, 2012 \subref{fig:aia_2015} and 2019
+  \caption[]{Images taken by SDO AIA 304\AA \ on the first of January in 2011
+    \subref{fig:aia_2011}, 2012 \subref{fig:aia_2015} and 2019
     \subref{fig:aia_2019}. Due to the degradation of the instrument, the
     exposure reduces over time. \textit{Images courtesy of NASA.}}
   \label{fig:aia_degradation}
@@ -432,8 +454,8 @@ the sun are at the edge of the image (see figure % From get_aia_png.ipynb
 
 \section{Projections}
 To train the GAN, features of the Sun need to be in the same position in both
-the input and output training images.
-The input image to the GAN, a seismic map, uses the projection
+the input and output training images. The input image to the GAN, a seismic map,
+uses the projection
 
 
 \bibliographystyle{mnras.bst}
@@ -444,7 +466,8 @@ The input image to the GAN, a seismic map, uses the projection
 \appendix
 
 \chapter{Coordinate Systems}
-For a description of solar coordinate systems, see \citet{thompson_w_t_coordinate_2006}.
+For a description of solar coordinate systems, see
+\citet{thompson_w_t_coordinate_2006}.
 
 
 \chapter{just getting things down quickly}
@@ -453,17 +476,16 @@ For a description of solar coordinate systems, see \citet{thompson_w_t_coordinat
 
 \section{STEREO Magnetogram GAN}
 - for the gan the input magnetograms and the seismic maps images needed to have
-the same dimensions
-- while the seismic maps were 180 by 180 pixels, the magnetograms were 1024 by
-1024 pixels.
+the same dimensions - while the seismic maps were 180 by 180 pixels, the
+magnetograms were 1024 by 1024 pixels.
 
 % currently thinking of upsampling seismic maps then downsampling magnetograms,
 % but commented out paragraph shows my initial idea
 
-% - to make them the same dimension, the magnetograms were resampled using bicubic
-% interpolation to the size of the seismic maps. This interpolation method was
-% chosen as it results in a smoother resampling with fewer interpolation artifacts
-% \citep{keys_cubic_1981}.
+% - to make them the same dimension, the magnetograms were resampled using
+%   bicubic interpolation to the size of the seismic maps. This interpolation
+%   method was chosen as it results in a smoother resampling with fewer
+%   interpolation artifacts \citep{keys_cubic_1981}.
 
 
 - to make them the same dimension, the seismic maps were resampled using bicubic
@@ -471,5 +493,5 @@ interpolation to the size of the magnetograms. This interpolation method was
 chosen as it results in a smoother resampling with fewer interpolation artifacts
 \citep{keys_cubic_1981}.
 
- \end{document}
+\end{document}
 
