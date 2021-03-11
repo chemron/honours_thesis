@@ -362,23 +362,41 @@ summarised in Figure \ref{fig:Project_summary}.\\
 \subsection{Farside Data}
 \begin{itemize}
   \item need to compare EUV with seismic maps
+  \item Why STEREO makes sense for this
   \item while the seismic maps are always generated for the solar farside, the
         EUV images captured by STEREO will only image the farside for some of
         it's orbit, as can be seen in Figure \ref{fig:stereo_pos}. This is
-        further complicated by the fact that between August 2014 and January
-        2016 
+        further complicated by reduced telemetry rates with STEREO between August 2014 and
+        January 2016, with complete instrument shut off between March and July
+        2015, due to STEREO's superior solar conjunction. Details of this phase
+        of the STEREO mission can be found in \citet{ossing_stereo_2017}.
         % https://stereo-ssc.nascom.nasa.gov/solar_conjunction.shtml
-        
-        the do not face the same
-        direction due to the orbit of STEREO, i.e. STEREO's position changes
-        relative to earth, as can be seen in figure:
-
+  \item Appendix \ref{app:fun orbit} shows the trajectory of STEREO A as it is
+        leaving earth.
+  \item As such, any STEREO image used would not be directly imaging the farside
+  \item due to the rotation of the sun, the `face' of the Sun imaged by STEREO
+  would also be imaged through farside helioseismic holography at a different
+  time. For example, if STEREO imaged the Sun while \SI[]{45}[]{\degree} from
+  the solar farside, after approximately 3 days, the Sun would have rotated
+  such that the same `face' of the Sun would now be on the farside, and could be
+  imaged by farside helioseismic holography.
+  \item By using this rotation to our advantage, we can effectively compare
+  farside seismic maps with not-quite-farside STEREO EUV images, albeit with
+  some time delay between images.
+  \item This method isn't perfect however, and has two primary drawbacks:
+  \begin{enumerate}
+    \item The differential rotation of the Sun means that active regions won't
+    necessarily be in the same position after a time delay
+    \item Active regions are constantly changing, for example new active regions may emerge on the surface over the course hours or days,
+    while the decay of sunspots may last from days to weeks
+    \citep{van_driel-gesztelyi_evolution_2015}.
+  \end{enumerate}
+  \item This will be discussed further in section \ref{chap:discussion}.
+  \item The sun has a synodic rotational period of \(27.2753\) days relative to
+  the Earth. according in carrington coordinates
 \end{itemize}
 
-- we want active regions to be at the same point of the image.\\
-- to do this, we have to compare stereo and accoustic maps taken at different
-times. \\
-- the sun has a period of T=27.2753 days according in carrington coordinates \\
+the sun has a period of T=27.2753 days according in carrington coordinates \\
 - angle between spacecraft and solar farside is given by: \\
 
 \begin{align}
@@ -399,11 +417,12 @@ images \\
 
 \begin{figure}[h]
   \centering
-  \includegraphics{STEREO_pos.png}
+  \includegraphics[width = 0.7\linewidth]{STEREO_pos.png}
   \caption[STEREO A Trajectory]{Trajectory of STEREO A between October 2006 and January 2001 in the
   Heliocentric Earth Equatorial coordinate system. In these coordinates, the Sun
-  is at the origin with the Earth fixed on X axis. \textit{Image generated using
-  data provided by Space Radiation Lab at California Institute of Technology}}
+  is at the origin with the Earth fixed on X axis. Each `bump' in STEREO's
+  Trajectory correspond to a year on Earth. \textit{Image generated using
+  data provided by Space Radiation Lab at California Institute of Technology.}}
   \label{fig:stereo_pos}
 \end{figure}
 
@@ -458,6 +477,56 @@ the input and output training images. The input image to the GAN, a seismic map,
 uses the projection
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+%
+%
+%
+%
+%
+\chapter{Discussion and Conclusion}
+\label{chap:discussion}
+%
+%
+%
+%
+%
+
+
+
+
+
+
+
+
+
+% Copied from earlier:
+% \item By using this rotation to our advantage, we can effectively compare
+%   farside seismic maps with not-quite-farside STEREO EUV images, albeit with
+%   some time delay between images.
+%   \item This method isn't perfect however, and has two primary drawbacks:
+%   \begin{enumerate}
+%     \item The differential rotation of the Sun means that active regions won't
+%     necessarily be in the same position after a time delay
+%     \item Active regions are constantly changing, for example new active regions may emerge on the surface over the course hours or days,
+%     while the decay of sunspots may last from days to weeks
+%     \citep{van_driel-gesztelyi_evolution_2015}.
+%   \end{enumerate}
+%   This will be discussed further in section \ref{chap:discussion}.
+
+
+
 \bibliographystyle{mnras.bst}
 
 \bibliography{Bibliography}
@@ -469,6 +538,14 @@ uses the projection
 For a description of solar coordinate systems, see
 \citet{thompson_w_t_coordinate_2006}.
 
+\chapter{STEREO orbit}
+\label{app:fun orbit}
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.8\linewidth]{fun_orbit.png}
+  \caption{Trajectory of STEREO spacecraft as it leaves the Earth and uses a gravity assist from the moon to reach it's orbit}
+  \label{fig:fun_orbit}
+\end{figure}
 
 \chapter{just getting things down quickly}
 
@@ -492,6 +569,8 @@ magnetograms were 1024 by 1024 pixels.
 interpolation to the size of the magnetograms. This interpolation method was
 chosen as it results in a smoother resampling with fewer interpolation artifacts
 \citep{keys_cubic_1981}.
+
+
 
 \end{document}
 
