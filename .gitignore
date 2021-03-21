@@ -7,5 +7,5 @@
 *.log
 *.out
 *.synctex.gz
-*.pdf
+thesis.pdf
 *.toc
