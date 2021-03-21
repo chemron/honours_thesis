@@ -14,6 +14,7 @@
 \usepackage{graphicx}
 \usepackage{fancyhdr}
 \pagestyle{fancy}
+\setlength{\headheight}{13.6pt}
 
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, arrows, calc}
@@ -40,7 +41,7 @@ height=1cm, text centered, draw=black, fill=gray!30, text width=3cm]
 \usepackage{textgreek}
 
 
-\geometry{a4paper, total={160mm,247mm}, left=25mm, top=25mm,}
+\geometry{a4paper, left=25mm, top=25mm,} % total={160mm,247mm} <- overspecification
 \graphicspath{{figures/} }
 \renewcommand{\listfigurename}{Figures}
 
@@ -140,12 +141,15 @@ Supervisors: Andrew Casey, Alina Donea}
 %
 %
 %
-\chapter{Introduction \& Background}
+\chapter{Introduction}
 %
 %
 %
 %
 
+
+
+%TODO: Introduction (maybe borrow slightly from lit review)
 
 
 %
@@ -205,6 +209,25 @@ summarised in Figure \ref{fig:Project_summary}.\\
   \label{fig:Project_summary}
 \end{figure}
 
+
+% get some
+
+
+
+
+%
+%
+%
+%
+%
+%
+\chapter{Background}
+%
+%
+%
+%
+%
+%
 
 
 
@@ -278,21 +301,6 @@ summarised in Figure \ref{fig:Project_summary}.\\
 %
 \subsection{Conditional Generative Adversarial Networkds}
 %
-
-
-
-%
-%
-%
-%
-\chapter{Background}
-%
-%
-%
-%
-
-
-
 
 
 % Lit review stuff
@@ -434,6 +442,85 @@ images \\
   \label{fig:stereo_pos}
 \end{figure}
 
+
+\section{Image Projections}
+
+\begin{itemize}
+  \item To train the GAN, features of the Sun need to be in the same position in both
+  the input and output training images.
+  \item As there are many ways to project data from a three dimensional object
+  (e.g. the Sun) on to a two dimensional image, this overlap is not guaranteed
+  in general, even if two images are taken at the same place and time.
+  \item therefore, to compare two different images of the Sun, the projection used
+must be taken into account
+\end{itemize}
+
+\subsection{Nearside Data}
+\begin{itemize}
+  \item Fortunately both EUV and magnetogram images are taken by SDO at very similar
+  times, and both sets of images are projected into helioprojective-cartesian
+  coordinates.
+  \item In this coordinate system, observations are projected against the
+  celestial sphere, and positions are measured in the longitude \(\theta_x\) or
+  latitude \(\theta_y\) of the celestial sphere, with the centre of the disk
+  (i.e. the point of the Sun closest to the observer) at the origin.
+  \item The helioprojective latitude and longitude of each pixel on the EUV and
+  magnetogram images could be found using the metadata from each image.
+  \item The instruments used to create these images are rotated relative to each
+  other.
+  \item to align the images, the images were rotated such that each column of
+  vertical pixels had the same helioprojective longitude, and each row of pixels
+  had the same helioprojective latitude.
+  \item however at different points of the orbit, the satelite is at a different
+  distance from the sun, and so the relative size of the sun in each image will
+  change throughout the one-year orbit.
+  \item to remove this discrepancy, while also removing unnecessary pixels, the
+  images were cropped to the radius of the sun, again using information
+  extracted from the image metadata.
+\end{itemize}
+
+\subsection{Farside Data}
+\begin{itemize}
+  \item As the Stereo EUV data also used the same helioprojective-cartesian
+  projection used for the nearside data, this data was prepared (?) in the same
+  manner, first rotating the images before cropping them to the radius of the
+  Sun.
+  \item this process was not so simple in the case of the farside helioseismic
+  holography seismic maps.
+  \item these images were instead projected into carrington heliographic
+  coordinates, where the positions are measured in the Carrington Solar latitude
+  and longitude.
+  \item This coordinate system rotates with the Sun such that the prime meridian
+  coincides with the central meridian (according to an observer on Earth)
+  approximately every 27 days, depending on the position of Earth in it's orbit.
+  \item As such, to directly compare the seismic maps with the STEREO EUV
+  data, we must first project the seismic maps into helioprojective-cartesian
+  coordinates.
+
+  \item For each pixel in the final (helioprojective-cartesian) image, we need
+  to find the corresponding point on the original (heliographic) image.
+  \item This point will not, in general, match up exactly to the centre of a
+  preexisting image, and so an interpolation method will need to be used to  it came from, i.e. where on the 
+  
+  
+  do this we need to define the inverse of this projection (i.e.
+  Helioprojective to heliographic) This actually requires an intermediate step
+  where we transform to and from heliocentric coordinates, which is the actual
+  3d coordinates of the sun (so we need Helioprojective -> heliocentric ->
+  heliographic)
+  \item Using this paper I found the definitions of these
+  transformations This required finding the distance to a given point on the sun
+  from helioprojective coordinates
+
+\end{itemize}
+
+
+The input image to the GAN, a seismic map,
+uses the projection
+
+
+
+
 \section{Data pre-processing}
 \label{sec:Data prep}
 - download the raw fits files of AIA and HMI from jsoc \\
@@ -476,13 +563,6 @@ intensity and normalised.
 \end{figure}
 
 
-
-
-
-\section{Projections}
-To train the GAN, features of the Sun need to be in the same position in both
-the input and output training images. The input image to the GAN, a seismic map,
-uses the projection
 
 
 \chapter{Training}
