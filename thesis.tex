@@ -392,12 +392,20 @@ summarised in Figure \ref{fig:Project_summary}.\\
     \citep{van_driel-gesztelyi_evolution_2015}.
   \end{enumerate}
   \item This will be discussed further in section \ref{chap:discussion}.
-  \item The sun has a synodic rotational period of \(27.2753\) days relative to
-  the Earth. according in carrington coordinates
-\end{itemize}
 
-the sun has a period of T=27.2753 days according in carrington coordinates \\
-- angle between spacecraft and solar farside is given by: \\
+  \item To use this method, we must first determine the rotational period of the
+  Sun
+  \item This is not as obvious as it may at first seem, due to the Sun's
+  differential rotation
+  \item an appropriate choice for this period is given by the Carrington rotation.
+  \item it is the average synodic rotational period of sunspots, which roughly
+  corresponds to the synodic rotation of the Sun at a latitude of \(\SI[]{26}[]{\degree}\) \citep{carrington_observations_1863}
+  \item this Carrington period is \(27.2753\) days which means it takes on average of \(27.2753\) days for a sunspot to rotate around the
+  sun, relative to earth.
+
+  \item In the heliocentric Earth Equatorial coordinate system, where the Z axis
+ as the axis of solar rotation, and the x axis points from the centre of the sun the earth the angle between spacecraft and solar farside is given by:
+\end{itemize}
 
 \begin{align}
   \theta = \arctan{\frac{y}{x}}
@@ -477,7 +485,7 @@ the input and output training images. The input image to the GAN, a seismic map,
 uses the projection
 
 
-
+\chapter{Training}
 
 
 
