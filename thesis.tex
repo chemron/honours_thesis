@@ -433,7 +433,7 @@ images \\
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width = 0.7\linewidth]{STEREO_pos.png}
+  \includegraphics[width = 0.7\linewidth]{STEREO_pos.pdf}
   \caption[STEREO A Trajectory]{Trajectory of STEREO A between October 2006 and January 2001 in the
   Heliocentric Earth Equatorial coordinate system. In these coordinates, the Sun
   is at the origin with the Earth fixed on X axis. Each `bump' in STEREO's
@@ -487,9 +487,9 @@ must be taken into account
   Sun.
   \item this process was not so simple in the case of the farside helioseismic
   holography seismic maps.
-  \item these images were instead projected into carrington heliographic
-  coordinates, where the positions are measured in the Carrington Solar latitude
-  and longitude.
+  \item these images were instead projected into Carrington heliographic
+  coordinates, where the positions are measured in latitude (\(\Theta\)) and
+  Carrington longitude (\(\Phi_c\)).
   \item This coordinate system rotates with the Sun such that the prime meridian
   coincides with the central meridian (according to an observer on Earth)
   approximately every 27 days, depending on the position of Earth in it's orbit.
@@ -499,26 +499,65 @@ must be taken into account
 
   \item For each pixel in the final (helioprojective-cartesian) image, we need
   to find the corresponding point on the original (heliographic) image.
-  \item This point will not, in general, match up exactly to the centre of a
-  preexisting image, and so an interpolation method will need to be used to  it came from, i.e. where on the 
-  
-  
-  do this we need to define the inverse of this projection (i.e.
-  Helioprojective to heliographic) This actually requires an intermediate step
-  where we transform to and from heliocentric coordinates, which is the actual
-  3d coordinates of the sun (so we need Helioprojective -> heliocentric ->
-  heliographic)
-  \item Using this paper I found the definitions of these
-  transformations This required finding the distance to a given point on the sun
-  from helioprojective coordinates
-
+  \item In general this point will not match up exactly to the centre of a pixel
+  on the original image and so an interpolation method needs to be used to find
+  determine the value of the original pixel.
+  \item to find this point we must first find the mapping from
+  helioprojective-cartesian coordinates to Carrington heliographic coordinates.
+  \item To do this, we use and intermediate transformation to
+  heliocentric-cartesian coordinates. i.e.:
 \end{itemize}
 
+\begin{align*}
+  \text{Helioprojective-cartesian} \rightarrow \text{Heliocentric-cartesian} \rightarrow \text{Carrington Heliographic}
+\end{align*}
 
-The input image to the GAN, a seismic map,
-uses the projection
+Heliocentric-cartesian coordinates give the true spatial position of an object
+(x, y, z), with the centre of the Sun at the origin. The z-axis
+points toward the observer, while the y-axis is in the plane containing the
+z-axis and the rotational axis of the Sun. The x-axis is oriented such that the three axes
+are orthogonal and create a right-hand coordinate system. \\
 
+To convert helioprojective-cartesian coordinates into heliocentric-cartesian
+coordinates, we use the following transformation, provided by
+\citet{thompson_w_t_coordinate_2006}:
+\begin{align}
+  x &= d \cos \theta_y \sin \theta_x \, , \\
+  y &= d \sin \theta_y \, and \\
+  z &= D_\odot - \cos \theta_y \cos \theta_x \, .
+\end{align}
+Where \(d\) is the distance is the distance between the observer and the point
+being observed, and \(D_\odot\) is the distance between the observer and the centre of
+the Sun. After some trigonometry, it can be shown that if the point being
+observed is on the surface of the Sun, then
+\begin{align}
+  d &= D_0 \cos\theta - \sqrt{D_\odot^2 \left( \cos^2\theta - 1 \right) + R_\odot } \, , \\
+  \intertext{where}
+  \theta &= \cos^{-1}\left(\cos\theta_y \cos\theta_x \right) \, .
+\end{align}
 
+Similarly, we can convert from heliocentric-cartesian coordinates to carrignton heliographic
+coordinates as follows:
+\begin{align}
+  \Theta &= \sin^{-1}\left( \frac{y \cos B_0 + z \sin B_0}{r}\right) \, , \\
+  \Phi_c &= \arg (z \cos B_0 - y \sin B_0, x) + \Phi_{0} \,
+  \intertext{where}
+  r &= \sqrt{x^2 + y^2 + z^2} \, ,
+\end{align}
+and \(B_0\) and \(\Phi_{0}\) are the Carrington heliographic latitude and
+longitude of the Observer. \\
+
+\begin{itemize}
+  \item This completes the required transformation, as the constants \(B_0\),
+  \(\Phi_0\) and \(D_\odot\) can be obtained from the image metadata of each seismic
+  map and corresponding STEREO EUV image we are comparing it too.
+  \item Using this transformation, with bi-linear interpolation, we were able
+  transform the STEREO Carrington heliographic images into
+  Helioprojective-cartesian images that matched the STEREO IMAGES
+  %TODO: reiterate that we want to match the seismic images with the stereo
+  %images
+  %TODO: compare stereo with transformed seismic maps
+\end{itemize}
 
 
 \section{Data pre-processing}
