@@ -13,6 +13,7 @@
 \usepackage{gensymb}
 \usepackage{graphicx}
 \usepackage{fancyhdr}
+\usepackage{enumerate}
 \pagestyle{fancy}
 \setlength{\headheight}{13.6pt}
 
@@ -245,7 +246,7 @@ summarised in Figure \ref{fig:Project_summary}.\\
 
 
 %
-% TODO: is this still a relavent title?
+% TODO: is this still a relevant title?
 \subsection{The Solar Magnetic field}
 %
 \label{sec:solar magnetic field}
@@ -294,12 +295,12 @@ summarised in Figure \ref{fig:Project_summary}.\\
 
 
 %
-\subsection{Generative Adversarial Networkds}
+\subsection{Generative Adversarial Networks}
 %
 
 
 %
-\subsection{Conditional Generative Adversarial Networkds}
+\subsection{Conditional Generative Adversarial Networks}
 %
 
 
@@ -321,6 +322,39 @@ summarised in Figure \ref{fig:Project_summary}.\\
 
 
 \begin{itemize}
+
+  \item We need to construct two datasets:
+  
+  \begin{itemize}
+    \item Nearside: Directly compare EUV 304 to magnetograms
+    \item Farside Directly compare farside helioseismic maps with farside magnetograms
+  \end{itemize}
+  
+  \item Furthermore, to go from 1 -> 2,  we need a set of farside EUV 304 which
+  matches the nearside EUV 304 dataset,
+
+  \item To maximise effectiveness of the networks, we need to make the images in
+  each dataset indistinguishable in every aspect except for the subject of
+  interest (i.e. the solar activity for the given image)
+
+  
+  \item Therefore, we need to account for the following factors
+  
+  \begin{enumerate}[i]
+    \item Changes in time of image capture
+    \item Changes in location of image capture
+    \item The solar cycle in which the image was taken
+    \item Position of the sun in images
+    \item Orientation of the Sun in images
+    \item Projection used in image
+    \item Amplitude of pixel values between images
+    \item Instrument degradation over time
+    \item Instrument clipping
+    \item Corrupted images or images with data artifacts
+  \end{enumerate}
+
+
+
   \item Nearside vs Farside (i.e. why we need it)
   \item Data sources were:
         \begin{itemize}
@@ -329,8 +363,8 @@ summarised in Figure \ref{fig:Project_summary}.\\
           \item AIA magnetograms
           \item farside helioseismic holography maps
         \end{itemize}
-  \item figure showing positions and tragectory of stereo, sun earth, SDO and
-        imaginary satelite for accoustic maps
+  \item figure showing positions and trajectory of stereo, sun earth, SDO and
+        imaginary satellite for acoustic maps
   \item figure (maybe the same one) showing plot of stereo position in
   \item position data from http://www.srl.caltech.edu/STEREO/docs/position.html
   \item This is in Heliocentric Earth equatorial (HEEQ): This system has its Z
@@ -338,6 +372,7 @@ summarised in Figure \ref{fig:Project_summary}.\\
         axis towards the intersection of the solar equator and the solar central
         meridian as seen from the Earth. This system is sometimes known as
         heliocentric solar (HS)
+
 \end{itemize}
 
 -
@@ -431,7 +466,7 @@ time \\
 images \\
 - (farside are created every 12 hours between 2010 and now)
 
-\begin{figure}[h]
+\begin{figure}[ht]
   \centering
   \includegraphics[width = 0.7\linewidth]{STEREO_pos.pdf}
   \caption[STEREO A Trajectory]{Trajectory of STEREO A between October 2006 and January 2001 in the
@@ -471,7 +506,7 @@ must be taken into account
   \item to align the images, the images were rotated such that each column of
   vertical pixels had the same helioprojective longitude, and each row of pixels
   had the same helioprojective latitude.
-  \item however at different points of the orbit, the satelite is at a different
+  \item however at different points of the orbit, the satellite is at a different
   distance from the sun, and so the relative size of the sun in each image will
   change throughout the one-year orbit.
   \item to remove this discrepancy, while also removing unnecessary pixels, the
@@ -604,9 +639,68 @@ intensity and normalised.
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%
+%
+%
+%
+%
+%
+%
+%
 \chapter{Training}
+%
+%
+%
+%
+%
+%
+%
+%
 
 
+
+
+
+
+
+
+
+
+
+
+
+%
+%
+%
+%
+%
+%
+%
+%
+\chapter{Results}
+%
+%
+%
+%
+%
+%
+%
+%
 
 
 
@@ -667,7 +761,7 @@ For a description of solar coordinate systems, see
 
 \chapter{STEREO orbit}
 \label{app:fun orbit}
-\begin{figure}[h]
+\begin{figure}[ht]
   \centering
   \includegraphics[width=0.8\linewidth]{fun_orbit.png}
   \caption{Trajectory of STEREO spacecraft as it leaves the Earth and uses a gravity assist from the moon to reach it's orbit}
