@@ -499,6 +499,15 @@ must be taken into account
   celestial sphere, and positions are measured in the longitude \(\theta_x\) or
   latitude \(\theta_y\) of the celestial sphere, with the centre of the disk
   (i.e. the point of the Sun closest to the observer) at the origin.
+  \item Note: this is not exactly correct, as the camera sensor (in this case a
+  CCD detector) is a flat plane. As such, we are actually projecting on to a
+  tangent plane of the celestial sphere (gnomonic projection). However since the
+  angle subtended by the solar disk is \(\approx \SI[]{0.3}[]{\degree} \), this
+  can be accurately approximated as a helioprojective projection. In fact, at a
+  distance of 1 AU (approximately the orbital radius of SDO and STEREO), the
+  angles on the tangent plane are the same as the angles on the celestial sphere
+  to at least five significant figures \cite{thompson_w_t_coordinate_2006}
+  %TODO: is this actually approximated like this?
   \item The helioprojective latitude and longitude of each pixel on the EUV and
   magnetogram images could be found using the metadata from each image.
   \item The instruments used to create these images are rotated relative to each
@@ -560,6 +569,7 @@ coordinates, we use the following transformation, provided by
   x &= d \cos \theta_y \sin \theta_x \, , \\
   y &= d \sin \theta_y \, and \\
   z &= D_\odot - \cos \theta_y \cos \theta_x \, .
+  \label{eqn:heliop_to_helioc}
 \end{align}
 Where \(d\) is the distance is the distance between the observer and the point
 being observed, and \(D_\odot\) is the distance between the observer and the centre of
@@ -703,6 +713,76 @@ intensity and normalised.
 %
 
 
+
+
+
+
+
+%
+%
+%
+%
+%
+%
+%
+\section{Analysis}
+%
+%
+%
+%
+%
+%
+
+
+\begin{itemize}
+  \item How do we analyse the data?
+  \item absolute difference of images is a bad idea because:
+  \begin{itemize}
+    \item difficult to interpret error
+    \item the surface area of the sun corresponding to a given pixel changes
+    with radius (i.e. pixels at the solar limb will correspond to a larger
+    section of the Sun than pixels in the centre of the image).
+    \item This means that the magnetic field will be unevenly weighted towards
+    the central pixels
+  \end{itemize}
+  \item An alternative to this is to calculate the total magnetic flux of a
+  given image, and compare this to the total magnetic flux of the Sun half a
+  rotation later
+  \item this can be done with the following steps
+  \begin{enumerate}
+    \item for each pixel, find the helioprojective coordinates
+  \end{enumerate}
+\end{itemize}
+
+\begin{align}
+  \theta_x &= \Delta x (x - c_x) \, \text{, and} \\
+  \theta_y &= \Delta y (y - c_y)
+\end{align}
+
+where  \((\Delta x, \Delta y)\) are the dimensions of one pixel in arcseconds,
+\( (x, y) \) is the image coordinates of the pixel, and \( (c_x, c_y) \) is the
+image coordinates of the centre of the disk. The dimensions and coordinates of
+the centre of the disk could be obtained from the image metadata. The
+helioprojective coordinates of each corner of each pixel can then be found by
+adding/subtracting \(\frac{1}{2} (\Delta x, \Delta y)\). Using Equation
+\ref{eqn:heliop_to_helioc}, we can convert these helioprojective coordinates
+into heliocentric coordinates, i.e. the true spatial positions \((x, y, z)\) of
+the four points \((\bm{a}, \bm{b}, \bm{c}, \bm{d})\) on the surface of the Sun.
+To approximate the area subtended by the given pixel, we split these four points
+into two triangles defined by the vectors \((\bm{c}-\bm{a}, \bm{b} - \bm{a}) \)
+and \((\bm{c}-\bm{a}, \bm{d} - \bm{a}) \). The areas of these triangles can be
+found 
+\begin{align}
+  A = \frac{1}{2} \abs*{\bm{v}_1 \times \bm{v}_2} \, ,
+\end{align}
+
+
+where \(\bm{v}_1\), \(\bm{v}_2\) are the vectors defining the triangle. By
+summing over the areas of both triangles, we obtain an estimate of the surface
+area corresponding to each pixel. Multiplying it by the magnitude of the
+magnetic field measured at the pixel, we obtain the magnitude of the magnetic
+flux of the pixel. Summing over all pixels gives us the total unsigned magnetic
+flux, \(\bm{\phi}\), for that image.
 
 
 
