@@ -347,7 +347,7 @@ summarised in Figure \ref{fig:Project_summary}.\\
     \item Position of the sun in images
     \item Orientation of the Sun in images
     \item Projection used in image
-    \item Amplitude of pixel values between images
+    \item Amplitude of pixel values between image data-sets
     \item Instrument degradation over time
     \item Instrument clipping
     \item Corrupted images or images with data artifacts
@@ -378,6 +378,10 @@ summarised in Figure \ref{fig:Project_summary}.\\
 -
 
 \section{Data Collection}
+% Changes in time of image capture
+% Changes in location of image capture
+% The solar cycle in which the image was taken
+
 
 \subsection{Nearside Data}
 \begin{itemize}
@@ -479,8 +483,14 @@ images \\
 
 
 \section{Image Projections}
+% Position of the sun in images
+% Orientation of the Sun in images
+% Projection used in image
 
 \begin{itemize}
+  \item need to take into account the position of the Sun, the orientation of
+  the Sun, and how the image was captured (i.e. what projection used - CCD with
+  heloprojective cartiesian)
   \item To train the GAN, features of the Sun need to be in the same position in both
   the input and output training images.
   \item As there are many ways to project data from a three dimensional object
@@ -515,6 +525,8 @@ must be taken into account
   \item to align the images, the images were rotated such that each column of
   vertical pixels had the same helioprojective longitude, and each row of pixels
   had the same helioprojective latitude.
+  \item rotated such that the top of the image correspond to the northernmost part
+  of the solar disk.
   \item however at different points of the orbit, the satellite is at a different
   distance from the sun, and so the relative size of the sun in each image will
   change throughout the one-year orbit.
@@ -529,6 +541,8 @@ must be taken into account
   projection used for the nearside data, this data was prepared (?) in the same
   manner, first rotating the images before cropping them to the radius of the
   Sun.
+  \item rotated such that the top of the image correspond to the northernmost part
+  of the solar disk.
   \item this process was not so simple in the case of the farside helioseismic
   holography seismic maps.
   \item these images were instead projected into Carrington heliographic
@@ -606,17 +620,88 @@ longitude of the Observer. \\
 
 
 \section{Data pre-processing}
+% Amplitude of pixel values between image data-sets
+% Instrument degradation over time
+% Instrument clipping
+% Corrupted images or images with data artifacts
+
 \label{sec:Data prep}
-- download the raw fits files of AIA and HMI from jsoc \\
-- The FITS meta-data allows us to translate between pixel space and
-helioprojective coordinate space. - using this information, we can rotate the
-image such that the north pole is at the highest point of the image, and then
-crop the image such that the edges of the sun are at the edge of the image (see
-figure % From get_aia_png.ipynb
-) \\
+
+
+\begin{itemize}
+  \item ok, so now that we have all the images fully aligned we now need to look
+  at the images themselves
+  \item Both the STEREO EUVI and SDO AIA use a Charge-coupled device (CCD) to
+  image the Sun at a wavelength of
+  \(\SI[]{304}[]{\angstrom}\) \citep{kaiser_stereo_2008,lemen_atmospheric_2012}.
+  Each pixel in the CCD converts the incoming photons into electric charge,
+  which is subsequently measured. This raw data is then processed to remove data
+  artifacts caused by the imaging process, and the resulting image can then be
+  used for analysis.  
+  \item The value of each pixel (measured in digital number, or DN) on these images is then proportional to the
+  solar spectral radiance over the width of the pixel.
+\end{itemize}
+
+\subsection{Ultraviolet Data}
+\begin{itemize}
+  \item From the 4313 AIA images used between 2010 and 2020, the pixel values
+  for the AIA data range from \(\SI[]{-166}[]{DN}\) to \(\SI[]{16383}[]{DN}\).
+  The get a handle on this data, a range of the pixel value percentiles were
+  calculated for each image. This was plotted against time and can be seen in
+  Figure \ref{fig:aia_percentiles}. Corrupted or otherwise poor quality images
+  could then be identified due to the large irregularity in the percentiles of
+  those images, as can be clearly seen in Figure \ref{fig:aia_outliers}. After
+  reviewing the offending images, a simple threshold was used to remove the
+  outliers.
+  \item Had to consider the following effects:
+  \begin{enumerate}
+    \item corrupted images
+    \item instrument degradation
+    \item 
+  \end{enumerate}
+\end{itemize}
+
+
+% outlier cutoff for stereo
+
+% long term degredation aia
+
+% long term degredation stereo
+
+
+% instrument clipping
+
+% shifting to match aia and stereo
+
+% normalisation
+
+\begin{figure}[t]%
+  \centering
+  \subfigure[]{%
+    \label{fig:aia_percentiles}
+    \includegraphics[width=\linewidth]{AIA_percentiles.png}%
+  }%
+  \qquad
+  \subfigure[]{%
+    \label{fig:aia_outliers}%
+    \includegraphics[height=2in]{AIA_outliers.png}% 
+  }%
+
+  \caption[]{\subref{fig:aia_percentiles} The percentiles of AIA data for images
+  taken every 12 hours between May 2010 and December 2020. Due to the large
+  range of data, the 25th to 100th percentiles where plotted on a log scale.
+  \subref{fig:aia_outliers} The 75th percentile of the AIA data. A simple
+  threshold was used to remove poor quality data.}
+  \label{fig:aia_data_prep}
+\end{figure}
+
+
+
+
+
 
 - However the 304\AA \ channel of SDO AIA is degrading over time
-\cite{boerner_photometric_2014}, effectively reducing the exposure of the
+\citep{boerner_photometric_2014}, effectively reducing the exposure of the
 image. Figures \ref{fig:aia_degradation} show a comparison in the exposures of
 images taken in 2011, 2015 and 2019 respectively. To account for this
 degradation, the image was clipped to the 95th percentile of the pixel
@@ -782,12 +867,32 @@ summing over the areas of both triangles, we obtain an estimate of the surface
 area corresponding to each pixel. Multiplying it by the magnitude of the
 magnetic field measured at the pixel, we obtain the magnitude of the magnetic
 flux of the pixel. Summing over all pixels gives us the total unsigned magnetic
-flux, \(\bm{\phi}\), for that image.
+flux, \(\bm{\phi}\), for that image. Figure \ref{fig:tumf_calc} shows an example
+of the unsigned magnetic field, area and unsigned magnetic flux.
 
 
-
-
-
+\begin{figure}[t]%
+  \centering
+  \subfigure[]{%
+    \label{fig:tumf_calc_1}%
+    \includegraphics[height=2.5in]{tumf_calc_1.png}% 
+  }%
+  \qquad
+  \subfigure[]{%
+    \label{fig:tumf_calc_2}%
+    \includegraphics[height=2.5in]{tumf_calc_2.png}% 
+  }%
+  \qquad
+  \subfigure[]{%
+    \label{fig:tumf_calc_3}%
+    \includegraphics[height=2.5in]{tumf_calc_3.png}% 
+  }%
+  \caption[]{The unsigned magnetic field \subref{fig:tumf_calc_1}, area
+  \subref{fig:tumf_calc_2} and unsigned
+  magnetic flux \subref{fig:tumf_calc_3} calculated using a HMI magnetogram,
+  taken on 5th May, 2010.}
+  \label{fig:tumf_calc}
+\end{figure}
 
 
 
