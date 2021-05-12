@@ -674,54 +674,44 @@ longitude of the Observer. \\
   50 point intervals ( was the most stable) indicating that it did not fluctuate
   with individual active regions, and was better representative of the quality
   of the instrument. The percentiles of the data after applying this
-  weighting are shown in Figure \ref{fig:aia_no_degredation}.
+  weighting are shown in Figure \ref{fig:aia_no_degradation}.
   \item This method is not perfect, and some of the real trend in the data
   caused by the solar cycle was also inadvertently removed.
+  \item while this is not ideal this mainly effects the quiet sun and had a
+  smaller effect on the active regions.
 
   \item To ensure that the GAN trained on SDO data would carry over well to
   STEREO data, the STEREO data was normalised to match the SDO dataset.
   \item This is complicated by the fact that SDO and STEREO have different EUV
   instruments, and so the pixel values have different ranges. The percentiles of
-  the STEREO data is shown in Figure \ref{fig:stereo_percentiles}. Clearly the image
-  
-  
-  the images from
-  these datasets.  The
-  zero point for the AIA data seemed like a good overall zeropoint,
-  ~3% of the AIA data was below zero
-  Conversely, for the stereo data the same percentile of data had a value below
-  725, i.e. a value of zero in a pixel from AIA was roughly equivalent to a
-  value of 725 in a STEREO pixel Therefore STEREO data was normalised in the
-  following steps:
-  
-  \item As can be seen in Figure \ref{fig:aia_percentiles}, pixel values above
-  $\approx \SI[]{2e4}[]{DN}$ are clipped by the instrument. After
-  accounting for the instrument degradation, this becomes the wavy line seen in Figure
-  \ref{fig:aia_no_degredation}. To avoid the GAN learning any relation from this
-  we must make the clipping uniform across the whole dataset. However since we
-  need to directly relate the AIA images to the STEREO images, this also needs
-  to match the clipping of STEREO. 
-  
-  The same procedure was applied to the STEREO data set, with the result
-  after each step shown in Figure 
+  the STEREO data is shown in Figure \ref{fig:stereo_percentiles}.
+  \item The gap in the STEREO data due to the aforementioned instrument shut off
+  during STEREO's superior solar conjunction.
+  \item To ensure the normalisation was consistent for between both data sets,
+  The STEREO data was shifted such that a pixel value of 0 was an equivalent UV
+  intensity for both STEREO and SDO data.
+  \item It was found that $\sim 3 \%$ of the SDO pixels had a value below 0,
+  while the same percentage of STEREO pixels had a value below $\SI[]{725}[]{DN}$.
+  \item Accordingly, the STEREO pixels were first shifted down by
+  $\SI[]{725}[]{DN}$ before excluding outliers and accounting for instrument
+  degradation using the same method as in the SDO data. This process is shown in
+  Figures \ref{fig:stereo_shifted}, \ref{fig:stereo_outliers} and
+  \ref{fig:stereo_no_degradation}.
+  \item As can be seen in Figures \ref{fig:aia_percentiles} and
+  \ref{fig:stereo_data_prep}, pixel values above $\approx \SI[]{2e4}[]{DN}$ are
+  clipped by the instrument for both SDO and STEREO. However after accounting
+  for instrument degradation and the offset of the STEREO data, the clipping
+  becomes the wavy curve seen in Figures \ref{fig:aia_no_degradation} and
+  \ref{fig:stereo_no_degradation}. To avoid the UV GAN learning any relation from
+  this we introduced our own clipping that was uniform across both datasets.
+  \item Since the STEREO data was clipped at a lower point than the AIA data,
+  this uniform clipping point was chosen to be the minimum of a 50 point rolling
+  average of the maximum pixel values across the STEREO data, which was $\sim \SI[]{32}[]{DN}$. This clipping
+  point is also shown in Figure \ref{fig:stereo_no_degradation}.
+  \item 
 \end{itemize}
 
 
-% outlier cutoff for stereo
-
-% long term degredation aia
-
-% long term degredation stereo
-
-
-% instrument clipping
-% To account for this
-% degradation, the image was clipped to the 95th percentile of the pixel
-% intensity and normalised.
-
-% shifting to match aia and stereo
-
-% normalisation
 
 \begin{figure}[t]%
   \centering
@@ -736,7 +726,7 @@ longitude of the Observer. \\
   }%
   \qquad
   \subfigure[]{%
-    \label{fig:aia_no_degredation}%
+    \label{fig:aia_no_degradation}%
     \includegraphics[width=\linewidth]{AIA_no_degradation.png}% 
   }%
 
@@ -748,6 +738,7 @@ longitude of the Observer. \\
   \label{fig:aia_data_prep}
 \end{figure}
 
+
 \begin{figure}[t]%
   \centering
   \subfigure[]{%
@@ -755,6 +746,20 @@ longitude of the Observer. \\
     \includegraphics[width=\linewidth]{STEREO_percentiles.png}%
   }%
   \qquad
+  \subfigure[]{%
+  \label{fig:stereo_shifted}
+  \includegraphics[width=\linewidth]{STEREO_shifted.png}%
+}%
+\qquad
+\subfigure[]{%
+\label{fig:stereo_outliers}
+\includegraphics[width=\linewidth]{STEREO_outlier.png}%
+}%
+\qquad
+\subfigure[]{%
+\label{fig:stereo_no_degradation}
+\includegraphics[width=\linewidth]{STEREO_no_degradation.png}%
+}%
   
   \caption[]{}
   \label{fig:stereo_data_prep}
@@ -977,6 +982,13 @@ of the unsigned magnetic field, area and unsigned magnetic flux.
 \end{itemize}
 
 
+% Use a piGAN (physically informed GAN Use a better gan
+% https://openaccess.thecvf.com/content_CVPRW_2020/papers/w11/Alshehhi_Deep_Regression_for_Imaging_Solar_Magnetograms_Using_Pyramid_Generative_Adversarial_CVPRW_2020_paper.pdf
+% Could help boundary conditions for dynamo models “since large-scale flux is
+% generated by the deep-seated dynamo, the observed characteristics of flux
+% emergence and that of the subsequent decay provide vital clues as well as
+% boundary conditions for dynamo models”
+% https://link.springer.com/article/10.1007%2Flrsp-2015-1 
 
 
 
