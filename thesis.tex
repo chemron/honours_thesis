@@ -267,45 +267,498 @@ summarised in Figure \ref{fig:Project_summary}.\\
 %
 
 
+% Machine learning
+% Supervised vs unsupervised
+% regression
+% structure
+% Input
+% Fully connected layer
+% Convolutional layers
+% Learning
+% Gradient descent
+% Backprop
+% Gans
+% cGans
+% how they could be used to generate farside magnetograms
+\label{sec: deep learning}
+Machine learning is the process of a computer algorithm improving at some task
+through `experience'. In supervised learning (as opposed to unsupervised
+learning), this task is to learn some function based on training examples,
+each consisting of an input, \(\bm{x'}\), and a corresponding desired output,
+\(\bm{y'}\). After training, the resulting function would ideally be able to
+take a new input, \(\bm{x}\), and return an appropriate output, \(\bm{y}\). \\
+
+In supervised deep learning this function takes the form of an artificial neural
+network, essentially a large composite function:
+\begin{align}
+  \bm{y} &= NN(\bm{x}, \bm{\theta})\\
+  &= L^{[n_L]}(\bm{\theta}^{[n_L]}, L^{[n_L-1]}( \dotsm L^{[1]}(\bm{\theta}^{[1]}, \bm{x}) \dotsm ))\,, 
+\end{align}
+where each function \(L^{[i]}\) is a `layer' with parameters
+\(\bm{\theta}^{[i]}\), and \(n_L\) is the total number of layers. The `deep' in deep
+learning refers to the large number of layers between the input and output.
+Training is therefore the process of tuning the parameters of the neural
+network until it behaves as desired. \\
+
+The past two decades have seen significant improvements in computational
+capability and the availability of large data sets. Recent improved deep
+learning algorithms have capitalised on this, using their immense flexibility to
+tackle problems such as object detection \citep{krizhevsky_imagenet_2017} or
+speech recognition \citep{toth_phone_2015}. To understand how these algorithms
+work, we must look deeper into the structure of neural networks.
+
+%
+% Section: Structure
+%
 
 
-%
-%
-\section{Deep Learning}
-%
-%
-
-%
 \subsection{Structure}
-%
 
-\subsubsection*{Input}
+A neural network consists of many connected `neurons': nodes in the network each
+holding some value, originally inspired by biological neurons in the brain
+\citep{mcculloch1943}. In `feedforward' neural networks, these neurons are
+organised into sequential layers as described above. The data is processed
+through the neural network beginning at the input layer, with the outputs of one
+layer (the neurons) becoming the inputs to the next, as shown in Figure
+\ref{fig:nn} \citep{michelucci2018}. These layers can take a variety of forms.
 
-\subsubsection*{Fully Connected Layer}
 
-\subsubsection*{Convolutional Layer}
+\subsubsection{Input}
+The first layer of a neural network is the input, which has neurons with values
+that directly correspond to the data. This is often organised into either a
+one-dimensional array or a two-dimensional matrix, with the latter primarily
+used when analysing images, where each neuron in the matrix would correspond to
+a pixel. Optionally, multiple `channels' can be used, which adds another
+dimension to the data. This is typically used if the input is an RGB image, in
+which case each pixel would have three values (one for the intensity of each
+colour). In this case, three channels would be used, with each channel
+representing the intensity of the given colour.\\
+
+Data is often sent into the network in `batches'. This adds another dimension
+to the input corresponding to the size of the batch. This has the advantage of
+allowing much of the data to be fed through in parallel.
+
+  \begin{figure}[t]%
+    \centering
+    \subfigure[]{%
+      \label{fig:nn}%
+      \includegraphics[height=2in]{nn.png}% 
+    }%
+    \qquad
+    \subfigure[]{%
+      \includegraphics[height=2in]{perceptatron.png}%
+      \label{fig:perceptatron}%
+    }%
+    \caption[]{ \subref{fig:nn} A feedforward neural network with a single hidden layer.
+      \textit{Image courtesy of Wikimedia commons\protect\footnotemark}.
+      \subref{fig:perceptatron} A diagram of a single perceptron with inputs,
+      \(x_i\), weights, \(w_i\), a bias, \(b\), an activation function,\(f\),
+      and output, \(y\). \textit{Image courtesy of Dr Andrew Casey}.}
+  \end{figure}
+
+\footnotetext{https://upload.wikimedia.org/wikipedia/commons/4/46/Colored_neural_network.svg}
 
 
 
+\subsubsection{Fully Connected Layer}
+Neurons in a fully connected layer are modelled after the perceptron, originally
+conceived by \citet{rosenblatt1958}, and take the form shown in Equation
+\ref{eqn:perceptatron}. This consists of a weighted sum over the inputs $x_i$,
+with some bias, $b$, and an activation function, $\varphi$, as shown below
+\citep{reagen2017}:
+\begin{align}
+  \label{eqn:perceptatron}
+  y = \varphi \left(\sum_{i}{w_i x_i} + b \right)\,.
+\end{align}
+\\
+
+This can be represented with a graph such as the one in Figure
+\ref{fig:perceptatron}. The use of the activation function was originally
+inspired by the activation of organic neurons \citep{hodgkin1952}, with the idea
+that the artificial neuron is only `activated' when the weighted sum of the
+inputs is high enough. Rectified Linear Units (ReLUs) are perhaps the most
+widely used activation function in modern neural networks and have been shown to
+outperform traditional sigmoid activation functions \citep{glorot2011}. Figure
+\ref{fig:activation} shows the sigmoid (left) and ReLU (right) activation
+functions.\\
+
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{sigmoid_v_relu.pdf}
+  \caption{Comparison of ReLU (left) and sigmoid (right) activation functions.}
+  \label{fig:activation}
+\end{figure}
+
+In a fully connected layer all neurons from one layer are connected to all
+neurons in the next, hence the name. An example of one such fully connected
+layer shown in Figure \ref{fig:fully_connected}. A single layer, \(L\), in a
+neural network can be represented by a matrix of weights, \(W^{[L]}\), a
+vector of biases \(\bm{b}^{[L]}\), and the activations (value of the neurons) of
+that layer \(\bm{x}^{[L]}\). The activations of the next layer,
+\(\bm{x}^{[L+1]}\) are then given by
+\begin{align}
+  \label{eqn:matrix_repr}
+  \bm{x}^{[L+1]} &= \varphi \left(W^{[L]}\bm{x}^{[L]} +\bm{b}^{[L]}\right)\,.
+\end{align}
+\\
+
+\noindent In component form, this is equivalent to
+\begin{align}
+  \label{eqn:component_repr}
+  \bm{x}^{[L+1]}_i
+  &= \varphi \left(\sum\limits_j \left(W^{[L]}_{ij}x^{[L]}_j\right) + b^{[L]}_i\right)\,,
+\end{align}
+where \(\bm{x}^{[1]} = \bm{x}\) would be the input of the network,
+\(\bm{x}^{[n_L]} = \bm{y}\) would be the output of the network, and \(n_L\) is
+the number of layers. In this case, the weights and biases would be the
+parameters of the model, i.e.
+\begin{align*}
+  \bm{\theta} = \left\{W_{ij}^{[L]}, b_{k}^{[L]} \mid i, j, k, L \in \mathbb{N} \right\}\,.
+\end{align*}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.5\linewidth]{ann.png}
+  \caption{The first two (fully connected) layers in a neural network
+  represented as a graph. Each circular node represents a neuron, while the
+  arrows and weights show the connections between them \citep{michelucci2018}.}
+  \label{fig:fully_connected}
+\end{figure}
+
+\subsubsection{Convolutional layers}
+Convolutional layers in neural networks are typically (although not necessarily)
+used when analysing inputs with more than one dimension, such as images or
+videos. A neural network consisting of mostly convolutional layers is called a
+convolutional neural network. \\
+
+
+\citet{hubel_receptive_1959} found that neurons in a cat's visual cortex fired
+in response to properties of the sensory inputs, such as edges. This was the
+inspiration for early convolutional architectures
+\citep{fukushima_neocognitron_1980}. Unlike fully connected layers, the neurons
+in a convolutional layer are organised into tensors of two or more dimensions.
+This is then convolved with a `filter': a tensor that takes up a small portion
+of the input. This filter is moved across the input in steps or `strides' of
+some size, and the dot product between the filter and the section of input is
+computed, which then makes up part of the input for the following layer (see
+Figure \ref{fig:convolution}). This gives a measure for the difference between
+the filter and the input area, with the idea that the filter will pick up some
+feature from the input, for example, an edge in an image. This process typically
+reduces the size of inputs between layers, and in this case, is called
+downsampling. If the input is first `padded' with extra zeros, the same process
+can increase the size of the inputs between layers in which case the process is
+called upsampling or deconvolution (see Figure \ref{fig:upsampling}).
+Furthermore, multiple filters may be used to create multiple output layers or
+equivalently multiple slices of a higher-dimensional output layer. For example,
+if two different filters were used on a two dimensional ($100 \times 100$) input,
+the output would be a ($100 \times 100 \times 2$) layer with the last dimension
+corresponding to each of the two filters. It should be noted that convolutional
+layers are equivalent to a fully connected layer with specific weights held at
+zero and non-zero weights (which correspond to a filter) are copied such that
+the same filter is applied across the image (see again Figure
+\ref{fig:convolution}). This mathematical equivalence means that the process of
+training a network is the same regardless of whether convolutional or fully
+connected layers are used.
+
+\begin{figure}%
+  \centering
+  \subfigure[]{%
+  \label{fig:convolution}%
+  \includegraphics[height=2in]{convolution.png}}%
+  \qquad
+  \subfigure[]{%
+  \label{fig:upsampling}%
+  \includegraphics[height=2in]{upsampling.png}}%
+  \caption[\subref{fig:convolution} Diagram of a convolutional layer \subref{fig:upsampling} Diagram of an upsampling layer]{\subref{fig:convolution} Diagram of a convolutional layer showing the input (blue) and the output (green). A filter is applied to a subset of the input (shaded blue) and the dot product between the entries of the filter and input is returned (shaded green). \\
+  \subref{fig:upsampling} Diagram of an upsampling layer, showing the input (blue) with padding (white) and the output (green). Convolution is applied to this in the same way as in \subref{fig:convolution}, however the padding allows for the output to be larger then the original input.\\
+  \textit{Both images generated from:} \url{https://github.com/vdumoulin/conv_arithmetic}.}
+  \end{figure}
+
+% Section: Learning
 %
 \subsection{Learning}
-%
+\label{sec:learning}
+Typically a neural network learns its parameters, \(\bm{\theta}\), via
+supervised learning. The network is first trained using known input/output pairs
+\((\bm{x'}, \bm{y'})\), and the model can then be used for inference to estimate
+the output (\(\bm{y}\)) of new inputs (\(\bm{x}\)) \citep{reagen2017}. This can
+be represented as follows:
+\begin{align*}
+  (\bm{x'}, \bm{y'}) &\rightarrow NN(\bm{\theta}) && \text{Training} \\
+  \bm{x} &\mathrel{\underset{NN}{\rightarrow}} \bm{y} && \text{Inference} \,.
+\end{align*}
+This training is typically done by using gradient descent, an iterative method
+for finding a local minimum in a differentiable function \citep{cauchy_1847}. At
+each iteration, beginning at some starting point, the gradient at the current
+point is calculated, and a step is taken in the direction of the negative of the
+gradient i.e. a step in the direction of the sharpest decline. A depiction of
+gradient descent is shown in Figure \ref{fig:gradient_descent} using a contour
+map. This has been applied to neural-network-like models since the 1960s
+\citep{bryson1962steepest}, where the differentiable function in this case is
+the cost function, \(C(\bm{\theta})\), a function in parameter space which gives
+a measure for the distance between the outputs of the current model and the
+desired outputs. By finding a minimum of this cost function, we effectively find
+a point in parameter space with minimal distance between the actual outputs and
+the desired outputs, i.e. we have a good model\footnote{This isn't actually
+guaranteed, as gradient descent only finds a local minima, and not necessarily
+the global minimum.}.\\
 
-\subsubsection*{Backpropagation}
+A cost function \(C_p\) can be calculated for the individual input/output pairs
+\((\bm{x'}, \bm{y'})\). The total cost function, \(C_T\), is then given by the
+average of the cost functions for all input/output pairs in the data, as shown
+in Equation \ref{eqn:total cost}, where \(n_D\) is the total number of
+input/output pairs in the training data.
+\begin{align}
+  C_T = \frac{1}{n_D} \sum\limits_{p} C_p \label{eqn:total cost}
+\end{align}
+
+These cost functions will often take the form of either the quadratic cost, also
+known as the mean squared error, (Equation \ref{eqn:quadratic}), or the cross
+entropy\footnote{Usually cross entropy is used when the outputs can be
+represented as probability functions, i.e. \( 0 < y_i < 1\) and \(\sum y_i =
+1\)} (Equation \ref{eqn:cross-entropy}).
+\begin{align}
+  C_p(\bm{\theta}, \bm{y}, \bm{y'}) &= \frac{1}{2} \sum\limits_{i}
+    \left(y'_i - y_i\right)^2 && \text{Quadratic cost} \label{eqn:quadratic}\\
+  C_p(\bm{\theta}, \bm{y}, \bm{y'}) &= - \sum\limits_{i}
+  y'_i \log{y_i} && \text{Cross-entropy} \label{eqn:cross-entropy}
+\end{align}
+By minimising the cost function using gradient descent, the neural network
+ideally learns the parameters that give a sensible output. To use traditional
+gradient descent, the gradient of the total cost function would be calculated at
+each step, requiring all the training data to be fed through the network before
+taking a single step in parameter space, in addition to increasing the
+computational cost of calculating the gradient.\\
+
+To avoid this, stochastic gradient descent is typically used, where an
+estimation of the gradient is used instead \citep{Bottou2010}. This estimation of
+the gradient is calculated by only looking at a subset of the data (a batch) and
+finding the gradient of the average cost function of this batch, i.e. finding
+the gradient of:
+\begin{align}
+  C_B = \frac{1}{n_B} \sum\limits_{B} C_p \label{eqn:average cost}\,,
+\end{align}
+where \(n_B\) is the number of input/output pairs in the batch. Backpropagation
+\citep{rumelhart_learning_1986} is typically used to calculate the gradient of
+this average cost function.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width = 0.4\linewidth]{gradient_descent.png}
+  \caption{Diagram showing gradient descent on a contour map. \textit{Image
+  courtesy of wikimedia commons.}}
+  \label{fig:gradient_descent}
+\end{figure}
 
 
-%
+\subsubsection{Backpropagation}
+By definition, the gradient of the average cost function is given by
+\begin{align}
+  \left(\nabla C_B\right)_i &= \partialderivative{C_B}{\theta_{i^{[L]}}} \,.
+  \intertext{Using Equation \ref{eqn:average cost}, this gives:}
+  \left(\nabla C_B\right)_i &=\frac{1}{n} \sum\limits_p \partialderivative{C_p}{\theta_i^{[L]}}\,.
+  \label{eqn:backprop_deriv}
+\end{align}
+
+The goal of backpropagation is therefore to calculate the derivative in Equation
+\ref{eqn:backprop_deriv} for each parameter \(\theta_i \in \bm{\theta} \)
+\citep{Goodfellow-et-al-2016}. \\
+
+From Equations \ref{eqn:quadratic} and \ref{eqn:cross-entropy}, we know that the
+cost function is dependent on the output of the network, \(\bm{y}\), and the
+desired output, \(\bm{y'}\). While \(\bm{y'}\) is fixed and does not depend on
+the parameters of the network, the output \(\bm{y}\) is the activation of the
+last layer of neurons (i.e. \(\bm{y} = \bm{x}^{[n_L]}\)), and is itself a
+function of the previous layer of neurons, \(\bm{x}^{[n_L - 1]}\), the weights
+of that layer, \(W^{[n_L - 1]}\), and the biases of that layer, \(\bm{b}^{[n_L -
+1]}\) (see Equation \ref{eqn:matrix_repr}).\\
+
+Using the chain rule, each derivative can then be framed in terms of the
+activation of the neuron \(x_i^{[L+1]}\) that depends on the parameter
+\(\theta_i^{L}\):
+\begin{align}
+  \partialderivative{C_p}{\theta_i^{[L]}} &=
+  \partialderivative{x_i^{[L+1]}}{\theta_i^{L}}
+  \partialderivative{C_p}{x_i^{[L+1]}}
+\end{align}
+\noindent
+While the derivative \(\partial x_i^{[L+1]} / \partial \theta_i^{[L]} \) can
+be directly computed using Equation \ref{eqn:matrix_repr}, the derivative
+\(\partial C_p / \partial x_i^{[L+1]} \) requires more discussion.\\
+
+If \(x_i^{[L+1]} = x_i^{[n_L]} = y_i\) (i.e. the neuron \(x_i^{[L+1]}\) is an
+output neuron in the last layer), then the cost function will be defined
+explicitly in terms of the activation of this neuron (Equations
+\ref{eqn:quadratic} and \ref{eqn:cross-entropy}), and we can easily calculate
+the derivative,
+\begin{align}
+  \partialderivative{C_p}{x_i^{[n_L]}} = C_p'\left(x_i^{[n_L]}\right)\,.
+  \label{eqn:back_prop_1}
+\end{align}
+\\
+
+However in general, this will not be the case and we must instead use an
+iterative process to calculate this derivative. Since the activation of a neuron
+in some layer, say \(x_i^{[L+1]}\), is a linear combination of the activation of
+the neurons in the previous layer (see Equation \ref{eqn:matrix_repr}), we can
+start with Equation \ref{eqn:back_prop_1}, and `propagate' backwards one layer
+at a time to find the partial derivative of \(C_p\) with respect to the
+activation of each neuron in the previous layer,
+\begin{align}
+  \partialderivative{C_p}{x_j^{[n_L - 1]}}
+  &= \sum\limits_i \partialderivative{x_i^{[n_L]}}{x_j^{[n_L - 1]}}
+  \partialderivative{C_p}{x_i^{[n_L]}} \,.
+  \label{eqn:back_prop_2}
+\end{align}
+\\
+
+\noindent We can therefore iterate through the following until we get to the layer
+\(k-1\) (or equivalently \(L+1\)):
+\begin{align}
+  \partialderivative{C_p}{x_j^{[k - 1]}}
+  &= \sum\limits_i \partialderivative{x_i^{[k]}}{x_j^{[k - 1]}}
+  \partialderivative{C_p}{x_i^{[k]}}\,.
+  \label{eqn:back_prop_3}
+\end{align}
+\\
+
+\noindent Using Equation \ref{eqn:component_repr}, we can explicitly calculate each derivative
+\begin{align}
+  \partialderivative{x_i^{[k]}}{x_j^{[k - 1]}}
+  &= \varphi'W_{ij}^{[k-1]}\,,
+\end{align}
+allowing us to calculate the gradient \(\nabla C_B\) of the average cost
+function for the batch using Equation \ref{eqn:backprop_deriv}. Finally, with
+the gradient found, we can now update the parameters of the network by taking a
+step in the \(-\nabla C_B\) direction of parameter space. \\
+
+Deep learning techniques based on the fully connected or convolutional neural
+networks described above have been very successful at labelling problems such as
+speech recognition, \citep{Hinton2012}, or image classification,
+\citep{Krizhevsky2012}. However using these techniques to \textit{generate}
+data had only experienced limited success before the recent introduction of
+generative adversarial networks (GANs).\\
+
 \subsection{Generative Adversarial Networks}
-%
+\label{sec:gan}
+\citet{Goodfellow2014} introduced GANs as a way of generating
+new data that `imitates' data from a given set. Rather than use a single
+network, a GAN uses two separate neural networks, a generative network (the
+generator) and a discriminative network (the discriminator), that compete
+against each other such that the success of one network becomes the loss for the
+other. In this process, the generative network learns to generate data similar
+to the dataset while the discriminative network learns to distinguish between
+samples either taken from the data distribution or generated by the generative
+network \citep{Goodfellow2014}. The objective of the generative network is
+therefore to increase the error-rate of the discriminative network. Notably, the
+generator never actually sees the data it's trying to emulate, only the success
+of the discriminator network. The only input to the generator is random noise,
+which allows it to generate a new output each time. \\
 
+An analogy of this process given by \citet{Goodfellow2014} is that the generative
+network is a counterfeiter, trying to produce a fake currency without being
+detected, while the discriminative network is the police, trying to detect the
+counterfeit currency.\\
 
-%
+In a traditional GAN, the input of the generator, G, is some noise, \(\bm{z}\),
+drawn from some predefined prior (\(\bm{z} \sim  p_z(\bm{z})\)), while
+the output, \(G(\bm{z})\) is a mapping to the data distribution. Meanwhile the
+input to the discriminator, D, is either samples, \(\bm{x}\), from the data
+distribution, \(p_x\), or outputs of the generator, \(G(\bm{z})\). The output of
+the discriminator, \(D(\bm{y})\), then represents the probability that the input
+came from the data distribution (\( \bm{y} \sim p_{data}\)) and not from the
+generator \(\bm{y} = G(\bm{z})\). The discriminator can therefore be trained to
+maximise the probability of correctly identifying it's input with the
+following cost function (see Section \ref{sec:learning})
+\begin{align}
+  C_D(D, G, \bm{\theta}_D, \bm{\theta}_G, \bm{x}, \bm{z}) &=
+  -\log[D(\bm{x})] - \log[1 - D(G(\bm{z}))]\,,
+\end{align}
+and so minimising this cost function will maximise the probability of the
+discriminator correctly identifying its input.\\
+
+\noindent Conversely, the cost function for the generator is given by
+\begin{align}
+  C_G(D, G, \bm{\theta}_D, \bm{\theta}_G, \bm{x}, \bm{z})
+  &= -C_D(D, G, \bm{\theta}_D, \bm{\theta}_G, \bm{x}, \bm{z})\\
+  &= \log[D(\bm{x})] + \log[1 - D(G(\bm{z}))] \,.
+  \label{eqn:generator_cost}
+\end{align}
+
+Early on in training, Equation \ref{eqn:generator_cost} might not be best suited
+as a cost function, since the discriminator will easily be able to reject the
+early generator outputs as they will be clearly distinct from the dataset
+\citep{Goodfellow2014}. To avoid this, it may be more efficient to instead use
+the following cost function at the start of training:
+\begin{align}
+  C_G(D, G, \bm{\theta}_D, \bm{\theta}_G, \bm{x}, \bm{z})
+  &= \log[D(\bm{x})]\,.
+\end{align}
+
+Typically, training is done by alternating between training the generative network
+and training the discriminative network until convergence. However GANs that
+operate as described above are unable to take in any auxiliary information that
+could allow it to condition the output of the generator.
+
 \subsection{Conditional Generative Adversarial Networks}
-%
+\label{sec:cgan}
+In \citeyear{mirza_conditional_2014}, \citeauthor{mirza_conditional_2014} first
+introduced the idea of a conditional generative adversarial network (cGAN) as a
+way to condition a GAN on some additional information, \(\bm{c}\), such as a
+label or related data. While a traditional GAN is unsupervised and only needs an
+input dataset which it learns to emulate, a cGAN is supervised and requires a
+labelled dataset, i.e. many \((\bm{x}, \bm{c})\) pairs. This extra information
+is fed into both networks allowing it to associate its output with this
+additional information. A comparison between a GAN
+and a cGAN is shown in Figure \ref{fig:gans}.\\
+
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width = 0.6\linewidth]{gan_cgan.png}
+  \caption{Comparison between a GAN (a) and a cGAN (b). In the GAN, noise
+  (\(\bm{z}\)) is fed into the generator (\(G\)). The input to the discriminator
+  (\(D\)) is then either the `fake' output of the GAN (\(G(\bm{z})\)) or the
+  `real' data (\(\bm{x}\)). The discriminator decides if the input it has been
+  given is real or fake. In the cGAN, both the generator and discriminator have
+  an additional input (\(\bm{c}\)) which `conditions' the data
+  \citep{mirza_conditional_2014}. In the case of an image-to-image GAN, this
+  conditional data is an image, which is the only input to the generator. }
+  \label{fig:gans}
+\end{figure}
+
+
+By conditioning a cGAN on images, this idea can be extended to image-to-image
+translation \citep{isola2017image}. In this case, the only input to the generator
+is the image \(\bm{c}\), from which the generator must produce an image
+\(G(\bm{c})\) that closely matches \(\bm{x}\). For an image-to-image cGAN, the
+cost function for the discriminator becomes
+\begin{align}
+  C_D(D, G, \bm{\theta}_D, \bm{\theta}_G, \bm{x}, \bm{c}) &=
+  -\log[D(\bm{x}\mid \bm{c})] - \log[1 - D(G(\bm{c}))]\,,
+\end{align}
+while the cost function for the generator becomes
+\begin{align}
+  C_G(D, G, \bm{\theta}_D, \bm{\theta}_G, \bm{x})
+  &= \log[D(\bm{x}\mid \bm{c})] + \log[1 - D(G(\bm{c}))]\,.
+\end{align}
+
+
+Image-to-image cGANs have a large potential for disruption in solar physics due
+to the large number of images taken by spacecraft and terrestrial observatories
+alike. While cGANs have already been used to generate solar magnetograms from EUV images
+\citep{Kim2019}, and vice versa \citep{park_generation_2019}, there has been no
+research into how they could be used to generate magnetograms from seismic maps.
+
+
+
+
+
 
 
 % Lit review stuff
-
+% TODO: summary of what we will be doing
 
 
 %
@@ -883,7 +1336,107 @@ longitude of the Observer. \\
 
 
 
+
 \begin{itemize}
+  \item with our data ready it is now time to train our networks.
+  \item we want to create solar magnetograms from farside seismic images
+  \item to do this, we requrie a training set of seismic image /magnetogram pairs
+  \item since we only have dopplergrams of the farside, we first need to be able
+  to generate a training set of farside magnetograms
+  \item this can be done by first generating  magnetograms from UV images.
+  \item Therefore we need to train two networks the first one generates
+  magnetograms from UV data, and the second one to generate magnetograms from
+  seismic data, using a training set created by the first network.
+
+  \item Image-to-image cGANs have proven to be very effective at this task and
+  make a suitable choice for such a task. As discussed in Section \ref{sec:gan},
+  these consist of two competing neural networks, the generator and the
+  discriminator. In this setup, the generator tries to `fool' the discriminator into
+  predicting that the generated image is in fact real.
+
+
+
+\end{itemize}
+
+
+
+\begin{itemize}
+  \item the process for creating a network capable of producing farside
+  magnetograms from seismic maps consists of three parts.
+  \begin{enumerate}
+    \item The UV GAN is trained to generate magnetograms from uv images by using
+    SDO UV/Magnetogram image pairs
+    \item The now trained UV GAN is used to generate `STEREO' magnetograms from
+    STEREO UV images
+    \item The Seismic GAN is trained to generate magnetograms from Seismic
+    images using STEREO magnetogram/ farside seismic image pairs.
+  \end{enumerate}
+  
+  \item The same network model was used for parts 1. and 3., which consisted of
+  a U-NET style generator, and a fully convolutional discriminator. Figure
+  %TODO:
+  shows a diagram of both GANs. This model was based on the one used by
+  \citet{Kim2019} for a very similar purpose.
+\end{itemize}
+
+
+%
+%
+%
+%
+%
+\section{Architecture}
+%
+%
+%
+%
+%
+%
+
+\subsection{Generator}
+
+
+
+
+
+\begin{itemize}
+  \item the generator part of each GAN must be able to translate between two
+  images of the same size.
+  \item A U-net \citep{ronneberger_u-net_2015} makes a suitable choice for this task
+  \item U-nets consists of a down sampling path where the width and height of
+  each layer gets
+  smaller at each `block' followed by an upsampling path where the width and height
+  get larger until it reaches the original size, making a symmetrical `U' shape.
+  \item the specific architecture used in the is shown in Figure %TODO:
+  
+  
+  
+  Many `skip
+  connections' join layers of the same size either side of the `U'. The model
+  used in this work is shown in Figure %TODO:
+  In our case, we start with a ($1024\times 1024$) input image and at each step
+  in the down sampling path, apply convolution, batch normalisation and leaky
+  reLU activation.% TODO need to explain these
+  At each convoluitonal step an additional 64 filters are used than on the
+  previous layer, maxing out at 512. The `bottom' layer 
+  \item 
+  
+  
+  \item need image-to-image
+  \item needs to maintain shape and large scale structures from original image
+  \item needs to capture small scale variations, interactions between small
+  sections of image
+  \item Gan
+  \item Generator
+  \item U-Net
+  \item 
+\end{itemize}
+
+\subsection{Descriminator}
+
+\begin{itemize}
+  \item Descriminator
+  \item 
   \item Why we used square root to artificially increase the saturation
 \end{itemize}
 
@@ -903,30 +1456,7 @@ longitude of the Observer. \\
 %
 %
 %
-\chapter{Results}
-%
-%
-%
-%
-%
-%
-%
-%
-
-
-
-
-
-
-
-%
-%
-%
-%
-%
-%
-%
-\section{Analysis}
+\chapter{Results \& Analysis}
 %
 %
 %
@@ -1032,16 +1562,26 @@ of the unsigned magnetic field, area and unsigned magnetic flux.
   clipping (we don't need low intensity information). Similar for seismic gan.
 \end{itemize}
 
+% Experiment with # layers etc
+
+% test on fake images - analyse how it works
 
 % Use a piGAN (physically informed GAN Use a better gan
 % https://openaccess.thecvf.com/content_CVPRW_2020/papers/w11/Alshehhi_Deep_Regression_for_Imaging_Solar_Magnetograms_Using_Pyramid_Generative_Adversarial_CVPRW_2020_paper.pdf
+
+% use recurrent neural network
+
+% do it all in one i.e. nearside dopplergrams -> farside magnetograms
+
+% compare directly to nearside mag rather than farside generated mag
+
 % Could help boundary conditions for dynamo models “since large-scale flux is
 % generated by the deep-seated dynamo, the observed characteristics of flux
 % emergence and that of the subsequent decay provide vital clues as well as
 % boundary conditions for dynamo models”
 % https://link.springer.com/article/10.1007%2Flrsp-2015-1 
 
-
+% use smaller gan for seismic GAN (not 1024 by 1024)
 
 
 
@@ -1063,7 +1603,7 @@ of the unsigned magnetic field, area and unsigned magnetic flux.
 
 \bibliographystyle{mnras.bst}
 
-\bibliography{Bibliography}
+\bibliography{ml.bib, imaging.bib,space_weather.bib,sun.bib,hsm.bib, Bibliography.bib}
 
 
 \appendix
