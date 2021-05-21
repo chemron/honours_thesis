@@ -1504,11 +1504,11 @@ this addition, the generator cost function used was
   \centering
   %TODO: fill out figure
   \caption{
-    In our case, we start with a ($1024\times 1024$) input image and at each step
-    in the down sampling path, apply convolution, batch normalisation and leaky
-    reLU activation.% TODO need to explain these
-    At each convoluitonal step an additional 64 filters are used than on the
-    previous layer, maxing out at 512. The `bottom' layer 
+    The input consits of two ($1024\times 1024$) `channels', containing the
+    magnetogram (be it real or fake) and the conditional image (either the UV
+    image or seismic map depending on the GAN). 5 successive convolutional
+    layers with batch normalisation and leaky ReLU activation were applied to
+    reduce the final input to a ($126\times 126 \times 1$) tensor.
   }
   \label{fig:discrim_model}
 \end{figure}
@@ -1518,13 +1518,26 @@ this addition, the generator cost function used was
 \section{UV-GAN}
 \begin{itemize}
   \item The UV-GAN was trained using 4247 SDO UV/magnetogram image pairs
-  captured during solar cycle 24 between April 2010 and December 2019.
-  Images taken in November and December each year were used as the testing set,
-  while the remaining 3505 image pairs were used as the training set.
-
-
-
-
+  captured during solar cycle 24 between April 2010 and December 2019. Images
+  taken in November and December each year were used as the testing set, while
+  the remaining 3505 image pairs were used as the training set. The GAN was run
+  for $200000$ iterations at each step doing a forward (inference) and backward
+  (training) pass of the discriminator before doing a forward and backward pass
+  of the generator with a batch size of one. This small batch size means that,
+  while potentially slower, the GAN will use less memory, and is less likely to
+  result mode collapse - where the generator produces the same output regardless
+  of the input. The training was done using the Adam optimizer
+  \citep{kingma_adam_2014} with a learning rate (step size during gradient
+  descent) of $0.0002$ and `momentum' parameters $\beta_1 = 0.5$, $\beta_2 =
+  0.999$. The weights in the convolutional layers where initialised by
+  \begin{align}
+    w_c \sim \mathcal{N}\left(0, 0.02\right) \quad ,
+  \end{align}
+  while the weights for batch normalisation were initialised by
+  \begin{align}
+    w_b \sim \mathcal{N}\left(1.0, 0.02\right) \quad .
+  \end{align}
+  
   \item After a first attempt at training the UV-GAN it was found that the GAN
   was unable to capture much of the lower-intensity magnetic structure of the
   active regions. This was thought to be due to the large dynamic range of both
@@ -1542,17 +1555,37 @@ this addition, the generator cost function used was
   both the normalised magnetograms and UV images. Since the UV images had a
   pixel values between $0$ and $1$, this `boosted' dim pixels while
   avoiding the loss of any data. On the other hand the magnetograms had a
-  pixel values between $-1 and 1$ and so the artificial saturation took the form:
+  pixel values between $-1$ and $1$ and so the artificial saturation took the form
   
 \begin{align}
-  p^{(\text{new})} = \text{Sign}\sqrt{\absolutevalue{p^{(\text{old})}}}
+  x^{(\text{new})} = \text{Sign}(x)\sqrt{\absolutevalue{x}}\, ,
 \end{align}
 
-again boosting pixels that had less intense magnetic fields. Importantly, this
-process is completely reversible and the true magnetic field can be easily extracted.
-  
-  Why we used square root to artificially increase the saturation
+boosting pixels that had less intense magnetic fields. Importantly, this process
+is completely reversible and the true magnetic field can be easily extracted.
+Figure \ref{fig:artificial_sat} shows the pixel values before and after applying
+this artificial saturation. 
+
+
+
 \end{itemize}
+
+
+\begin{figure}[h]
+  \centering
+  
+  \caption{Percentiles of UV and magnetogram data before and after the artificial saturation}
+  \label{fig:artificial_sat}
+\end{figure}
+
+
+
+
+
+
+
+
+
 
 \section{Seismic-GAN}
 
