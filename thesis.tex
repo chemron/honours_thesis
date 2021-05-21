@@ -26,6 +26,7 @@ height=1cm, text centered, draw=black, fill=gray!30, text width=3cm]
 >=stealth]
 
 \usepackage[detect-all]{siunitx}
+\usepackage{dsfont}
 \usepackage{breqn}
 \usepackage{subfigure}
 \usepackage{geometry}
@@ -266,6 +267,12 @@ summarised in Figure \ref{fig:Project_summary}.\\
 %
 %
 
+
+%
+%
+\section{Deep learning}
+%
+%
 
 % Machine learning
 % Supervised vs unsupervised
@@ -693,7 +700,7 @@ early generator outputs as they will be clearly distinct from the dataset
 the following cost function at the start of training:
 \begin{align}
   C_G(D, G, \bm{\theta}_D, \bm{\theta}_G, \bm{x}, \bm{z})
-  &= \log[D(\bm{x})]\,.
+  &= -\log[D(G(\bm{z}))]\,.
 \end{align}
 
 Typically, training is done by alternating between training the generative network
@@ -849,8 +856,9 @@ research into how they could be used to generate magnetograms from seismic maps.
   \item To train GAN1, images were collected every 12 hours, same as
         \cite{Kim2019} - allowing us to get many images which are distinct enough for
         training
-  \item these images were taken over solar cycle 24 between 2010, when the first
-        SDO data became available, and december 2019 (the end of the solar cycle).
+  \item these images were taken over solar cycle 24 between April 2010, when the
+        first SDO data became available, and December 2019 (the end of the solar
+        cycle).
   \item as the global magnetic field flips every solar cycle (see Section
         \ref{sec:solar magnetic field}), this gave consistent magnetograms across the
         data set.
@@ -1374,11 +1382,18 @@ longitude of the Observer. \\
   
   \item The same network model was used for parts 1. and 3., which consisted of
   a U-NET style generator, and a fully convolutional discriminator. Figure
-  %TODO:
-  shows a diagram of both GANs. This model was based on the one used by
-  \citet{Kim2019} for a very similar purpose.
+  \ref{fig:solar_gans_diagram} shows a diagram of both GANs. This architecture
+  for each GAN was based on the one used by \citet{Kim2019} for a very similar
+  purpose.
 \end{itemize}
 
+\begin{figure}[h]
+  \centering
+  %TODO: this figure. see data analysis book for sketch. maybe different colours
+  %for training gan/training
+  \caption{Diagram of the UV-GAN and Seismic GAN.}
+  \label{fig:solar_gans_diagram}
+\end{figure}
 
 %
 %
@@ -1407,42 +1422,139 @@ longitude of the Observer. \\
   each layer gets
   smaller at each `block' followed by an upsampling path where the width and height
   get larger until it reaches the original size, making a symmetrical `U' shape.
-  \item the specific architecture used in the is shown in Figure %TODO:
-  
-  
-  
-  Many `skip
-  connections' join layers of the same size either side of the `U'. The model
-  used in this work is shown in Figure %TODO:
-  In our case, we start with a ($1024\times 1024$) input image and at each step
-  in the down sampling path, apply convolution, batch normalisation and leaky
-  reLU activation.% TODO need to explain these
-  At each convoluitonal step an additional 64 filters are used than on the
-  previous layer, maxing out at 512. The `bottom' layer 
-  \item 
-  
-  
-  \item need image-to-image
-  \item needs to maintain shape and large scale structures from original image
-  \item needs to capture small scale variations, interactions between small
-  sections of image
-  \item Gan
-  \item Generator
-  \item U-Net
-  \item 
+  \item   Many `skip connections' join layers of the same size either side of
+  the `U'. The model used in this work is shown in Figure \ref{fig:gen_model}.
+  By using a U-Net, we are able to do image-to-image to image translation that
+  is capable of retaining the shape and large scale structures of the original
+  image while capturing small scale features and the interactions between these.
 \end{itemize}
+  
+  \begin{figure}[h]
+    \centering
+    %TODO: fill out figure
+    \caption{
+      In our case, we start with a ($1024\times 1024$) input image and at each step
+      in the down sampling path, apply convolution, batch normalisation and leaky
+      reLU activation.% TODO need to explain these
+      At each convoluitonal step an additional 64 filters are used than on the
+      previous layer, maxing out at 512. The `bottom' layer 
+    }
+    \label{fig:gen_model}
+  \end{figure}
 
-\subsection{Descriminator}
+
+  
+
+
+\subsection{Discriminator}
 
 \begin{itemize}
-  \item Descriminator
-  \item 
-  \item Why we used square root to artificially increase the saturation
+  \item The discriminator is given two inputs. The magnetogram (either real or
+  generated) and the conditional image - a UV image in the case of the UV-GAN or
+  a seismic map in the case of the Seismic-GAN. The network will then attempt to
+  determine if the magnetogram input is either real or fake. The architecture of
+  the discriminator used is shown in Figure~\ref{fig:discrim_model}. The output
+  of the discriminator is a ($126\times 126$) array.
+  \item when the discriminator is given a real magnetogtram, the discriminators
+  goal is to maximise it's output, while if the discriminator is given a `fake'
+  magnetogram the goal is to minimise it's output. Since the final layer of the
+  descriminator has a sigmoid activation function the output of each output
+  neuron is bounded between 0 and 1. A `perfect' discriminator would then output
+  a tensor of $0$'s for a fake magnetogram input and a tensor of $1$'s for a
+  real magnetogram. It should be noted that a perfect discriminator would
+  paradoxically be bad, as this would prevent the generator from being able to
+  learn. Similar to Section \ref{sec:gan}, the cost function for the
+  discriminator is then given by
+
+
+  \begin{align}
+    C_{D(Real)} &= -\mathds{E}\left[\log(D(\mathbf{x}|\mathbf{c}))\right]
+    \intertext{and,}
+    C_{D(Fake)} &=  -\mathds{E}\left[\log(\mathds{1} -  D(G(\mathbf{c})|\mathbf{c}) ) \right]\,,
+  \end{align} 
+
+
+where $ C_{D(Real)}$ and $ C_{D(Fake)}$ are the discriminator cost functions
+for real and fake magnetogram inputs respectively, $\mathbf{c}$ is the
+"conditional" input to the GAN (either a UV image or a Seismic image, depending
+on which GAN), $D(\dotsb|\mathbf{c})$ is the discriminator output with a real
+($\mathbf{x}$) or fake ($G(\mathbf{c})$) magnetogram as an input, and
+$\mathds{1}$ is a tensor full of $1$'s with the same shape as $D(\dotsb)$. In
+each expression the `log' is taken element-wise, before the mean of all tensor
+elements is taken. The total discriminator cost function is therefore given by
+\begin{align}
+  C_{D} = C_{D(Real)} + C_{D(Fake)} \,.
+\end{align}
+
+As explained in Section \ref{sec:cgan}, the discriminator also provides the cost
+function for the generator. Unlike \ref{sec:cgan} an additional term was added
+to minimise the absolute difference between the real and fake magnetograms. With
+this addition, the generator cost function used was
+\begin{align}
+  C_{G} = -\mathds{E}\left[\log(D(G(\mathbf{c})|\mathbf{c}))\right] +
+  100 \times \mathds{E}\left[|G(\mathbf{c} - \mathbf{x}|\right] \,.
+\end{align} 
+
+
 \end{itemize}
 
 
 
+\begin{figure}[h]
+  \centering
+  %TODO: fill out figure
+  \caption{
+    In our case, we start with a ($1024\times 1024$) input image and at each step
+    in the down sampling path, apply convolution, batch normalisation and leaky
+    reLU activation.% TODO need to explain these
+    At each convoluitonal step an additional 64 filters are used than on the
+    previous layer, maxing out at 512. The `bottom' layer 
+  }
+  \label{fig:discrim_model}
+\end{figure}
 
+
+
+\section{UV-GAN}
+\begin{itemize}
+  \item The UV-GAN was trained using 4247 SDO UV/magnetogram image pairs
+  captured during solar cycle 24 between April 2010 and December 2019.
+  Images taken in November and December each year were used as the testing set,
+  while the remaining 3505 image pairs were used as the training set.
+
+
+
+
+  \item After a first attempt at training the UV-GAN it was found that the GAN
+  was unable to capture much of the lower-intensity magnetic structure of the
+  active regions. This was thought to be due to the large dynamic range of both
+  the UV images and magnetograms. This range is clearly seen in Figures
+  \ref{fig:sdo_stereo_comparison} and \ref{fig:hmi_p}, where which in both cases
+  show that approximately $99\%$ of the pixels in each image were at least an
+  order of magnitude smaller than the maximum pixel values. This essentially
+  results in images that are too dark, causing the GAN to largely focus on the
+  few bright pixels. Previous work have used saturation limits to deal with this
+  problem by clipping data above a certain point, \citet{Kim2019} for example
+  used saturation limits of $\pm 100G$ for generating magnetograms. However this
+  comes at the cost of utility, with the peak magnetic field in many sunspots
+  exceeding $\SI[]{3000}[]{G}$. To avoid such a cut-off we instead artificially
+  increased the saturation by taking the square-root of the pixel values for
+  both the normalised magnetograms and UV images. Since the UV images had a
+  pixel values between $0$ and $1$, this `boosted' dim pixels while
+  avoiding the loss of any data. On the other hand the magnetograms had a
+  pixel values between $-1 and 1$ and so the artificial saturation took the form:
+  
+\begin{align}
+  p^{(\text{new})} = \text{Sign}\sqrt{\absolutevalue{p^{(\text{old})}}}
+\end{align}
+
+again boosting pixels that had less intense magnetic fields. Importantly, this
+process is completely reversible and the true magnetic field can be easily extracted.
+  
+  Why we used square root to artificially increase the saturation
+\end{itemize}
+
+\section{Seismic-GAN}
 
 
 
