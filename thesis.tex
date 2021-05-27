@@ -1226,7 +1226,7 @@ longitude of the Observer. \\
     \includegraphics[height=1.5in]{AIA_2019.01.01_00:00:00.png}%
     \label{fig:aia_2019}%
   }%
-  \caption[]{Images taken by SDO AIA 304\AA \ on the first of January in 2011
+  \caption[]{Images taken by SDO AIA $\SI[]{304}[]{\AA}$ on the first of January in 2011
     \subref{fig:aia_2011}, 2012 \subref{fig:aia_2015} and 2019
     \subref{fig:aia_2019}. Due to the degradation of the instrument, the
     exposure reduces over time. \textit{Images courtesy of NASA.}}
@@ -1521,7 +1521,7 @@ this addition, the generator cost function used was
   captured during solar cycle 24 between April 2010 and December 2019. Images
   taken in November and December each year were used as the testing set, while
   the remaining 3505 image pairs were used as the training set. The GAN was run
-  for $200000$ iterations at each step doing a forward (inference) and backward
+  for $300000$ iterations at each step doing a forward (inference) and backward
   (training) pass of the discriminator before doing a forward and backward pass
   of the generator with a batch size of one. This small batch size means that,
   while potentially slower, the GAN will use less memory, and is less likely to
@@ -1581,10 +1581,23 @@ this artificial saturation.
 
 
 
+\begin{itemize}
+  \item Training the GAN again with the artificial saturation the GAN, we were able
+  generate magnetograms that correctly replicated the shape of active regions.
+  \item consistently underestimates magnetic field
+  \item consistently gets shape
+  \item doesn't consistently get polarities correct
+  \item \ref{fig:aia_hmi_mag} shows a sample predicted magnetogram, along with
+  the corresponding true 
+\end{itemize}
 
 
-
-
+\begin{figure}[t]%
+  \includegraphics[width=\linewidth]{aia_hmi_mag.png}
+  \caption[]{Taken on the 12th of November 2014. This image was part of the
+  testing set and so was not used in training.}
+  \label{fig:aia_hmi_mag}
+\end{figure}
 
 
 \section{Seismic-GAN}
