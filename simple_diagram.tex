@@ -19,72 +19,45 @@ height=1cm, text centered, draw=black, fill=gray!30, text width=3cm]
 
 \begin{figure}
     \centering
-    \begin{tikzpicture}[node distance=3cm]
+    \begin{tikzpicture}[node distance=4.5cm]
         % \draw[help lines] (0,-5) grid (10,10);
+        \node (SDO) [cool, above=1.5cm, left=1.5cm] {SDO\\ UV/Magnetogram};
+        \node (UVGAN) [cool, left=1.5cm] {UV\\ GAN};
+        \node (SM) [cool, right of=SDO] {Farside \quad \quad \quad \qquad  Seismic Map};
+        % \node (E) [cool] {STEREO EUV image};
+        \node (STEM) [cool, right of=UVGAN] {STEREO Magnetogram};
+        \node (SGAN) [cool, right of=STEM, above=1cm] {Seismic\\ GAN};
+        \node (FM) [cool, right of=SGAN] {Farside\\ Magnetogram};
+
+        \coordinate (I1) at ([xshift=0.5cm]UVGAN.east); % we collect the edges in front of Q
+
+        \node (SUV) [cool, below of=I1, above=0.0cm] {STEREO\\ UV};
+        \draw [->] (SUV) -- node[anchor=west] {Inference} (I1);
+
+        \coordinate (I2) at ([xshift=0.5cm]SGAN.east); % we collect the edges in front of Q
+
+        \node (SM2) [cool, below of=I2, above=0.0cm] {Seismic\\ Map};
+        \draw [->] (SM2) -- node[anchor=west] {Inference} (I2);
+
+        \coordinate (T) at ([xshift=-0.5cm]SGAN.west);
+        \draw [line] (STEM) -| (T);
+        \draw [line] (SM) -| (T);
+        \draw [arrow] (T) -> (SGAN);
+
+        \draw [arrow] (SDO) -> (UVGAN);
+        \draw [arrow] (UVGAN) -> (STEM);
+        \draw [arrow] (SGAN) -> (FM);
+
+        % \coordinate (FF) at ([xshift=-1.5cm]F.west); % we collect the edges in front of Q
+        % \coordinate (MM) at ([xshift=-1.5cm]M.west); % we collect the edges in front of Q
         
-        \node (SGAN) [cool, right=6cm] {seismic GAN};
-        \node (FS) [cool, left of=SGAN, above=0cm] {Farside\\ seismic map};
-
-
-
-
-        \node (UVGAN) [cool, above=5cm] {UV GAN};
-        \node (STEU) [cool, left of=UVGAN, left=0cm] {STEREO UV image};
-        \node (SDOD) [cool, right of=UVGAN, right=0cm] {SDO Dopplergram};
-
-        \node (SDOM) [cool, above of=UVGAN, left=0.5cm] {SDO Magnetogram};
-        \node (SDOU) [cool, above of=UVGAN, right=0.5cm] {SDO UV image};
-
-        \node (STEM) [cool, below of=UVGAN] {STEREO Magnetogram};
-        \node (FS) [cool, right of=STEM, right=0cm] {Farside\\ seismic map};
-
-        \node (SGAN) [cool, below of=STEM, right=0.5cm] {seismic GAN};
-        \node (FM) [cool, below of=SGAN] {Farside Magnetogram};
-        
-        \draw [arrow] (SDOU) -| node[anchor=south] {} (UVGAN);
-        \draw [arrow] (SDOM) -| node[anchor=south] {} (UVGAN);
-
-        \draw [arrow] (STEU) -- node[anchor=east] {} (UVGAN);
-
-        \draw [arrow] (UVGAN) -- node[anchor=south] {} (STEM);
-        \draw [arrow] (SDOD) -- node[anchor=south] {} (FS);
-
-        \draw [arrow] (STEM) -| node[anchor=south] {} (SGAN);
-        \draw [arrow] (FS) -| node[anchor=south] {} (SGAN);
-
-        \draw [arrow] (SGAN) -_ node[anchor=south] {} (FM);
-
-        % \coordinate (SU) at ([yshift=-1cm]SDOU.south); % we collect the edges in front of Q
-        % \coordinate (SM) at ([yshift=-1cm]SDOM.south); % we collect the edges in front of Q
-        % \coordinate (UU) at ([]UVGAN.north); % we collect the edges in front of Q
-        % \draw [line] (SDOU) -|  (SU);
-        % \draw [line] (SDOM) -|  (SM);
-        % \draw [line] (SU) -|  (UU);
-        % \draw [line] (SM) -|  (UU);
-
-
         % \draw [arrow] (D) -- node[anchor=south, text width=2cm] {Helioseismic Holography} (P);
-        % \draw [arrow] (MM) -- node[anchor=south] {Train} (M);
+        % \draw [arrow] (MM) -- node[anchor=south] {cGAN} (M);
         % \draw [line] (P) -|  (FF);
-        % \draw [line] (N) -|  (FF);
+        % \draw [line] (M) -|  (FF);
         % \draw [line] (S) -|  (MM);
-        % \draw [line] (E) -|  (MM);
+        % % \draw [line] (E) -|  (MM);
         % \draw [arrow] (FF) -- node[anchor=south] {cGAN} (F);
-        % \draw [arrow] (Q) -- node[anchor=south, text width=2cm] {} (M);
-
-
-        % \node (E) [cool] {SDO UV image};
-        % \node (M) [cool, right of=E, below=0.5cm] {UV GAN};
-        % \node (N) [cool, right of=M] {STEREO Magnetogram};
-        % \node (D) [cool, right of=E, above=0.5cm] {SDO Dopplergram};
-        % \node (P) [cool, right of=D] {Farside \quad \quad \quad \qquad  seismic map};
-        % \node (F) [cool, right of=N, above=0.5cm] {Farside\\ Magnetogram};
-        % % \node (S) [cool, below=1.5cm] {SDO Magnetogram};
-        % \node (Q) [cool, right of=S, below=0.5cm] {STEREO UV image};
-
-
-
-
 
     \end{tikzpicture}
     \caption{Test}
