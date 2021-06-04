@@ -19,32 +19,39 @@ height=1cm, text centered, draw=black, fill=gray!30, text width=3cm]
 
 \begin{figure}
     \centering
-    \begin{tikzpicture}[node distance=4.5cm]
-        % \draw[help lines] (0,-5) grid (10,10);
-        \node (SDO) [cool, above=1.5cm, left=1.5cm] {SDO\\ UV/Magnetogram};
-        \node (UVGAN) [cool, left=1.5cm] {UV\\ GAN};
-        \node (SM) [cool, right of=SDO] {Farside \quad \quad \quad \qquad  Seismic Map};
+    \begin{tikzpicture}[node distance=4cm]
+
+        % \draw[help lines] (0,0) grid (10cm,10cm);
+
+        \coordinate (T) at (5,4);
+
+        \node (SGAN) [cool, right of=T, left=0.0cm] {Seismic\\ GAN};
+    
+        \node (SM) [cool, left of=T, above=1cm, right=0.5cm] {Farside\\ Seismic Map};
+        \node (STEM) [cool, left of=T, below=1cm, right=0.5cm] {STEREO Magnetogram};
+
+        \node (SDO) [cool, left of=SM] {SDO\\ UV/Magnetogram};
+        \node (UVGAN) [cool, left of=STEM] {UV\\ GAN};
+        
         % \node (E) [cool] {STEREO EUV image};
-        \node (STEM) [cool, right of=UVGAN] {STEREO Magnetogram};
-        \node (SGAN) [cool, right of=STEM, above=1cm] {Seismic\\ GAN};
+        
         \node (FM) [cool, right of=SGAN] {Farside\\ Magnetogram};
 
-        \coordinate (I1) at ([xshift=0.5cm]UVGAN.east); % we collect the edges in front of Q
+        \coordinate (I1) at ([xshift=0.3cm]UVGAN.east);
 
-        \node (SUV) [cool, below of=I1, above=0.0cm] {STEREO\\ UV};
+        \node (SUV) [cool, below of=I1, above=1.5cm] {STEREO\\ UV};
         \draw [->] (SUV) -- node[anchor=west] {Inference} (I1);
 
-        \coordinate (I2) at ([xshift=0.5cm]SGAN.east); % we collect the edges in front of Q
+        \coordinate (I2) at ([xshift=0.3cm]SGAN.east);
 
-        \node (SM2) [cool, below of=I2, above=0.0cm] {Seismic\\ Map};
+        \node (SM2) [cool, below of=I2, above=0.5cm] {Seismic\\ Map};
         \draw [->] (SM2) -- node[anchor=west] {Inference} (I2);
 
-        \coordinate (T) at ([xshift=-0.5cm]SGAN.west);
         \draw [line] (STEM) -| (T);
         \draw [line] (SM) -| (T);
-        \draw [arrow] (T) -> (SGAN);
+        \draw [arrow] (T) -> node[anchor=east, xshift=-0.3cm] {Train}(SGAN);
 
-        \draw [arrow] (SDO) -> (UVGAN);
+        \draw [arrow] (SDO) -> node[anchor=west] {Train}(UVGAN);
         \draw [arrow] (UVGAN) -> (STEM);
         \draw [arrow] (SGAN) -> (FM);
 

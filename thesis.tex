@@ -807,10 +807,10 @@ research into how they could be used to generate magnetograms from seismic maps.
     \item Position of the sun in images
     \item Orientation of the Sun in images
     \item Projection used in image
-    \item Amplitude of pixel values between image data-sets
+    \item Corrupted images or images with data artifacts
     \item Instrument degradation over time
     \item Instrument clipping
-    \item Corrupted images or images with data artifacts
+    \item Amplitude of pixel values between image data-sets
   \end{enumerate}
 
 
@@ -936,7 +936,7 @@ images \\
 \begin{figure}[ht]
   \centering
   \includegraphics[width = 0.7\linewidth]{STEREO_pos.pdf}
-  \caption[STEREO A Trajectory]{Trajectory of STEREO A between October 2006 and January 2001 in the
+  \caption[STEREO A Trajectory]{Trajectory of STEREO A between October 2006 and January 2021 in the
   Heliocentric Earth Equatorial coordinate system. In these coordinates, the Sun
   is at the origin with the Earth fixed on X axis. Each `bump' in STEREO's
   Trajectory correspond to a year on Earth. \textit{Image generated using
@@ -1718,6 +1718,14 @@ of the unsigned magnetic field, area and unsigned magnetic flux.
   \item how we could have done it better
   \item could potentially improve uv gan by setting a higher lower bound on
   clipping (we don't need low intensity information). Similar for seismic gan.
+
+  \item it is likely that the siesmic disturbance and UV light contain any
+  information about the magnetic polarity (direction) of a given active region.
+  \item It was postulated that their might be enough information for the network
+  to learn an indirect relationship between the polarity and the siesmic
+  disturbance/UV light through the context of the image - for example Hale's law
+  can be used to predict the polarity of the leading sunspot.
+  \item
 \end{itemize}
 
 % Experiment with # layers etc
