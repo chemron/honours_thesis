@@ -434,6 +434,7 @@ parameters of the model, i.e.
 \end{figure}
 
 \subsubsection{Convolutional layers}
+\label{sec:convolutional}
 Convolutional layers in neural networks are typically (although not necessarily)
 used when analysing inputs with more than one dimension, such as images or
 videos. A neural network consisting of mostly convolutional layers is called a
@@ -1537,7 +1538,8 @@ this addition, the generator cost function used was
   \begin{align}
     w_b \sim \mathcal{N}\left(1.0, 0.02\right) \quad .
   \end{align}
-  
+  \item a kernal (filter) size of $4$ was used for the convoluitonal layers (see
+  Section \ref{sec:convolutional}).
   \item After a first attempt at training the UV-GAN it was found that the GAN
   was unable to capture much of the lower-intensity magnetic structure of the
   active regions. This was thought to be due to the large dynamic range of both
@@ -1599,11 +1601,74 @@ this artificial saturation.
   \label{fig:aia_hmi_mag}
 \end{figure}
 
+\begin{itemize}
+  \item Using the UV GAN, we then went on to generate the STEREO magnetograms
+  using 5087 STEREO UV images, between March 2011 and August 2019. These dates
+  were chosen arbitrally such that the position of the Sun would mean that each
+  image would be less than a seven day solar rotation from the Farside, and
+  therefore a maximum of seven day time delay between the Farside and Stereo
+  images.
+  \item These STEREO magnetograms were then used for training the Seismic-GAN.
+\end{itemize}
+
 
 \section{Seismic-GAN}
 
 
+\begin{itemize}
+  \item the Seismic-GAN was initially trained using all the aforementioned
+  magnetograms, along with the equivalent seismic maps.
+  \item before training the Seismic-GAN, a mask was applied to the STEREO
+  magnetograms `zero-out' any pixels outside the solar disk.
+  \item once again, images taken in November or December were used for the test
+  set with all other images used as part of the training set.
+  
+  \item The initial training resulted in a GAN that produced images that looked
+  physically realistic to some degree, however did not match the STEREO
+  magnetograms. i.e. the GAN was faking it.
 
+  \item It was hypothesised that due to the 'blurriness' of the seismic images,
+  i.e. changes happen over larger scales, we should use a larger filter size in
+  the convolutional layers (see Section \ref{sec:convolutional})
+  \item it was thought that this could potentially improve the generated
+  magnetograms by giving the generator more relevant information (? reword).
+
+  \item The generator was trained using a filter size of 16 (as apposed to 4)
+  However training a GAN with this larger filter size resulted in
+  mode-collapse, where the Generator found a local minimum by producing (almost)
+  the same output image regardless of the input.
+\end{itemize}
+
+
+\begin{figure}[t]%
+  \centering
+  \subfigure[]{%
+    \label{fig:6.11.11_STE}%
+    \includegraphics[height=2in]{6.11.11_STE.png}% 
+  }%
+  \subfigure[]{%
+    \label{fig:6.11.11_MAG}%
+    \includegraphics[height=2in]{6.11.11_MAG.png}% 
+  }%
+  \subfigure[]{%
+    \label{fig:6.11.11_smap}%
+    \includegraphics[height=2in]{6.11.11_smap.png}% 
+  }%
+  \subfigure[]{%
+  \label{fig:6.11.11_default}%
+  \includegraphics[height=2in]{6.11.11_default.png}% 
+  }%
+  \subfigure[]{%
+  \label{fig:6.11.11_kernal}%
+  \includegraphics[height=2in]{6.11.11_16kernal.png}%
+  }%
+  \subfigure[]{%
+  \label{fig:6.11.11_batch}%
+  \includegraphics[height=2in]{6.11.11_batch.png}% 
+  }%
+  \caption[]{}
+  \label{fig:6.11.11}
+\end{figure}
 
 
 %
