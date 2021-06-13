@@ -6,7 +6,6 @@
 *.fls
 *.log
 *.out
-*.synctex.gz
-*.synctex
+*.synctex*
 thesis.pdf
 *.toc
