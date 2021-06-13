@@ -241,6 +241,7 @@ summarised in Figure \ref{fig:Project_summary}.\\
 %
 
 \section{The Sun}
+\label{sec:Sun}
 % Formation of the Sun
 
 The formation of the Sun began around 4.6 billion years ago, with a giant
@@ -980,7 +981,7 @@ above (\(H_+(\bm{r}, t)\)), the waves travelling toward the farside are modelled
 `coherent acoustic ingression', \(H_-(\bm{r}, t)\), which is the time-forward
 equivalent. By comparing these two for various pupils, a map of the phase-shifts
 and therefore a map of potential farside active regions can be created.
-Composite images of the farside phase map and the corresponding nearside
+Composite images of the farside seismic map and the corresponding nearside
 magnetograms are shown in Figure \ref{fig:phase_map}.\\
 
 \noindent The spatial resolution of this technique is limited by the Abbe
@@ -1011,17 +1012,17 @@ such as the one shown in Figure \ref{fig:skips}, we have an opening angle of
     \subref{fig:pupil} Diagram showing the paths taken by the wavefronts
     travelling to the focus (green) before echoing back from the focus (yellow)
     \citep{Lindsey2011}.\\
-    \subref{fig:phase_map} Images showing both a farside phase map created using
+    \subref{fig:phase_map} Images showing both a farside seismic map created using
     farside helioseismic holography (yellow) and a nearside magnetogram (blue).
     As the Sun rotates, active regions can be seen moving from the farside to
-    nearside. The phase map is measured by the time perturbation, \(\tau\) caused by
+    nearside. The seismic map is measured by the time perturbation, \(\tau\) caused by
     potential active regions \citep{Lindsey2017}.
     }
 \end{figure}
 
 
 In practice, farside helioseismic holography has been used to produce farside
-phase maps every 12 hours by Stanford's Joint Science Operations
+seismic maps every 12 hours by Stanford's Joint Science Operations
 Center\footnote{See \url{http://jsoc.stanford.edu/data/farside/}.}. Both \(H_+\)
 and \(H_-\) are calculated over 24 hour (overlapping) periods, using
 dopplergrams taken by the Solar Dynamics Observatory's Helioseismic
@@ -1622,104 +1623,169 @@ research into how they could be used to generate magnetograms from seismic maps.
 %
 %
 \chapter{Data Preparation}
+\label{chap:data}
 %
 %
 %
 %
 
+To generate farside magnetograms from farside seismic maps, we first create two distinct
+data sets
+\begin{enumerate}
+  \item a nearside dataset consisting of EUV and magnetogram image pairs, and
+  \item a farside dataset consisting of seismic map and EUV image pairs.
+\end{enumerate}
+As detailed in Chapter \ref{chap:training}, the farside EUV images will be used
+to generate magnetograms, which can then be used to train an image-to-image cGAN
+to generate magnetograms from farside seismic maps. Figure
+\ref{fig:simple_diagram} shows a summary of the project pipeline. \\
+\begin{figure}
+  \centering
+  \begin{tikzpicture}[node distance=4cm]
 
+      % \draw[help lines] (0,0) grid (10cm,10cm);
 
+      \coordinate (T) at (5,4);
 
-\begin{itemize}
-  \item we want to generate farside magnetograms from farside seismic maps
-  \item 
-
-
-  \item We need to construct two datasets:
+      \node (SGAN) [cool, right of=T, left=0.0cm] {Seismic\\ GAN};
   
-  \begin{itemize}
-    \item Nearside: Directly compare EUV 304 to magnetograms
-    \item Farside Directly compare farside helioseismic maps with farside magnetograms
-  \end{itemize}
+      \node (SM) [cool, left of=T, above=1cm, right=0.5cm] {Farside\\ Seismic Map};
+      \node (STEM) [cool, left of=T, below=1cm, right=0.5cm] {STEREO Magnetogram};
+
+      \node (SDO) [cool, left of=SM] {SDO: EUV and \\ Magnetogram};
+      \node (UVGAN) [cool, left of=STEM] {UV\\ GAN};
+      
+      % \node (E) [cool] {STEREO EUV image};
+      
+      \node (FM) [cool, right of=SGAN] {Farside\\ Magnetogram};
+
+      \coordinate (I1) at ([xshift=0.3cm]UVGAN.east);
+
+      \node (SUV) [cool, below of=I1, above=1.5cm] {STEREO-A:\\ EUV};
+      \draw [->] (SUV) -- node[anchor=west] {Inference} (I1);
+
+      \coordinate (I2) at ([xshift=0.3cm]SGAN.east);
+
+      \node (SM2) [cool, below of=I2, above=0.5cm] {Seismic\\ Map};
+      \draw [->] (SM2) -- node[anchor=west] {Inference} (I2);
+
+      \draw [line] (STEM) -| (T);
+      \draw [line] (SM) -| (T);
+      \draw [arrow] (T) -> node[anchor=east, xshift=-0.3cm] {Train}(SGAN);
+
+      \draw [arrow] (SDO) -> node[anchor=west] {Train}(UVGAN);
+      \draw [arrow] (UVGAN) -> (STEM);
+      \draw [arrow] (SGAN) -> (FM);
+
+      % \coordinate (FF) at ([xshift=-1.5cm]F.west); % we collect the edges in front of Q
+      % \coordinate (MM) at ([xshift=-1.5cm]M.west); % we collect the edges in front of Q
+      
+      % \draw [arrow] (D) -- node[anchor=south, text width=2cm] {Helioseismic Holography} (P);
+      % \draw [arrow] (MM) -- node[anchor=south] {cGAN} (M);
+      % \draw [line] (P) -|  (FF);
+      % \draw [line] (M) -|  (FF);
+      % \draw [line] (S) -|  (MM);
+      % % \draw [line] (E) -|  (MM);
+      % \draw [arrow] (FF) -- node[anchor=south] {cGAN} (F);
+
+  \end{tikzpicture}
+  \caption{A simplified diagram of the project pipeline. Nearside SDO
+  EUV/magnetogram image pairs are used to train the ``UV GAN'', which is then
+  used to generate farside STEREO magnetograms. Farside seismic map/STEREO
+  magnetogram pairs are then used to train the ``Seismic GAN'' which can then be
+  used to generate farside magnetograms from nearside seismic maps without the
+  need for STEREO data.}
+  \label{fig:simple_diagram}
+\end{figure}
+To maximise effectiveness of each cGAN, we need to make the images consistent
+across each dataset such that the only differentiation between images is the
+change in solar activity. Furthermore, in each image-to-image translation we
+need to ensure that the active regions are located in the same position in both the
+input and output images. We must therefore account for the following effects
+\begin{enumerate}[i]
+  \item changes in time of image capture, 
+  \item changes in location of image capture,
+  \item the solar cycle in which the image was taken,
+  \item position of the sun in images,
+  \item orientation of the Sun in images,
+  \item projection used in image,
+  \item corrupted images or images with data artifacts,
+  \item instrument degradation over time,
+  \item instrument saturation, and
+  \item amplitude of pixel values between image data-sets.
+\end{enumerate}
+In this chapter we detail how we obtain our data and prepare it for training,
+accounting for above effects.
+
+% \begin{itemize}
   
-  \item Furthermore, to go from 1 -> 2,  we need a set of farside EUV 304 which
-  matches the nearside EUV 304 dataset,
-
-  \item To maximise effectiveness of the networks, we need to make the images in
-  each dataset indistinguishable in every aspect except for the subject of
-  interest (i.e. the solar activity for the given image)
-
-  
-  \item Therefore, we need to account for the following factors
-  
-  \begin{enumerate}[i]
-    \item Changes in time of image capture
-    \item Changes in location of image capture
-    \item The solar cycle in which the image was taken
-    \item Position of the sun in images
-    \item Orientation of the Sun in images
-    \item Projection used in image
-    \item Corrupted images or images with data artifacts
-    \item Instrument degradation over time
-    \item Instrument clipping
-    \item Amplitude of pixel values between image data-sets
-  \end{enumerate}
-
+%   \item Nearside vs Farside (i.e. why we need it)
+%   \item Data sources were:
+%         \begin{itemize}
+%           \item STEREO EUV images
+%           \item SDO EUV images
+%           \item SDO magnetograms
+%           \item farside helioseismic holography maps
+%         \end{itemize}
+%   \item magnetograms measure the radial magnetic field, using filtegrams
+%   \item %TODO: expand on how hmi works http://soi.stanford.edu/papers/dissertations/giles/thesis/PDF/chapter03.pdf
+%   \item % https://link.springer.com/content/pdf/10.1007/s11207-011-9834-2.pdf
+%   \item figure showing positions and trajectory of stereo, sun earth, SDO and
+%         imaginary satellite for acoustic maps
+%   \item figure (maybe the same one) showing plot of stereo position in
+%   \item position data from http://www.srl.caltech.edu/STEREO/docs/position.html
+%   \item This is in Heliocentric Earth equatorial (HEEQ): This system has its Z
+%         axis parallel to the Sun's rotation axis (positive to the North) and its X
+%         axis towards the intersection of the solar equator and the solar central
+%         meridian as seen from the Earth. This system is sometimes known as
+%         heliocentric solar (HS)
+% \end{itemize}
 
 
-  \item Nearside vs Farside (i.e. why we need it)
-  \item Data sources were:
-        \begin{itemize}
-          \item STEREO EUV images
-          \item SDO EUV images
-          \item SDO magnetograms
-          \item farside helioseismic holography maps
-        \end{itemize}
-  \item magnetograms measure the radial magnetic field, using filtegrams
-  \item %TODO: expand on how hmi works http://soi.stanford.edu/papers/dissertations/giles/thesis/PDF/chapter03.pdf
-  \item % https://link.springer.com/content/pdf/10.1007/s11207-011-9834-2.pdf
-  \item figure showing positions and trajectory of stereo, sun earth, SDO and
-        imaginary satellite for acoustic maps
-  \item figure (maybe the same one) showing plot of stereo position in
-  \item position data from http://www.srl.caltech.edu/STEREO/docs/position.html
-  \item This is in Heliocentric Earth equatorial (HEEQ): This system has its Z
-        axis parallel to the Sun's rotation axis (positive to the North) and its X
-        axis towards the intersection of the solar equator and the solar central
-        meridian as seen from the Earth. This system is sometimes known as
-        heliocentric solar (HS)
-\end{itemize}
-
--
 
 \section{Data Collection}
+Our research required the following data sources:
+\begin{enumerate}
+  \item SDO EUV images,
+  \item SDO magnetograms,
+  \item STEREO-A EUV images, and
+  \item helioseismic holography maps.
+\end{enumerate}
+EUV images with a wavelength of \SI{304}{\angstrom} are produced by both the SDO
+and STEREO EUV telescopes and were therefore choosen for this project. As explained in
+Section \ref{sec:Sun}, light at \SI{304}{\angstrom} is emitted by the
+chromosphere - the atmospheric layer above the photoshpere. \\
+
+As SDO is orbiting the Earth, both the SDO EUV images and magnetograms were
+taken of the nearside. STEREO-A is instead in a heliocentric orbit, with an
+orbital period of 346 days. As such, it has rotated about the Sun relative to
+Earth taking some images of the farside over the course of it's 14 year life.
+Figure \ref{fig:stereo_pos} shows the location of STEREO-A over the course of
+the mission. Finally, the seismic maps are generated from SDO dopplergrams, and
+image the farside of the Sun as detailed in Section \ref{sec:FHSM}. \\
+
+Of particular importance when collecting the data is the time of image capture, the
+location of image capture, and the solar cycle in which the image was taken in.
+Here we detail what decisions were made in regards to these factors.
+
 % Changes in time of image capture
 % Changes in location of image capture
 % The solar cycle in which the image was taken
 
 
 \subsection{Nearside Data}
-\begin{itemize}
-  \item as shown in in figure \ref{fig:Project_summary}, we need to generate solar
-        magnetograms from EUV \SI[]{304}[]{\angstrom} images
-  \item SDO captures these EUV images with a cadence of 12 seconds, and
-        magnetograms every 45 seconds.
-  \item This huge image database allows us compare pairs of these images with
-        very little time difference, making SDO the ideal candidate for this data.
-  \item To train GAN1, images were collected every 12 hours, same as
-        \cite{Kim2019} - allowing us to get many images which are distinct enough for
-        training
-  \item these images were taken over solar cycle 24 between April 2010, when the
-        first SDO data became available, and December 2019 (the end of the solar
-        cycle).
-  \item as the global magnetic field flips every solar cycle (see Section
-        \ref{sec:dynamo}), this gave consistent magnetograms across the
-        data set.
-  \item due to a combination of missing images, and images excluded due to poor
-        quality (see Section \ref{sec:Data prep}) resulted in a total of 4247
-        EUV/magnetogram pairs.
-
-\end{itemize}
-
+As all the nearside data comes from SDO the position of the telescope does not
+change between data types. Furthermore, SDO captures EUV images and magnetograms
+with a cadence of 12 and 45 seconds respectively, allowing us to compare these
+with very little time difference. The images were provided by the Joint Science
+Operation Centre \footnote{See \url{http://jsoc.stanford.edu/}} and were
+collected for every 12 hours between April 2010, when the first SDO data became
+available, and December 2019 - the end of Solar cycle 24. Since all data was
+taken during this solar cycle, we did not have to take into acount the flipping
+of the global magnetic field which occurs between solar cycles (see Section
+\ref{sec:dynamo}). Due to a combination of missing or poor quality images (see
+Section \ref{sec:Data prep}) this process resulted in a total of 4247 nearside
+EUV/magnetogram pairs.
 
 \subsection{Farside Data}
 \begin{itemize}
@@ -2185,6 +2251,7 @@ longitude of the Observer. \\
 %
 %
 \chapter{Training}
+\label{chap:training}
 %
 %
 %
