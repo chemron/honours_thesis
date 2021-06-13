@@ -1570,55 +1570,45 @@ research into how they could be used to generate magnetograms from seismic maps.
   detailed in Section \ref{sec:FHSM}, these dopplergrams can be used to generate
   farside seismic maps. However by the nature of orbiting Earth, SDO is unable
   to image the solar farside except indirectly through farside helioseismic
-  holography.
+  holography. Only three active solar probes, Parker Solar Probe, Solar Orbiter
+  and Solar-Terrestrial Relations Observatory A (STEREO-A) measure the farside
+  at any point in their orbit, and only STEREO-A consistently takes full-disk
+  solar images. While STEREO-A does not produce magnetograms, the extreme
+  ultraviolet imager on board images the Sun at a wavelenth of
+  \SI{304}{\angstrom}. 
+
+  Therefore, an indirect
+  measurement of the magnetic field must be employed to reliably predict extreme
+  space weather events.
+  
+  \citet{Kim2019} trained an image-to-image cGAN to generate artificial
+  magnetograms from Extreme Ultraviolet (EUV) images. This training was done
+  using pairs of \SI{304}{\angstrom} EUV images and magnetograms from SDO. This
+  trained cGAN was then used to generate artificial farside magnetograms from
+  similar STEREO-A EUV images.
+
+  \item however they used a saturation point of 100 Gauss, limiting the ability
+  to predict strong magnetic fields, especially considering that active regions
+  can have magnetic field strengths of thousands of Gauss
+
+  \item Furthermore, STEREO-A is currently on the nearside coming towards Earth
+  and only has a partial view the solar farside (see Figure
+  \ref{fig:stereo_pos}).
+
+  \item As such the only consistent observation of the Farside comes from
+  farside helioseismic holography.
+
+  \item To generate farside magnetograms from seismic images using an
+  image-to-image cGAN, we need to construct a dataset of seismic
+  image/magnetogram pairs. However since we have no available farside
+  magnetograms, the creation of this dataset presents it's own issue. To
+  overcome this issue, we first train an image-to-image cGAN to generate
+  magnetograms from \SI{304}{\angstrom} solar EUV images.
+
 \end{itemize}
-Solar Magnetograms - images of the magnetic field of the Sun's surface, are an
-important tool for understanding the solar magnetic field and its evolution
-\citep{Solanki_2006}. 
-Currently, magnetograms are only available for the
-nearside - the side of the Sun facing the Earth at any given moment, which are
-taken with the Helioseismic and Magnetic Imager (HMI) aboard the Solar Dynamics
-Observatory (SDO) satellite \citep{nasa_sdo}. Relative to Earth, the Sun rotates
-with a period of approximately 28 days\footnote{Different latitudes rotate at
-different rates and so this is just an average (see section
-\ref{sec:internal_structure})} \citep{beck_comparison_2000}. Therefore a method
-to image the farside magnetic field would be beneficial for not only modelling
-the global magnetic field of the Sun, but also for predicting extreme space
-weather events ahead of time. \par
 
-There are currently nine active solar probes observing the Sun\footnote{These
-are: Advanced Composition Explorer (ACE), Deep Space Climate Observatory
-(DSCOVR), Hinode, Interface Region Imaging Spectrograph (IRIS), Parker Solar
-Probe, Solar Dynamics Observatory (SDO), Solar and Heliospheric Observatory
-mission (SOHO), Solar Orbiter, Solar-Terrestrial Relations Observatory A (STEREO
-A), and Wind. See
-https://www.nasa.gov/mission_pages/sunEarth/missions/index.html}. Of these nine
-spacecraft, only three (Parker Solar Probe, Solar Orbiter and STEREO-A) are in
-heliocentric orbits, and so only these satellites are capable of observing the
-farside at any point in their orbit. Of these three, none are capable of taking
-magnetograms. Therefore, an indirect measurement of the magnetic field must be
-employed to reliably predict extreme space weather events .\par
 
-\citet{Kim2019} trained a conditional Generative Adversarial Network (cGAN) (see
-section \ref{sec:cgan}) to generate artificial magnetograms from Extreme
-Ultraviolet (EUV) images. This was done by associating the EUV images from the
-SDO's Atmospheric Imaging Assembly (AIA) with the SDO's HMI magnetograms. While
-the SDO has a geocentric orbit (i.e. it orbits the Earth) and can only see the
-solar nearside, the STEREO-A spacecraft is on a heliocentric orbit and observes
-the solar farside at some points in its orbit. As such, \citet{Kim2019} were
-able to generate artificial farside magnetograms based on EUV images from
-STEREOs extreme ultraviolet Imager (EUVI). This method has since been improved
-upon by \citep{Alshehhi2020} using a different discriminator model (see section
-\ref{sec:gan}).\par
 
-However, STEREO-A is currently on the nearside coming towards Earth and only has
-a partial view  the solar farside (see figure %TODO:
-). Furthermore, it will not pass Earth and begin
-to return to the farside until August 2023\footnote{See:
-https://stereo-ssc.nascom.nasa.gov/where.shtml}. The satellite launched in 2006
-and had a planned mission duration of 2 years \citep{nasa_stereo}. It is
-therefore unlikely that STEREO-A will be able to reach the farside once more before
-a loss of contact. \par
 \begin{itemize}
   \item 
 \end{itemize}
@@ -2509,6 +2499,10 @@ this artificial saturation.
   struggled to detect active regions closer to the edge of the disk, and often
   predicted active regions near the edge that didn't exist.
 
+  \item to determine the usefulness of these magnetograms, we need to develop a
+  metric for determining the accuracy of our predictions, in particular how
+  capable it is at predicting extreme magnetic fields.
+
 \end{itemize}
 
 
@@ -2609,6 +2603,8 @@ this artificial saturation.
 %
 
 
+
+
 \begin{itemize}
   \item How do we analyse the data?
   \item absolute difference of images is a bad idea because:
@@ -2685,13 +2681,21 @@ of the unsigned magnetic field, area and unsigned magnetic flux.
 \end{figure}
 
 
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\linewidth]{Flux_vs_time.png}
+  \caption{Total Unsigned Magnetic Flux according to SDO (Blue), the UV GAN
+  (orange) and the Seismic GAN (Green) as a function of time. }
+  \label{fig:flux_vs_time}
+\end{figure}
+
 
 %
 %
 %
 %
 %
-\chapter{Discussion and Conclusion}
+\chapter{Discussion}
 \label{chap:discussion}
 %
 %
@@ -2752,6 +2756,8 @@ of the unsigned magnetic field, area and unsigned magnetic flux.
 %   This will be discussed further in section \ref{chap:discussion}.
 
 
+
+\chapter*{Conclusion}
 
 \bibliographystyle{mnras.bst}
 
