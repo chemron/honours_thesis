@@ -2068,11 +2068,39 @@ these datasets.
 As mentioned in Section \ref{sec:proj}, STEREO-A and SDO both use a CCD to image
 the Sun at a wavelength of \(\SI[]{304}[]{\angstrom}\). Each pixel in the CCD
 converts the incoming photons into electric charge, which is subsequently
-measured. This raw data is then processed to remove data artifacts caused by the
-imaging process, and the resulting image is then made available for use. The
-value of each pixel (measured in digital number, or DN) on these images is then
-proportional to the solar spectral radiance over the width of the pixel. \\
+measured. The value of each pixel in units of digital number (DN), is given by
+the integral 
+\begin{align}
+  \label{eqn:pixel value}
+  p(\bm{x}) = \int_0^\infty \eta(\lambda) \int_{\text{pixel } \bm{x}} I(\lambda, \bm{\theta}) d\bm{\theta} d\lambda\, ,
+\end{align}
+were $I(\lambda, \bm{\theta})$ is the spectral radiance of pixel $\bm{x}$ at point
+$\bm{\theta}$ and wavelength $\lambda$, and $\eta(\lambda)$ represents the efficiency
+of the \SI{304}{\angstrom} channel in the telescope, measured in units of
+DN per unit flux \citep{boerner_initial_2012}. Informally,
+$\eta(\lambda)$ is equivalent to the ratio of the signal strength (in DN) of the
+CCD to the total electromagnetic flux at wavelength $\lambda$ incident on pixel
+$\bm{x}$. As we are attempting to measure the flux at \SI{304}{\angstrom},
+$\eta$ would ideally be large for wavelengths close to
+\SI{304}{\angstrom}, vanishing as we move away from this wavelength.
+Approximating $\eta$ to be zero for $\lambda \neq \SI{304}{\angstrom}$, Equation
+\ref{eqn:pixel value} reduces to
+\begin{align}
+  p(\bm{x}) &= \eta(\SI{304}) \int_{\text{pixel } \bm{x}} I(304, \bm{\theta}) d\bm{\theta} \\
+  \intertext{and so,}
+  p(\bm{x}) &\propto \Phi(\bm{x}, 304) \, , \label{eqn:pixel propto flux}
+  \intertext{where}
+  \Phi(\bm{x}, \lambda)& = \int_{\text{pixel } \bm{x}} I(\lambda, \bm{\theta}) d\bm{\theta}
+\end{align}
+is the electromagnetic flux at wavelength $\lambda$ incident on pixel $\bm{x}$.
+And so we find our pixel values are linearly proportional to the
+EUV flux to a reasonable approximation.\\
 
+
+Each raw image is processed to remove data artifacts caused by the the imaging,
+and the resulting image is then made available for use. This image processing is
+not perfect however, and we still have make some corrections ourselves before we
+are ready to use the images.
 
 From the 4313 SDO EUV images used between 2010 and 2020, the pixel values for the
 AIA data range from \(\SI[]{-166}[]{DN}\) to \(\SI[]{16383}[]{DN}\). To get a
@@ -2122,58 +2150,71 @@ identified by the large deviations in the percentile values, and were removed
 using a simple cutoff criteria (see Figure \ref{fig:stereo_outliers}).\\
 
 It was found that approximately $3 \%$ of the pixels in the SDO data had a value
-below 0, while the same percentage of STEREO pixels had a value below
-$\SI[]{725}[]{DN}$. Accordingly, the STEREO pixels were decreased by
+below 0, while the same percentage of pixels from STEREO-A images had a value
+below $\SI[]{725}[]{DN}$. Accordingly, the STEREO-A pixels were decreased by
 $\SI[]{725}[]{DN}$ before dividing by the rolling average of the 75th
-percentile. At this stage in the normalisation process both SDO and STEREO-A
-datasets had approximately $3 \%$ of the data had a value below \SI{0}{DN}, and $75 \%$ of the
-data with a value below \SI{1}{DN}.  
+percentile. Figure \ref{fig:stereo_no_degradation} shows the pixel value
+percentiles of the STEREO-A images after this process. At this stage in the
+normalisation process both SDO and STEREO-A datasets had approximately $3 \%$ of
+the data had a value below \SI{0}{DN}, and $75 \%$ of the data with a value
+below \SI{1}{DN}. As the pixel values are (approximately) linearly proportional
+to the EUV flux (see Equation \ref{eqn:pixel propto flux}), these two points are
+enough to constrain the two datasets such that a given pixel value will
+correspond to the same level of EUV flux for images in either dataset taken
+at roughly the same time. \\
+% Assuming that the 75th percentile is the same (flux) at that time.
 
-
-\begin{itemize}
-  \item To ensure that the GAN trained on SDO data would carry over well to
-  STEREO data, the STEREO data was normalised to match the SDO dataset.
-  \item This is complicated by the fact that SDO and STEREO have different EUV
-  instruments, and so the pixel values have different ranges. The percentiles of
-  the STEREO data is shown in Figure \ref{fig:stereo_percentiles}.
-  \item The gap in the STEREO data due to the aforementioned instrument shut off
-  during STEREO's superior solar conjunction.
-  \item To ensure the normalisation was consistent across both data sets,
-  the STEREO data was shifted such that a pixel value of 0 was an equivalent UV
-  intensity for both STEREO and SDO data.
-  \item It was found that $\sim 3 \%$ of the SDO pixels had a value below 0,
-  while the same percentage of STEREO pixels had a value below $\SI[]{725}[]{DN}$.
-  \item Accordingly, the STEREO pixels were first shifted down by
-  $\SI[]{725}[]{DN}$ before excluding outliers and accounting for instrument
-  degradation using the same method as in the SDO data. This process is shown in
-  Figures \ref{fig:stereo_shifted}, \ref{fig:stereo_outliers} and
-  \ref{fig:stereo_no_degradation}.
-  \item As can be seen in Figures \ref{fig:aia_percentiles} and
-  \ref{fig:stereo_data_prep}, pixel values above $\approx \SI[]{2e4}[]{DN}$ are
-  clipped by the instrument for both SDO and STEREO. However after accounting
-  for instrument degradation and the offset of the STEREO data, the clipping
-  becomes the wavy curve seen in Figures \ref{fig:aia_no_degradation} and
-  \ref{fig:stereo_no_degradation}. To avoid the UV GAN learning any relation from
-  this we introduced our own clipping that was uniform across both datasets.
-  \item Since the STEREO data was clipped at a lower point than the AIA data,
-  this uniform clipping point was chosen to be the minimum of a 50 point rolling
-  average of the maximum pixel values across the STEREO data, which was $\sim \SI[]{32}[]{DN}$. This clipping
-  point is also shown in Figure \ref{fig:stereo_no_degradation}.
-  \item Any pixel values above this point or below zero were then clipped in both data sets.
-  \item Finally the data was normalised by dividing by this clipping upper
-  bound, such that all pixels across both data sets had values between 0 and 1.
-  \item Figure \ref{fig:sdo_stereo_comparison} shows a comparison between the
-  STEREO and SDO data sets after normalisation. As can be seen, the data still
-  retains information about the solar cycle, with a peak in the middle of the
-  solar cycle around 2014. This indicates that our normalisation has not over
-  corrected, and is representative of the actual data. % reword
-  \item Importantly both data sets appear very similar, allowing either to be
-  inputs to the EUV GAN.
-\end{itemize}
-
+One last discrepeny between the two datasets is the saturation points at which
+the CCD cannot record any value above. While both instruments initialy have a
+saturation point at $\approx \SI[]{2e4}[]{DN}$ (see Figures
+\ref{fig:aia_percentiles} and \ref{fig:stereo_data_prep}), this has been
+distorted during our image processing, as can be seen in Figures
+\ref{fig:aia_no_degradation} and \ref{fig:stereo_no_degradation}. To make this
+consistant between the STEREO-A and SDO images, we introduce our own artificial
+saturation point. To choose this upper bound, we found the minimum of a 50
+rolling average of the 100th percentile of pixel value for the STEREO-A data,
+which was \SI[]{32}[]{DN}. The upper-bound can be seen in Figure
+\ref{fig:stereo_no_degradation}. To avoid lossing information about regions of
+intense solar activity, it was important to make this upperbound as high as
+possible while keeping the two datasets consistant. This constraint did not
+apply to a lower bound, which was chosen to have a value of \SI{0}{DN}. Finally
+both datasets were normalised by dividing by the upperbound such that all pixels
+had a value between 0 and 1. Figure \ref{fig:sdo_stereo_comparison} shows a
+comparison between the STEREO-A and SDO datasets after normalisation. As can be
+seen, the datasets seem to be largely consistent with each other. Furthermore,
+not all information about the long-term solar activity has been lost through
+this normalisation process, as can be seen by the peak in the middle of the
+solar cycle around 2014. 
 
 
 \subsection{Magnetogram Data}
+
+\begin{itemize}
+  \item The pixel percentiles for the SDO magnetogram data is shown in Figure
+  \ref{fig:hmi_p}. Each pixel on the magnetogram measures the average radial
+  magnetic field ($\mathbf{B}\cdot\mathbf{\hat{r}}$) in Gauss on the surface of
+  the sun subtended by the pixel.
+  \item As can be seen in Figure \ref{fig:hmi_p} the values of the pixels are
+  almost perfectly mirrored across the x axis. This is explained by Gauss's
+  law for magnetism,
+  \begin{align}
+    \oint \mathbf{B} \cdot \text{d}\mathbf{s} = 0 \,,
+  \end{align}
+  \item which in our case indicates that any positive radial magnetic field is
+  likely accompanied by a negative magnetic field.
+  \item Fortunately the magnetogram data did not have any noticeable instrument
+  degradation and did not clip any data.
+  \item Therefore the only normalisation required before using the data was
+  dividing it by the absolute maximum pixel value across all the data, which in
+  this case was $\SI[]{5847.6}[]{G}$, limiting the pixel values to between $-1$
+  and $1$. 
+  \item This ensured that the all magnetic field information was retained, while
+  still being a suitable input to the EUV GAN.
+\end{itemize}
+
+
+\subsection{Seismic Data}
+
 
 \begin{itemize}
   \item The pixel percentiles for the SDO magnetogram data is shown in Figure
