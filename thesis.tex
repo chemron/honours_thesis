@@ -1887,6 +1887,7 @@ same location.
 
 
 \section{Image Projections}
+\label{sec:proj}
 % Position of the sun in images
 % Orientation of the Sun in images
 % Projection used in image
@@ -1898,22 +1899,22 @@ Therefore to effectively compare different images of the Sun we must take into
 account the projection used to construct the image.
 
 \subsection{Nearside Data}
-Fortunately,  both SDO EUV images and magnetograms use the same
-projection. For these images, each pixel directly corresponds to a pixel
-on the camera sensor, which in the case of SDO and STEREO-A images is a
-charge-coupled device or CCD. As this is a flat plane, the resultant image is
-projected on to the parallel tangent plane of the celestial sphere.
+Fortunately,  both SDO EUV images and magnetograms use the same projection. For
+these images, each pixel directly corresponds to a pixel on the camera sensor,
+which in the case of SDO and STEREO-A images is a charge-coupled device or
+CCD\citep{kaiser_stereo_2008,lemen_atmospheric_2012}. As the CCD is flat plane,
+the resultant image is a projection of the Sun onto the parallel tangent plane of the
+celestial sphere.
 % gnomonic projection
 For both SDO and STEREO-A, the angle subtended by the solar disk is
 approximately \SI[]{0.3}[]{\degree} and so we can instead approximate the image
-to be projected against the celestial sphere itself, where positions are
-measured in longitude \(\theta_x\) and latitude \(\theta_y\) of the celestial
-sphere. %TODO: check 0.3
-In fact, at a distance of 1 AU (approximately the orbital radius of SDO and
-STEREO-A), the angles describing the Sun on the tangent plane are the same as
-the angles on the celestial sphere to at least five significant figures
-\citep{thompson_w_t_coordinate_2006}. This projection is known as a
-helioprojective-cartesian projection.\\
+to be projected against the celestial sphere itself.  %TODO: check 0.3
+This is a very good approximation, and at a distance of 1 AU (approximately the
+orbital radius of SDO and STEREO-A) the angles describing the Sun on the tangent
+plane match the angles on the celestial sphere to at least five significant
+figures \citep{thompson_w_t_coordinate_2006}. This projection is known as a
+helioprojective-cartesian projection, and measures positions in terms of the
+longitude \(\theta_x\) and latitude \(\theta_y\) of the celestial sphere.\\
 
 SDO uses two distinct instruments to create the EUV and magnetogram data
 (Atmospheric Imaging Assembly \citep{lemen_atmospheric_2012} and the
@@ -1968,50 +1969,18 @@ To transform the seismic maps, we need to find the points in the original
 heliographic projection that correspond to each pixel in the final
 helioprojective image. In general, these points will not dirrectly correspond to
 the centre of a pixel and so we must first apply an image interpolation method
-to construct a continuous version of the original heliographic image.
-in the original image, and so an image interpolation method must be used to
-
-
-
-\begin{itemize}
-  \item As the Stereo EUV data also used the same helioprojective-cartesian
-  projection used for the nearside data, this data was prepared (?) in the same
-  manner, first rotating the images before cropping them to the radius of the
-  Sun.
-  \item rotated such that the top of the image correspond to the northernmost part
-  of the solar disk.
-  \item this process was not so simple in the case of the farside helioseismic
-  holography seismic maps.
-  \item these images were instead projected into Carrington heliographic
-  coordinates, where the positions are measured in latitude (\(\Theta\)) and
-  Carrington longitude (\(\Phi_c\)).
-  \item This coordinate system rotates with the Sun such that the prime meridian
-  coincides with the central meridian (according to an observer on Earth)
-  approximately every 27 days, depending on the position of Earth in it's orbit.
-  \item As such, to directly compare the seismic maps with the STEREO EUV
-  data, we must first project the seismic maps into helioprojective-cartesian
-  coordinates.
-
-  \item For each pixel in the final (helioprojective-cartesian) image, we need
-  to find the corresponding point on the original (heliographic) image.
-  \item In general this point will not match up exactly to the centre of a pixel
-  on the original image and so an interpolation method needs to be used to find
-  determine the value of the original pixel.
-  \item to find this point we must first find the mapping from
-  helioprojective-cartesian coordinates to Carrington heliographic coordinates.
-  \item To do this, we use and intermediate transformation to
-  heliocentric-cartesian coordinates. i.e.:
-\end{itemize}
-
+to construct a continuous version of the original heliographic image. To find
+these points we use an intermediate transformation to heliocentric-cartesian
+coordinates, i.e. 
 \begin{align*}
-  \text{Helioprojective-cartesian} \rightarrow \text{Heliocentric-cartesian} \rightarrow \text{Carrington Heliographic}
+  \text{Helioprojective-cartesian} \rightarrow \text{Heliocentric-cartesian} \rightarrow \text{Carrington Heliographic} \, .
 \end{align*}
-
 Heliocentric-cartesian coordinates give the true spatial position of an object
-(x, y, z), with the centre of the Sun at the origin. The z-axis
-points toward the observer, while the y-axis is in the plane containing the
-z-axis and the rotational axis of the Sun. The x-axis is oriented such that the three axes
-are orthogonal and create a right-hand coordinate system. \\
+($x$, $y$, $z$) with the origin at the centre of the Sun, the z-axis pointed
+toward the observer, and the y-axis in the plane containing the z-axis and the
+rotational axis of the Sun. The x-axis is oriented such that the all three axes
+create an orthogonal right-handed coordinate system. \\
+
 
 To convert helioprojective-cartesian coordinates into heliocentric-cartesian
 coordinates, we use the following transformation, provided by
@@ -2043,17 +2012,43 @@ coordinates as follows:
 and \(B_0\) and \(\Phi_{0}\) are the Carrington heliographic latitude and
 longitude of the Observer. \\
 
-\begin{itemize}
-  \item This completes the required transformation, as the constants \(B_0\),
-  \(\Phi_0\) and \(D_\odot\) can be obtained from the image metadata of each seismic
-  map and corresponding STEREO EUV image we are comparing it too.
-  \item Using this transformation, with bi-linear interpolation, we were able
-  transform the STEREO Carrington heliographic images into
-  Helioprojective-cartesian images that matched the STEREO IMAGES
-  %TODO: reiterate that we want to match the seismic images with the stereo
-  %images
-  %TODO: compare stereo with transformed seismic maps
-\end{itemize}
+
+Since we are directly comparing the seismic maps to STEREO-A EUV images, we
+choose values \(B_0\), \(\Phi_0\) and \(D_\odot\) according an observer at STEREO-A,
+with the longitude adjusted to be opposite Earth (i.e. the centre of the
+farside). These exact values were obtained from the STEREO-A image metadata.
+The seismic maps were re-projected using this transformation with a bi-linear
+interpolation. Figure \ref{fig:projection} shows a seismic map before and after
+this transformation. \\
+%TODO: overlay stereo and seismic maps or at least show stereo as well. Also
+%maybe inbetween image
+
+Now with consistant projection, the STEREO-A EUV images were prepared in the
+same manner as for the nearside, by first rotating the images such that the
+northenmost region of the solar disk was at the uppermost point in the image,
+then cropping the images to the radius of the Sun. This step was not required
+for the re-projected seismic maps as they were already correctly aligned as a
+by-product of the transformation. With all images correctly aligned, it
+is now necessary to take into account effects caused by each imaging instrument.
+
+\begin{figure}[t]%
+  \centering
+  \subfigure[]{%
+    \label{fig:heliographic}
+    \includegraphics[height=1.5in]{heliographic.png}%
+  }%
+  \qquad
+  \subfigure[]{%
+    \label{fig:helioprojective}%
+    \includegraphics[height=1.5in]{helioprojective.png}% 
+  }%
+
+  \caption[]{\subref{fig:heliographic} shows an original seismic map with a
+  heliographic-cartesian projection. \subref{fig:helioprojective} shows the same
+  image after projection into helioprojective-cartesian coordinates.}
+  \label{fig:projection}
+\end{figure}
+
 
 
 \section{Data pre-processing}
@@ -2063,23 +2058,31 @@ longitude of the Observer. \\
 % Corrupted images or images with data artifacts
 
 \label{sec:Data prep}
+Before using the images we need to first take into account various factors and
+inconsistancies that arise during the imaging process. Of particular importance
+is the EUV data which comes from two data sources, SDO and STEREO-A. To use
+data from both sources interchangably, we must make the images consistant between
+these datasets.
+
+\subsection{Extreme Ultraviolet Data}
+As mentioned in Section \ref{sec:proj}, STEREO-A and SDO both use a CCD to image
+the Sun at a wavelength of \(\SI[]{304}[]{\angstrom}\). Each pixel in the CCD
+converts the incoming photons into electric charge, which is subsequently
+measured. This raw data is then processed to remove data artifacts caused by the
+imaging process, and the resulting image can then be used for analysis. The
+value of each pixel (measured in digital number, or DN) on these images is then
+proportional to the solar spectral radiance over the width of the pixel. \\
 
 
-\begin{itemize}
-  \item ok, so now that we have all the images fully aligned we now need to look
-  at the images themselves
-  \item Both the STEREO EUVI and SDO AIA use a Charge-coupled device (CCD) to
-  image the Sun at a wavelength of
-  \(\SI[]{304}[]{\angstrom}\) \citep{kaiser_stereo_2008,lemen_atmospheric_2012}.
-  Each pixel in the CCD converts the incoming photons into electric charge,
-  which is subsequently measured. This raw data is then processed to remove data
-  artifacts caused by the imaging process, and the resulting image can then be
-  used for analysis.  
-  \item The value of each pixel (measured in digital number, or DN) on these images is then proportional to the
-  solar spectral radiance over the width of the pixel.
-\end{itemize}
+From the 4313 AIA images used between 2010 and 2020, the pixel values for the
+AIA data range from \(\SI[]{-166}[]{DN}\) to \(\SI[]{16383}[]{DN}\). The get a
+handle on this data, a range of the pixel value percentiles were calculated for
+each image. Figure \ref{fig:aia_percentiles} shows these percentiles plotted as
+a function of time. Corrupted or otherwise poor quality images could then be
+identified due to the large irregularity in the percentiles of those images, as
+can be clearly seen in Figure \ref{fig:aia_outliers}. After reviewing the
+offending images, a simple threshold was used to remove the outliers.
 
-\subsection{Ultraviolet Data}
 \begin{itemize}
   \item From the 4313 AIA images used between 2010 and 2020, the pixel values
   for the AIA data range from \(\SI[]{-166}[]{DN}\) to \(\SI[]{16383}[]{DN}\).
@@ -2907,6 +2910,26 @@ of the unsigned magnetic field, area and unsigned magnetic flux.
 
 
 \chapter*{Conclusion}
+
+
+\section{Data availability}
+
+\section{Software}
+\begin{itemize}
+  \item Python
+  \item scikit image \cite{van_der_walt_scikit-image_2014}
+  \item numpy
+  \item imageio
+  \item pandas
+  \item tensorflow
+  \item PIL
+  \item sunpy
+  \item astropy
+  \item cv2
+  \item matplotlib
+  \item \url{https://github.com/chemron/honours}
+\end{itemize}
+
 
 \bibliographystyle{mnras.bst}
 
