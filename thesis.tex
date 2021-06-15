@@ -2184,60 +2184,10 @@ comparison between the STEREO-A and SDO datasets after normalisation. As can be
 seen, the datasets seem to be largely consistent with each other. Furthermore,
 not all information about the long-term solar activity has been lost through
 this normalisation process, as can be seen by the peak in the middle of the
-solar cycle around 2014. 
+solar cycle around 2014. With the EUV data normalised, it is now time to turn to
+the Magnetogram and seismic data. %TODO: fix this sentence
 
 
-\subsection{Magnetogram Data}
-
-\begin{itemize}
-  \item The pixel percentiles for the SDO magnetogram data is shown in Figure
-  \ref{fig:hmi_p}. Each pixel on the magnetogram measures the average radial
-  magnetic field ($\mathbf{B}\cdot\mathbf{\hat{r}}$) in Gauss on the surface of
-  the sun subtended by the pixel.
-  \item As can be seen in Figure \ref{fig:hmi_p} the values of the pixels are
-  almost perfectly mirrored across the x axis. This is explained by Gauss's
-  law for magnetism,
-  \begin{align}
-    \oint \mathbf{B} \cdot \text{d}\mathbf{s} = 0 \,,
-  \end{align}
-  \item which in our case indicates that any positive radial magnetic field is
-  likely accompanied by a negative magnetic field.
-  \item Fortunately the magnetogram data did not have any noticeable instrument
-  degradation and did not clip any data.
-  \item Therefore the only normalisation required before using the data was
-  dividing it by the absolute maximum pixel value across all the data, which in
-  this case was $\SI[]{5847.6}[]{G}$, limiting the pixel values to between $-1$
-  and $1$. 
-  \item This ensured that the all magnetic field information was retained, while
-  still being a suitable input to the EUV GAN.
-\end{itemize}
-
-
-\subsection{Seismic Data}
-
-
-\begin{itemize}
-  \item The pixel percentiles for the SDO magnetogram data is shown in Figure
-  \ref{fig:hmi_p}. Each pixel on the magnetogram measures the average radial
-  magnetic field ($\mathbf{B}\cdot\mathbf{\hat{r}}$) in Gauss on the surface of
-  the sun subtended by the pixel.
-  \item As can be seen in Figure \ref{fig:hmi_p} the values of the pixels are
-  almost perfectly mirrored across the x axis. This is explained by Gauss's
-  law for magnetism,
-  \begin{align}
-    \oint \mathbf{B} \cdot \text{d}\mathbf{s} = 0 \,,
-  \end{align}
-  \item which in our case indicates that any positive radial magnetic field is
-  likely accompanied by a negative magnetic field.
-  \item Fortunately the magnetogram data did not have any noticeable instrument
-  degradation and did not clip any data.
-  \item Therefore the only normalisation required before using the data was
-  dividing it by the absolute maximum pixel value across all the data, which in
-  this case was $\SI[]{5847.6}[]{G}$, limiting the pixel values to between $-1$
-  and $1$. 
-  \item This ensured that the all magnetic field information was retained, while
-  still being a suitable input to the EUV GAN.
-\end{itemize}
 
 \begin{figure}[t]%
   \centering
@@ -2323,34 +2273,44 @@ solar cycle around 2014.
   \label{fig:sdo_stereo_comparison}
 \end{figure}
 
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=\linewidth]{HMI_percentiles.png}
-  \caption{}
-  \label{fig:hmi_p}
+
+
+\subsection{Magnetogram and Seismic Data}
+Figure \ref{fig:hmi_p} shows the percentiles of pixel values for the SDO
+magnetogram data. Each pixel on a magnetogram image measures the average radial
+magnetic field ($\mathbf{B}\cdot\mathbf{\hat{r}}$) in units of Gauss (G) on the
+surface of the sun subtended by the pixel. Similarly, Figure \ref{fig:seismic_p}
+shows the percentiles of pixel values for the seismic maps. As explained in
+Section \ref{sec:HSM}, seismic maps measure the relative phase shift experienced
+by p-modes as they travel to and from the solar farside. \\
+
+Fortunately neither of these datasets exhibited the instrument degredation or
+image saturation seen in the EUV data. The magnetogram data was normalised by
+dividing it by the absolute maximum pixel value across all the data, which in
+this case was $\SI[]{5847.6}[]{G}$, limiting the pixel values to between $-1$
+and $1$. Importantly this process is completely reversible, with information
+loss only from rounding errors. The raw seismic data had a range between
+\SI{-0.9}{Rad} and \SI{0.8}{Rad}. As such normalising this data was deemed
+unnecessary. %TODO: explain WHY we need the normalisation
+With our data prepared and normalised we now turn to training each of the
+image-to-image cGANs.
+
+\begin{figure}[t]%
+  % \centering
+  \subfigure[]{%
+    \label{fig:hmi_p}
+    \includegraphics[width=\linewidth]{HMI_percentiles.png}%
+  }%
+  \\
+  \subfigure[]{%
+  \label{fig:seismic_p}
+  \includegraphics[width=\linewidth]{phase_percentiles.png}%
+}%
+  \caption[]{\subref{fig:hmi_p} shows the percentiles of the pixel values for
+  the magnetogram data. \subref{fig:seismic_p} shows the percntile of pixel
+  values for the seismic data.}
+  \label{fig:hmi_seismic_p}
 \end{figure}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 %
@@ -2372,6 +2332,9 @@ solar cycle around 2014.
 %
 %
 
+
+As outlined in Figure \ref{fig:simple_diagram} we require two image-to-image
+is to train 
 
 
 
