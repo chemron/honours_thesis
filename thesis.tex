@@ -2456,12 +2456,12 @@ for a `true' magnetogram input, and
 \begin{align}
   C_{D(Fake)} &=  -\mathds{E}\left[\log(\mathds{1} -  D(G(\mathbf{c})|\mathbf{c}) ) \right]\,,
 \end{align}
-for a `fake' magnetogram input where $\mathbf{c}$ is the
-"conditional" input, $D(\dotsb|\mathbf{c})$ is the discriminator output with a real
-($\mathbf{x}$) or fake ($G(\mathbf{c})$) magnetogram as an input, and
-$\mathds{1}$ is a tensor full of $1$'s with the same shape as $D(\dotsb)$. In
-each expression the `log' is taken element-wise, before the mean of all tensor
-elements is taken. The total discriminator cost function is then
+for a `fake' magnetogram input where $\mathbf{c}$ is the `conditional' input,
+$D(\dotsb|\mathbf{c})$ is the discriminator output with a real ($\mathbf{x}$) or
+fake ($G(\mathbf{c})$) magnetogram as an input, and $\mathds{1}$ is a tensor
+full of $1$'s with the same shape as $D(\dotsb)$. In each expression the `log'
+is taken element-wise, before the mean of all tensor elements is taken. The
+total discriminator cost function is then
 \begin{align}
   C_{D} = C_{D(Real)} + C_{D(Fake)} \,. \label{eqn:d_loss}
 \end{align}
@@ -2472,7 +2472,7 @@ to minimise the absolute difference between the real and fake magnetograms. With
 this addition, the generator cost function used was
 \begin{align}
   C_{G} = -\mathds{E}\left[\log(D(G(\mathbf{c})|\mathbf{c}))\right] +
-  100 \times \mathds{E}\left[|G(\mathbf{c} - \mathbf{x}|\right] \,.\label{eqn:G_loss}
+  100 \times \mathds{E}\left[|G(\mathbf{c}) - \mathbf{x}|\right] \,.\label{eqn:G_loss}
 \end{align}
 
 
@@ -2521,48 +2521,33 @@ the optimisation, with `momentum' parameters $\beta_1 = 0.5$, $\beta_2 = 0.999$.
 % efficient, the GAN will use less memory, and is less likely to result mode
 % collapse - where the generator produces the same output regardless of the input.
 
-
-\begin{itemize}
-  \item After a first attempt at training the UV-GAN it was found that the GAN
-  was unable to capture much of the lower-intensity magnetic structure of the
-  active regions. This was thought to be due to the large dynamic range of both
-  the UV images and magnetograms. This range is clearly seen in Figures
-  \ref{fig:sdo_stereo_comparison} and \ref{fig:hmi_p}, where which in both cases
-  show that approximately $99\%$ of the pixels in each image were at least an
-  order of magnitude smaller than the maximum pixel values. This essentially
-  results in images that are too dark, causing the GAN to largely focus on the
-  few bright pixels. Previous work have used saturation limits to deal with this
-  problem by clipping data above a certain point, \citet{Kim2019} for example
-  used saturation limits of $\pm 100G$ for generating magnetograms. However this
-  comes at the cost of utility, with the peak magnetic field in many sunspots
-  exceeding $\SI[]{3000}[]{G}$. To avoid such a cut-off we instead artificially
-  increased the saturation by taking the square-root of the pixel values for
-  both the normalised magnetograms and UV images. Since the UV images had a
-  pixel values between $0$ and $1$, this `boosted' dim pixels while
-  avoiding the loss of any data. On the other hand the magnetograms had a
-  pixel values between $-1$ and $1$ and so the artificial saturation took the form
-  
+After the first attempt at training the UV-GAN it was found that it was not able
+to reproduce the structure of the active regions. This was thought to be due to
+the large dynamic range both the EUV images and magnetograms. This range is
+clearly seen in Figures \ref{fig:sdo_stereo_comparison} and \ref{fig:hmi_p},
+where which in both cases show that approximately $99\%$ of the pixels in each
+image were at least an order of magnitude smaller than the maximum pixel value.
+This essentially results in images that are too dark, causing the GAN to largely
+focus on the few bright pixels. Previous work have used saturation limits to
+deal with this problem by clipping data above a certain point, \citet{Kim2019}
+for example used saturation limits of $\pm 100G$ for generating magnetograms.
+However this comes at the cost of utility, with the peak magnetic field in many
+sunspots exceeding $\SI[]{3000}[]{G}$. To avoid such a cut-off we instead
+artificially increased the saturation by amplifying lower intensity pixels. For
+the EUV images which had normalised pixel values between \SI{0}{DN} and
+\SI{1}{DN} this artificial saturation was done by taking the square-root of the
+pixel values. This ensured that the pixel values stayed between \SI{0}{DN} and
+\SI{1}{DN}, while increasing the intensity of the under-represented pixels. For
+the magentograms, which had pixel values between $\pm \SI{1}{DN}}$ this
+artificial saturation took the form  
 \begin{align}
-  x^{(\text{new})} = \text{Sign}(x)\sqrt{\absolutevalue{x}}\, ,
+  p^{(\text{new})} = \text{Sign}(p)\sqrt{\absolutevalue{p}}\, ,
 \end{align}
-
-boosting pixels that had less intense magnetic fields. Importantly, this process
-is completely reversible and the true magnetic field can be easily extracted.
-Figure \ref{fig:artificial_sat} shows the pixel values before and after applying
-this artificial saturation. 
-
-
-
-\end{itemize}
-
-
-\begin{figure}
-  \centering
-  
-  \caption{Percentiles of UV and magnetogram data before and after the artificial saturation}
-  \label{fig:artificial_sat}
-\end{figure}
-
+amplifying pixels that corresponded to less intense magnetic fields.
+Importantly, just as with the normalisation, this process is completely
+reversible and the true magnetic field can be easily obtained. Figure
+\ref{fig:artificial_sat} shows the percentiles pixel values before and after applying this
+artificial saturation. \\
 
 
 
@@ -2575,6 +2560,15 @@ this artificial saturation.
   \item \ref{fig:aia_hmi_mag} shows a sample predicted magnetogram, along with
   the corresponding true 
 \end{itemize}
+
+
+\begin{figure}
+  \centering
+  
+  \caption{Percentiles of UV and magnetogram data before and after the artificial saturation}
+  \label{fig:artificial_sat}
+\end{figure}
+
 
 
 \begin{figure}[t]%
@@ -2843,6 +2837,8 @@ of the unsigned magnetic field, area and unsigned magnetic flux.
 %
 
 \begin{itemize}
+  \item both GAN's were flawed
+
   \item poorly accounted for the long term trend from the degradation
   \item how we could have done it better
   \item could potentially improve uv gan by setting a higher lower bound on
