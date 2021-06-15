@@ -2331,7 +2331,11 @@ image-to-image cGANs.
 %
 %
 %
-
+With our data processing done, we are finally ready to begin training our deep
+neural networks.
+% - both the UV GAN and seismic GAN
+%TODO make it a story.
+%TODO fix this -- maybe introduce UV GAN and Seismic GAN earlier.
 We require two deep neural networks in order to generate farside magentgorams
 from seismic maps. The first of these must generate magnetograms from EUV
 \SI{304}{\angstrom} images, which is then used to generate `STEREO-Magnetograms'
@@ -2341,8 +2345,9 @@ to be very effective at image-to-image translation. We henceforth refer to these
 two cGANs as the `UV-GAN' and the `Seismic GAN' respectively. As outlined in
 Section \ref{sec:cgan}, each of these cGANs actually consist of two competing
 networks: a `generator' and a `discriminator'. The same generator and
-discrimnator architecture is used for both the UV-GAN and the Seismic GAN. We
-outline this architecture below.
+discrimnator architecture is used for both the UV-GAN and the Seismic-GAN. In
+this chapter we outline the architecture used for the UV and Seiscmic GAN and
+discribe how these deep neural networks were trained.
 
 
 
@@ -2458,7 +2463,7 @@ $\mathds{1}$ is a tensor full of $1$'s with the same shape as $D(\dotsb)$. In
 each expression the `log' is taken element-wise, before the mean of all tensor
 elements is taken. The total discriminator cost function is then
 \begin{align}
-  C_{D} = C_{D(Real)} + C_{D(Fake)} \,.
+  C_{D} = C_{D(Real)} + C_{D(Fake)} \,. \label{eqn:d_loss}
 \end{align}
 \par
 As detailed in Section \ref{sec:cgan}, the discriminator also provides the cost
@@ -2467,10 +2472,8 @@ to minimise the absolute difference between the real and fake magnetograms. With
 this addition, the generator cost function used was
 \begin{align}
   C_{G} = -\mathds{E}\left[\log(D(G(\mathbf{c})|\mathbf{c}))\right] +
-  100 \times \mathds{E}\left[|G(\mathbf{c} - \mathbf{x}|\right] \,.
-\end{align} 
-
-
+  100 \times \mathds{E}\left[|G(\mathbf{c} - \mathbf{x}|\right] \,.\label{eqn:G_loss}
+\end{align}
 
 
 
@@ -2490,29 +2493,36 @@ this addition, the generator cost function used was
 
 
 \section{UV-GAN}
+With our architecture specified, we move on to training the UV-GAN. After data
+processing we were left with 4247 pairs of normalised SDO EUV and magnetogram
+images, captured between April 2010 and December 2019. Images taken in November
+and December each year were set aside for evaluation, while the remaining 3505
+image pairs were used for training the network. Before training, the weights
+(parameters) of the convolutional layers for both the discriminator and
+generator where initialised by
+\begin{align}
+  w_c \sim \mathcal{N}\left(0, 0.02\right) \quad ,
+\end{align}
+while the weights for batch normalisation were initialised by
+\begin{align}
+  w_b \sim \mathcal{N}\left(1.0, 0.02\right) \quad .
+\end{align}
+A kernal (filter) size of $4$ was used for the convoluitonal layers (see Section
+\ref{sec:convolutional}). The UV-GAN was trained for $300000$ iterations, with a
+batch size of 1, i.e. one magnetogram/EUV image pair per batch. At each
+itteration, an EUV image is passed through the generator to produce a fake
+magnetogram. The real and fake magnetograms are then both passed through the
+discriminator which produces it's output. The parameters of both networks are
+then updated using the Adam optimizer \citep{kingma_adam_2014}, according to the
+loss functions given by Equations \ref{eqn:d_loss} and \ref{eqn:G_loss}. A
+learning rate (step size during gradient descent) of $0.0002$ was used during
+the optimisation, with `momentum' parameters $\beta_1 = 0.5$, $\beta_2 = 0.999$.\\
+% The small batch size used meant that, while potentially slower and less
+% efficient, the GAN will use less memory, and is less likely to result mode
+% collapse - where the generator produces the same output regardless of the input.
+
+
 \begin{itemize}
-  \item The UV-GAN was trained using 4247 SDO UV/magnetogram image pairs
-  captured during solar cycle 24 between April 2010 and December 2019. Images
-  taken in November and December each year were used as the testing set, while
-  the remaining 3505 image pairs were used as the training set. The GAN was run
-  for $300000$ iterations at each step doing a forward (inference) and backward
-  (training) pass of the discriminator before doing a forward and backward pass
-  of the generator with a batch size of one. This small batch size means that,
-  while potentially slower, the GAN will use less memory, and is less likely to
-  result mode collapse - where the generator produces the same output regardless
-  of the input. The training was done using the Adam optimizer
-  \citep{kingma_adam_2014} with a learning rate (step size during gradient
-  descent) of $0.0002$ and `momentum' parameters $\beta_1 = 0.5$, $\beta_2 =
-  0.999$. The weights in the convolutional layers where initialised by
-  \begin{align}
-    w_c \sim \mathcal{N}\left(0, 0.02\right) \quad ,
-  \end{align}
-  while the weights for batch normalisation were initialised by
-  \begin{align}
-    w_b \sim \mathcal{N}\left(1.0, 0.02\right) \quad .
-  \end{align}
-  \item a kernal (filter) size of $4$ was used for the convoluitonal layers (see
-  Section \ref{sec:convolutional}).
   \item After a first attempt at training the UV-GAN it was found that the GAN
   was unable to capture much of the lower-intensity magnetic structure of the
   active regions. This was thought to be due to the large dynamic range of both
@@ -2734,14 +2744,12 @@ this artificial saturation.
 \begin{itemize}
   \item How do we analyse the data?
   \item absolute difference of images is a bad idea because:
-  \begin{itemize}
-    \item difficult to interpret error
-    \item the surface area of the sun corresponding to a given pixel changes
-    with radius (i.e. pixels at the solar limb will correspond to a larger
-    section of the Sun than pixels in the centre of the image).
-    \item This means that the magnetic field will be unevenly weighted towards
+  \item difficult to interpret error
+  \item the surface area of the sun corresponding to a given pixel changes with
+  radius (i.e. pixels at the solar limb will correspond to a larger section of
+  the Sun than pixels in the centre of the image).
+  \item This means that the magnetic field will be unevenly weighted towards
     the central pixels
-  \end{itemize}
   \item An alternative to this is to calculate the total magnetic flux of a
   given image, and compare this to the total magnetic flux of the Sun half a
   rotation later
@@ -2963,20 +2971,21 @@ of the unsigned magnetic field, area and unsigned magnetic flux.
 \bibliography{ml.bib, imaging.bib,space_weather.bib,sun.bib,hsm.bib, Bibliography.bib, unet.bib}
 
 
-\appendix
+% \appendix
 
-\chapter{Coordinate Systems}
-For a description of solar coordinate systems, see
-\citet{thompson_w_t_coordinate_2006}.
 
-\chapter{STEREO orbit}
-\label{app:fun orbit}
-\begin{figure}[ht]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fun_orbit.png}
-  \caption{Trajectory of STEREO spacecraft as it leaves the Earth and uses a gravity assist from the moon to reach it's orbit}
-  \label{fig:fun_orbit}
-\end{figure}
+% \chapter{Coordinate Systems}
+% For a description of solar coordinate systems, see
+% \citet{thompson_w_t_coordinate_2006}.
+
+% \chapter{STEREO orbit}
+% \label{app:fun orbit}
+% \begin{figure}[ht]
+%   \centering
+%   \includegraphics[width=0.8\linewidth]{fun_orbit.png}
+%   \caption{Trajectory of STEREO spacecraft as it leaves the Earth and uses a gravity assist from the moon to reach it's orbit}
+%   \label{fig:fun_orbit}
+% \end{figure}
 
 % \chapter{just getting things down quickly}
 
