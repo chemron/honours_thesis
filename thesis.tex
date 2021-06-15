@@ -2332,53 +2332,38 @@ image-to-image cGANs.
 %
 %
 
-
-As outlined in Figure \ref{fig:simple_diagram} we require two image-to-image
-is to train 
-
-
-
-\begin{itemize}
-  \item with our data ready it is now time to train our networks.
-  \item we want to create solar magnetograms from farside seismic images
-  \item to do this, we requrie a training set of seismic image /magnetogram pairs
-  \item since we only have dopplergrams of the farside, we first need to be able
-  to generate a training set of farside magnetograms
-  \item this can be done by first generating  magnetograms from UV images.
-  \item Therefore we need to train two networks the first one generates
-  magnetograms from UV data, and the second one to generate magnetograms from
-  seismic data, using a training set created by the first network.
-
-  \item Image-to-image cGANs have proven to be very effective at this task and
-  make a suitable choice for such a task. As discussed in Section \ref{sec:gan},
-  these consist of two competing neural networks, the generator and the
-  discriminator. In this setup, the generator tries to `fool' the discriminator into
-  predicting that the generated image is in fact real.
+We require two deep neural networks in order to generate farside magentgorams
+from seismic maps. The first of these must generate magnetograms from EUV
+\SI{304}{\angstrom} images, which is then used to generate `STEREO-Magnetograms'
+from our STEREO-A EUV data. The second network must then generate magnetograms
+from seismic maps. In both cases we use an image-to-image cGAN, which has proven
+to be very effective at image-to-image translation. We henceforth refer to these
+two cGANs as the `UV-GAN' and the `Seismic GAN' respectively. As outlined in
+Section \ref{sec:cgan}, each of these cGANs actually consist of two competing
+networks: a `generator' and a `discriminator'. The same generator and
+discrimnator architecture is used for both the UV-GAN and the Seismic GAN. We
+outline this architecture below.
 
 
 
-\end{itemize}
-
-
-
-\begin{itemize}
-  \item the process for creating a network capable of producing farside
-  magnetograms from seismic maps consists of three parts.
-  \begin{enumerate}
-    \item The UV GAN is trained to generate magnetograms from uv images by using
-    SDO UV/Magnetogram image pairs
-    \item The now trained UV GAN is used to generate `STEREO' magnetograms from
-    STEREO UV images
-    \item The Seismic GAN is trained to generate magnetograms from Seismic
-    images using STEREO magnetogram/ farside seismic image pairs.
-  \end{enumerate}
+% \begin{itemize}
+%   \item the process for creating a network capable of producing farside
+%   magnetograms from seismic maps consists of three parts.
+%   \begin{enumerate}
+%     \item The UV GAN is trained to generate magnetograms from uv images by using
+%     SDO UV/Magnetogram image pairs
+%     \item The now trained UV GAN is used to generate `STEREO' magnetograms from
+%     STEREO UV images
+%     \item The Seismic GAN is trained to generate magnetograms from Seismic
+%     images using STEREO magnetogram/ farside seismic image pairs.
+%   \end{enumerate}
   
-  \item The same network model was used for parts 1. and 3., which consisted of
-  a U-NET style generator, and a fully convolutional discriminator. Figure
-  \ref{fig:solar_gans_diagram} shows a diagram of both GANs. This architecture
-  for each GAN was based on the one used by \citet{Kim2019} for a very similar
-  purpose.
-\end{itemize}
+%   \item The same network model was used for parts 1. and 3., which consisted of
+%   a U-NET style generator, and a fully convolutional discriminator. Figure
+%   \ref{fig:solar_gans_diagram} shows a diagram of both GANs. This architecture
+%   for each GAN was based on the one used by \citet{Kim2019} for a very similar
+%   purpose.
+% \end{itemize}
 
 \begin{figure}
   \centering
@@ -2401,10 +2386,18 @@ is to train
 %
 %
 
+The architecture for each cGAN was based on the one used by \citet{Kim2019}. In
+their paper they describe a cGAN similar to the UV-GAN we train which generates
+magnetograms from EUV solar images. However while the cGAN used by
+\citet{Kim2019} was only capable of predicting magnetic field strengths of at
+most 100 G, ours does not have this issue. This will be further discussed in
+Chapter \ref{chap:discussion}. Our model consists of a U-NET style generator
+\citep{ronneberger_u-net_2015}, and a fully convolutional discriminator. Figure
+\ref{fig:solar_gans_diagram} shows a diagram of each cGAN.
+
+
 \subsection{Generator}
-
-
-
+The generator network must be able to translate between two types of images. 
 
 
 \begin{itemize}
