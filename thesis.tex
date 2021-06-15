@@ -2391,30 +2391,29 @@ their paper they describe a cGAN similar to the UV-GAN we train which generates
 magnetograms from EUV solar images. However while the cGAN used by
 \citet{Kim2019} was only capable of predicting magnetic field strengths of at
 most 100 G, ours does not have this issue. This will be further discussed in
-Chapter \ref{chap:discussion}. Our model consists of a U-NET style generator
-\citep{ronneberger_u-net_2015}, and a fully convolutional discriminator. Figure
+Chapter \ref{chap:discussion}. Our model consists of a U-net style generator network
+\citep{ronneberger_u-net_2015}, and a fully convolutional discriminator network. Figure
 \ref{fig:solar_gans_diagram} shows a diagram of each cGAN.
 
 
 \subsection{Generator}
-The generator network must be able to translate between two types of images. 
+The generator network must be capable of tranlating the conditional image
+(either an EUV image or seismic map) into a magnetogram. For this purpose we
+chose a U-net \citep{ronneberger_u-net_2015}. U-nets were originally developed
+for biomedical image segmentation, however have been used in a wide range of
+Astrophysics applications (for example
+\citet{felipe_improved_2019,bekki_quantifying_2021,baso_solar_2019}). U-nets
+consist of a down sampling path where the width and hight of each layer are
+reduced at each step, followed by and upsampling path where the width and height
+are get larger at each step until reaching the original size. Many `skip
+connections' join layers of the same size either side of the `U'. The model used
+in this work is shown in Figure \ref{fig:gen_model}. By implemeting a U-net the
+generator is can perform image-to-image translation that retains the shape and
+large scale structures of the input image while still capturing complex
+relationships between the input and output. While the generator network must be
+able to translate between image types, the discriminator network must be able to
+evaluate the quality of it's input.
 
-
-\begin{itemize}
-  \item the generator part of each GAN must be able to translate between two
-  images of the same size.
-  \item A U-net \citep{ronneberger_u-net_2015} makes a suitable choice for this task
-  \item U-nets consists of a down sampling path where the width and height of
-  each layer gets
-  smaller at each `block' followed by an upsampling path where the width and height
-  get larger until it reaches the original size, making a symmetrical `U' shape.
-  \item   Many `skip connections' join layers of the same size either side of
-  the `U'. The model used in this work is shown in Figure \ref{fig:gen_model}.
-  By using a U-Net, we are able to do image-to-image to image translation that
-  is capable of retaining the shape and large scale structures of the original
-  image while capturing small scale features and the interactions between these.
-\end{itemize}
-  
   \begin{figure}
     \centering
     %TODO: fill out figure
@@ -2429,50 +2428,40 @@ The generator network must be able to translate between two types of images.
   \end{figure}
 
 
-  
-
-
 \subsection{Discriminator}
-
-\begin{itemize}
-  \item The discriminator is given two inputs. The magnetogram (either real or
-  generated) and the conditional image - a UV image in the case of the UV-GAN or
-  a seismic map in the case of the Seismic-GAN. The network will then attempt to
-  determine if the magnetogram input is either real or fake. The architecture of
-  the discriminator used is shown in Figure~\ref{fig:discrim_model}. The output
-  of the discriminator is a ($126\times 126$) array.
-  \item when the discriminator is given a real magnetogtram, the discriminators
-  goal is to maximise it's output, while if the discriminator is given a `fake'
-  magnetogram the goal is to minimise it's output. Since the final layer of the
-  descriminator has a sigmoid activation function the output of each output
-  neuron is bounded between 0 and 1. A `perfect' discriminator would then output
-  a tensor of $0$'s for a fake magnetogram input and a tensor of $1$'s for a
-  real magnetogram. It should be noted that a perfect discriminator would
-  paradoxically be bad, as this would prevent the generator from being able to
-  learn. Similar to Section \ref{sec:gan}, the cost function for the
-  discriminator is then given by
-
-
-  \begin{align}
-    C_{D(Real)} &= -\mathds{E}\left[\log(D(\mathbf{x}|\mathbf{c}))\right]
-    \intertext{and,}
-    C_{D(Fake)} &=  -\mathds{E}\left[\log(\mathds{1} -  D(G(\mathbf{c})|\mathbf{c}) ) \right]\,,
-  \end{align} 
-
-
-where $ C_{D(Real)}$ and $ C_{D(Fake)}$ are the discriminator cost functions
-for real and fake magnetogram inputs respectively, $\mathbf{c}$ is the
-"conditional" input to the GAN (either a UV image or a Seismic image, depending
-on which GAN), $D(\dotsb|\mathbf{c})$ is the discriminator output with a real
+The discrimnator network is given two inputs: a magnetogram (either real or
+generated) and the corresponding conditional image - an EUV image for the UV-GAN
+or a seismic map for the Seismic-GAN. The network then attempts to determine if
+the magnetogram input is real, based on the conditional image. The architecture
+of the discrimnator network we used is shown in Figure~\ref{fig:discrim_model}.
+The output of the discrimnator is a ($126\times 126$) array, where each element
+has a value between 0 and 1. The training objective of the discrimnator network
+is to maximise it's output for a true magnetogram input, and minimise it's input
+for a generated magnetogram input. A `perfect' descrimnator would then output an
+array of only $0$'s for a fake magnetogram input, and an array of $1$'s for a
+true magnetogram. On the other hand, the training objective of the generator is
+to increase the error-rate of the discrimnator. Informally, the generator can be
+thought of trying to `fool' the discrimnator into thinking that the magnetogram
+it generated is real. Similar to Section \ref{sec:gan}, the discrimnator's cost
+function is given by
+\begin{align}
+  C_{D(Real)} &= -\mathds{E}\left[\log(D(\mathbf{x}|\mathbf{c}))\right]
+\end{align}
+for a `true' magnetogram input, and
+\begin{align}
+  C_{D(Fake)} &=  -\mathds{E}\left[\log(\mathds{1} -  D(G(\mathbf{c})|\mathbf{c}) ) \right]\,,
+\end{align}
+for a `fake' magnetogram input where $\mathbf{c}$ is the
+"conditional" input, $D(\dotsb|\mathbf{c})$ is the discriminator output with a real
 ($\mathbf{x}$) or fake ($G(\mathbf{c})$) magnetogram as an input, and
 $\mathds{1}$ is a tensor full of $1$'s with the same shape as $D(\dotsb)$. In
 each expression the `log' is taken element-wise, before the mean of all tensor
-elements is taken. The total discriminator cost function is therefore given by
+elements is taken. The total discriminator cost function is then
 \begin{align}
   C_{D} = C_{D(Real)} + C_{D(Fake)} \,.
 \end{align}
-
-As explained in Section \ref{sec:cgan}, the discriminator also provides the cost
+\par
+As detailed in Section \ref{sec:cgan}, the discriminator also provides the cost
 function for the generator. Unlike \ref{sec:cgan} an additional term was added
 to minimise the absolute difference between the real and fake magnetograms. With
 this addition, the generator cost function used was
@@ -2482,7 +2471,6 @@ this addition, the generator cost function used was
 \end{align} 
 
 
-\end{itemize}
 
 
 
@@ -2972,7 +2960,7 @@ of the unsigned magnetic field, area and unsigned magnetic flux.
 
 \bibliographystyle{mnras.bst}
 
-\bibliography{ml.bib, imaging.bib,space_weather.bib,sun.bib,hsm.bib, Bibliography.bib}
+\bibliography{ml.bib, imaging.bib,space_weather.bib,sun.bib,hsm.bib, Bibliography.bib, unet.bib}
 
 
 \appendix
