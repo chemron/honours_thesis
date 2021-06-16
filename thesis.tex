@@ -2534,12 +2534,12 @@ for example used saturation limits of $\pm 100G$ for generating magnetograms.
 However this comes at the cost of utility, with the peak magnetic field in many
 sunspots exceeding $\SI[]{3000}[]{G}$. To avoid such a cut-off we instead
 artificially increased the saturation by amplifying lower intensity pixels. For
-the EUV images which had normalised pixel values between \SI{0}{DN} and
-\SI{1}{DN} this artificial saturation was done by taking the square-root of the
-pixel values. This ensured that the pixel values stayed between \SI{0}{DN} and
-\SI{1}{DN}, while increasing the intensity of the under-represented pixels. For
-the magentograms, which had pixel values between $\pm \SI{1}{DN}}$ this
-artificial saturation took the form  
+the EUV images (both from SDO and STEREO-A) this artificial saturation was done
+by taking the square-root of the pixel values. This ensured that the pixel
+values remained between the normalised bounds of \SI{0}{DN} and \SI{1}{DN},
+while increasing the intensity of the under-represented pixels. For the
+magentograms which had pixel values between $\pm \SI{1}{DN}$ this artificial
+saturation took the form
 \begin{align}
   p^{(\text{new})} = \text{Sign}(p)\sqrt{\absolutevalue{p}}\, ,
 \end{align}
@@ -2550,16 +2550,24 @@ reversible and the true magnetic field can be easily obtained. Figure
 artificial saturation. \\
 
 
+A new cGAN was trained with the same parameters, this time with the artificial
+saturation. This time, the UV-GAN was able to produce seemingly realistic
+magnetograms, and appear to correctly identify the shape and location of active
+regions. Figure \ref{fig:aia_hmi_mag} shows a generated magnetogram along with
+the corresponding  The accuracy of these synthetic magentograms will be analysed in
+Chapter \ref{chap:results_and_analysis}. \\
 
-\begin{itemize}
-  \item Training the GAN again with the artificial saturation the GAN, we were able
-  generate magnetograms that correctly replicated the shape of active regions.
-  \item consistently underestimates magnetic field
-  \item consistently gets shape
-  \item doesn't consistently get polarities correct
-  \item \ref{fig:aia_hmi_mag} shows a sample predicted magnetogram, along with
-  the corresponding true 
-\end{itemize}
+
+Using this trained UV GAN, 5017 synthetic magnetograms where generated between
+March 2011 and August 2019 from the corresponding STEREO-A EUV images. We
+henceforth refer to these synthetic magnetograms as `STEREO magnetograms'. The
+images were chosen such that the time delay between the STEREO-A and farside
+images was less than seven days, i.e. STEREO-A was roughly less than one quater
+of a solar rotation away from the farside (see Figure \ref{fig:stereo_pos}). A
+mask was applied to each of the STEREO magnetograms, setting the value of any
+pixels outside the solar disk to zero. Figure \ref{fig:stereo_mag} shows a
+STEREO-A \SI{304}{\angstrom} EUV image and the corrosponding synthetic STEREO
+magnetogram.
 
 
 \begin{figure}
@@ -2578,62 +2586,54 @@ artificial saturation. \\
   \label{fig:aia_hmi_mag}
 \end{figure}
 
-\begin{itemize}
-  \item Using the UV GAN, we then went on to generate the STEREO magnetograms
-  using 5087 STEREO UV images, between March 2011 and August 2019. These dates
-  were chosen arbitrally such that the position of the Sun would mean that each
-  image would be less than a seven day solar rotation from the Farside, and
-  therefore a maximum of seven day time delay between the Farside and Stereo
-  images.
-  \item These STEREO magnetograms were then used for training the Seismic-GAN.
-\end{itemize}
-
+\begin{figure}[t]
+  \centering
+  
+  \caption{%TODO: STEREO-A EUV and STEREO magnetogram
+  }
+  \label{fig:stereo_mag}
+\end{figure}
 
 \section{Seismic-GAN}
 
 
-\begin{itemize}
-  \item the Seismic-GAN was initially trained using all the aforementioned
-  magnetograms, along with the equivalent seismic maps.
-  \item before training the Seismic-GAN, a mask was applied to the STEREO
-  magnetograms `zero-out' any pixels outside the solar disk.
-  \item once again, images taken in November or December were used for the test
-  set with all other images used as part of the training set.
-  
-  \item The initial training resulted in a GAN that produced images that looked
-  physically realistic to some degree, however did not match the STEREO
-  magnetograms. i.e. the GAN was faking it. This is shown in Figure \ref{fig:default}.
+We trained the Seismic-GAN with the same parameters as the UV-GAN using 4288
+seismic map/STEREO magnetogram image pairs. Once again images taken from
+November or December each year where set aside for evaluation. After this
+initial training, the Seismic-GAN was able to produce images that appeared
+physically realistic however did not seem to be correlated to the true magnetic
+field. This indicates that the cGAN did not actually learn any relationship
+between the seismic images and the magnetic field, and only learnt how to
+produce an image that `looked' like a magnetogram. An example of one of these
+generated magnetograms along with the equivalent STEREO magnetogram is shown is
+shown in Figure \ref{fig:default}. \\
 
-  \item It was hypothesised that due to the 'blurriness' of the seismic images,
-  i.e. changes happen over larger scales, we should use a larger filter size in
-  the convolutional layers (see Section \ref{sec:convolutional})
-  \item it was thought that this could potentially improve the generated
-  magnetograms allowing the generator to learn from more large scale structures.
+It was hypothesised that due to the 'blurriness' of the seismic images that a
+larger filter size should be used in the convolutional layers. It was thought
+that this could potentially improve the generated magnetograms allowing the
+generator to learn from the large scale structures rather than the small scale
+changes.\\
 
-  \item The GAN was trained using a filter size of 16 (as apposed to 4)
-  However training a GAN with this larger filter size resulted in
-  mode-collapse, where the Generator found a local minimum by producing (almost)
-  the same output image regardless of the input. This can be seen in
-  Figure~\ref{fig:mode_collapse}.
-  
-  \item Finally the Seismic GAN was again trained with the smaller filter size, but now with a
-  batch size of 8 as opposed to 1 (see Section \ref{sec: deep learning}). Figure
-  \ref{fig:batch} shows an example magnetogram generated using this Seismic GAN.
-  This time the GAN was able to predict some of the active regions, especially
-  closer to the centre of the image (where the seismic maps are more accurate).
-  \item However, there was a consistent bias in the images, and the GAN
-  struggled to detect active regions closer to the edge of the disk, and often
-  predicted active regions near the edge that didn't exist.
+The Seismic-GAN was retrained using a filter size of 16 (as apposed to 4), again
+using the same parameters as before. This resulted in mode-collapse, where
+the Generator found a local minimum by producing (almost) the same output
+image regardless of the input. Figure~\ref{fig:mode_collapse} shows two seismic
+maps and the corresponding synthetic magnetograms produced by this cGAN. Despite
+the two seismic maps being taken five years apart, both generated magnetograms
+appear to be identical.\\
 
-  \item 536 iter/epoch = 4288 images for batch
-  \item 2899 for 16 kernal
-  \item 4288 for (7 days) default
+Finally the Seismic GAN was again trained with the smaller filter size, but now
+with a batch size of 8 as opposed to 1. This larger batch size means that each
+step taken through parameter space will be closer to the optimal step (see
+Section \ref{sec:learning}). Figure \ref{fig:batch} shows an example magnetogram
+generated using this Seismic GAN. This time the GAN was able to predict some of
+the active regions, especially closer to the centre of the image where the
+seismic maps are more accurate. However, there was a consistent bias in the
+images, and the GAN struggled to detect active regions closer to the edge of the
+disk, and often predicted active regions near the edge that didn't exist. We
+analyse the performance of this cGAN in Chapter \ref{chap:discussion}.
 
-  \item to determine the usefulness of these magnetograms, we need to develop a
-  metric for determining the accuracy of our predictions, in particular how
-  capable it is at predicting extreme magnetic fields.
 
-\end{itemize}
 
 
 \begin{figure}[t]%
@@ -2731,7 +2731,31 @@ artificial saturation. \\
 %
 %
 %
+\label{chap:results_and_analysis}
 
+\begin{itemize}
+  \item 536 iter/epoch = 4288 images for batch
+  \item 2899 for 16 kernal
+  \item 4288 for (7 days) default
+
+  \item to determine the usefulness of these magnetograms, we need to develop a
+  metric for determining the accuracy of our predictions, in particular how
+  capable it is at predicting extreme magnetic fields.
+
+\end{itemize}
+
+
+
+
+\begin{itemize}
+  \item Training the GAN again with the artificial saturation the GAN, we were able
+  generate magnetograms that correctly replicated the shape of active regions.
+  \item consistently underestimates magnetic field
+  \item consistently gets shape
+  \item doesn't consistently get polarities correct
+  \item \ref{fig:aia_hmi_mag} shows a sample predicted magnetogram, along with
+  the corresponding true 
+\end{itemize}
 
 
 
@@ -2837,7 +2861,23 @@ of the unsigned magnetic field, area and unsigned magnetic flux.
 %
 
 \begin{itemize}
-  \item both GAN's were flawed
+  \item both GAN's were flawed - give something that looks realistic but does
+  not necessarily correspond to the true magnetic field
+  \item underlying problem with the methodology itself
+  \item If the GAN does not have enough information, it will make it up, as the
+  discriminator will be unable to determine if the magnetogram is realistic
+  based on the information
+
+  \item not required to actually be consistent with maxwell's equations i.e. the
+  generator does not need to produce magnetograms that are physically possible,
+  it just needs to be able to fool the descriminator into thinking that it is.
+
+  \item it is possible that after more training the cGAN's may have been able to
+  learn more complex relationships and some of the underlying phsyics, but this
+  begins to cut in to the available resources for training. As it was, training
+  a full GAN required roughly four days of computation time using an expensive GPU.
+
+  \item time delay vs dataset size
 
   \item poorly accounted for the long term trend from the degradation
   \item how we could have done it better
