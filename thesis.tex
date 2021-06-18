@@ -2779,15 +2779,26 @@ uninterateble however and does not take into account the relative importance of
 pixels. For example a pixel near the centre of a magnetogram will subtend a
 smaller region of the solar surface than a pixel closer to the solar limb. This
 effectively means that the absolute error between images will be unevenly
-weighted towards the central pixels. A better metric is to calculate the total
-magnitude of the measured radial magentic flux at the surface of the synthetic
-and true magnetograms and compare these values. 
-
-This metric is typically used for predicting solar flares in individual active
-regions for example
+weighted towards the central pixels. A better metric for evaluation is the
+unsigned magnetic flux, \(T_{\text{flux}}\) given by
+\begin{align}
+  T_{\text{flux}} = \int \int \absolutevalue{B_z} dx dy \, ,
+\end{align}
+where \(B_z\) is the line-of-sight magnetic field, i.e. the pixel values of the
+magnetograms. For indivual active regions, this is typically used as a predictor
+for solar flares, for example
 \citet{song_statistical_2009,yuan_solar_2010,lan_automated_2012,chen_identifying_2019}.
-To calculate this flux, we must first determine the surface area subtended by
-each pixel.\\
+By comparing the total unsigned magnetic flux of the true SDO magnetograms to
+the unsigned magnetic flux of the predicted magnetograms, we evaluate the
+accuracy and predictive capability of the synthetic magnetograms. We approximate
+the total unsigned magnetic flux by 
+\begin{align}
+  T_{\text{flux}} \approx \sum\limits_p \absolutevalue{B_z(p)} A(p) \, ,
+\end{align},
+where $B_z(p)$ is the line-of-sight magnetic field corresponding to pixel $p$
+and $A(p)$ is the surface area of the Sun subtended by pixel $p$. Thus, to
+calculate the total unsigned magnetic flux we first calculate $A(p)$ for each
+pixel.\\
 
 For a given pixel at position \( (x, y) \) in the magnetogram, the equivalent
 helioprojective coordinates \((\theta_x, \theta_y)\)are given by
