@@ -125,11 +125,22 @@ height=1cm, text centered, draw=black, fill=gray!30, text width=3cm]
 \end{titlepage}
 
 \chapter*{Abstract}
+Active regions on the surface of the Sun can lead to large eruptions that have
+the potential to cause significant hazards on the Earth. Images of the magnetic
+field on the Sun's surface, known as magnetograms, are a vital tool for
+predicting these events. While these are readily available for the hemisphere of
+the Sun facing the Earth, there is currently no reliable way to generate
+magnetograms for the opposite hemisphere. Consequently, potentially dangerous farside
+active regions may rotate into the view of Earth with little warning. Here we
+describe a method to generate synthetic farside magnetograms from a helioseismology data
+product using a deep learning method. While the synthetic magnetograms are
+unable to accurately predict the position or shape of active regions, they
+successfully predict sharp changes in the total unsigned magnetic field - a key
+predictor of solar eruptions.
 
 
-
-\chapter*{Acknowledgements}
-
+% \chapter*{Acknowledgements}
+%TODO:
 
 % Andy and Alina for their support and invaluable feedback
 % Bernhard being very accomadating and willing to help/spend time and effort to
@@ -163,6 +174,52 @@ height=1cm, text centered, draw=black, fill=gray!30, text width=3cm]
 %
 %
 
+Active regions are areas of intense magnetic field on the surface of the Sun.
+These are known to cause significant eruptions, such as coronal mass ejections
+or solar flares. These extreme events can eject fast-moving particles into
+interstellar space which have the potential to cause mass electrical blackouts,
+loss of satellites, and hazardous levels of radiation exposure for astronauts
+\citep{Mewaldt2005,council_severe_2008}. \\
+
+Solar magnetograms, images of the magnetic field of the Sun, can be used to
+identify potentially high-risk active regions before they erupt
+\citep{bobra_solar_2015}. However, these magnetograms are only available for the
+`nearside': the hemisphere of the Sun facing the Earth. Due to the rotation of
+the Sun, active regions that emerge on the `farside' could be facing the Earth
+only seven days after becoming visible. A method for imaging the farside
+regions is necessary to identify dangerous farside magnetic activity before it
+reaches Earth. \\
+
+Using a conditional generative adversarial network (cGAN), a deep learning
+technique useful for image-to-image translation, \citet{Kim2019} were able to
+create magnetograms based on extreme ultraviolet (EUV) images taken by NASA's
+Solar Terrestrial Relations Observatory (STEREO)\footnote{STEREO actually
+consists of two spacecraft, STEREO ahead (A) and STEREO behind (B), however,
+contact with STEREO-B was lost in 2016, and so the images used were taken by
+STEREO-A.}. The orbit of STEREO-A allows it to move around the Sun relative to
+the Earth, and take EUV images on the farside during some points of its orbit,
+which can then be used to generate farside magnetograms. However STEREO-A
+currently only has a partial view of the farside, a view that will only decrease
+until it passes the Earth in 2023. By then, STEREO-A will be more than 16 years
+into its planned 2-year mission and may have lost contact with the Earth.
+Futhermore \citet{Kim2019} used a saturation point of 100 Gauss when generating
+these magnetograms. As many active regions have magnetic fields stronger than
+1000 G, this severely limits the ability to predict extreme events.\\
+
+
+To avoid these issues, we instead employ a method to generate synthetic
+magnetograms from farside seismic maps - images that measure perturbations on
+the far hemisphere by computing the travel-time of acoustic waves, known as
+p-modes, that travel through the interior of the Sun \citep{Lindsey2017}. This
+generation is done using a cGAN similar to that used by \citet{Kim2019}, trained
+on 4288 farside seismic map/magnetogram pairs. 
+
+
+As the
+precise relationship between these seismic maps and the magnetic field is
+unknown, a cGAN similar to that used by \citet{Kim2019} is first created to
+generate farside magnetograms from seismic maps, therefore allowing earlier
+detection of dangerous active regions.
 
 
 %TODO: Introduction (maybe borrow slightly from lit review)
@@ -3093,110 +3150,111 @@ amount of data. After some trial and error (see Section \ref{sec:train_seismic})
 we used data with a time delay of less than seven days. \\
 
 
-The final predictions could have been im
+Many of these issues may have been solved if we simply used a neural network to
+predict the unsigned magnetic flux for a given seismic image, rather than trying
+to generate a magnetogram from scratch. This comes at the cost of
+interperability however, generating magnetograms as we did allowed us to
+interogate the outputs and understand why the network predicted a given flux.
+Perhaps a better method would have been to avoid the use of the EUV data
+alltogether, and instead train a cGAN to generate magnetograms from seismic data
+based on the nearside images half of a rotation later. While this suffers from
+the same issue of emerging and decaying active regions, the shifting of the
+active regions would be consistant across the whole dataset. This does not solve
+the problem of insufficient informatin however. To overcome this, the cGAN could
+be given the magnetogram half a rotation earlier as an additional input. The
+cGAN would then only have to learn about changes in the magnetic field rather
+than having to produce a magnetogram from scratch. \\
 
-an alternative to this could have been to avoid the use of the EUV data
-alltogether, and instead train the GAN on the nearside images half of a
-rotation later
-this may have been more difficult to train as many of the active regions
-will have shifted, however this would consist of a much simpler pipeline.
-another idea could be to give the GAN information about the magnetic
-field on the nearside before the rotation. The gan would take in information
-about what the nearside did look like before the rotation, and ideally use the
-Seismic map only to determine what active regions have disapeared, and if any
-new ones have emerged
-this would mean the gan would be learning only how the magnetic field
-changes, and would not have to create a magnetogram from scratch
 
 
 
-\begin{itemize}
-  \item weren't happy with the predictive capabilities
-  \item we had magnetograms that we could interogate
-  \item rather than just getting out a number
-  \item would have been much easier to just predict the magnetic flux from the
-  seismic images
-  \item however his comes at the cost of interperability
+% \begin{itemize}
+%   \item weren't happy with the predictive capabilities
+%   \item we had magnetograms that we could interogate
+%   \item rather than just getting out a number
+%   \item would have been much easier to just predict the magnetic flux from the
+%   seismic images
+%   \item however his comes at the cost of interperability
 
-  \item both GAN's were flawed - give something that looks realistic but does
-  not necessarily correspond to the true magnetic field
-  \item underlying problem with the methodology itself
-  \item If the GAN does not have enough information, it will make it up, as the
-  discriminator will be unable to determine if the magnetogram is realistic
-  based on the information
+%   \item both GAN's were flawed - give something that looks realistic but does
+%   not necessarily correspond to the true magnetic field
+%   \item underlying problem with the methodology itself
+%   \item If the GAN does not have enough information, it will make it up, as the
+%   discriminator will be unable to determine if the magnetogram is realistic
+%   based on the information
 
-  \item In this way the generator is not required to produce physically possible
-magnetograms that are consistent with Maxwell's equations, it just needs to be
-able to fool the descriminator into believing that
+%   \item In this way the generator is not required to produce physically possible
+% magnetograms that are consistent with Maxwell's equations, it just needs to be
+% able to fool the descriminator into believing that
 
-  \item not required to actually be consistent with maxwell's equations i.e. the
-  generator does not need to produce magnetograms that are physically possible,
-  it just needs to be able to fool the descriminator into thinking that it is.
+%   \item not required to actually be consistent with maxwell's equations i.e. the
+%   generator does not need to produce magnetograms that are physically possible,
+%   it just needs to be able to fool the descriminator into thinking that it is.
 
-  \item it is possible that after more training the cGAN's may have been able to
-  learn more complex relationships and some of the underlying phsyics, but this
-  begins to cut in to the available resources for training. As it was, training
-  a full GAN required roughly four days of computation time using an expensive GPU.
+%   \item it is possible that after more training the cGAN's may have been able to
+%   learn more complex relationships and some of the underlying phsyics, but this
+%   begins to cut in to the available resources for training. As it was, training
+%   a full GAN required roughly four days of computation time using an expensive GPU.
 
-  \item time delay vs dataset size
+%   \item time delay vs dataset size
 
-  \item poorly accounted for the long term trend from the degradation
-  \item how we could have done it better
-  \item could potentially improve uv gan by setting a higher lower bound on
-  clipping (we don't need low intensity information). Similar for seismic gan.
+%   \item poorly accounted for the long term trend from the degradation
+%   \item how we could have done it better
+%   \item could potentially improve uv gan by setting a higher lower bound on
+%   clipping (we don't need low intensity information). Similar for seismic gan.
 
-  \item it is likely that the siesmic disturbance and UV light contain any
-  information about the magnetic polarity (direction) of a given active region.
-  \item It was postulated that their might be enough information for the network
-  to learn an indirect relationship between the polarity and the siesmic
-  disturbance/UV light through the context of the image - for example Hale's law
-  can be used to predict the polarity of the leading sunspot.
+%   \item it is likely that the siesmic disturbance and UV light contain any
+%   information about the magnetic polarity (direction) of a given active region.
+%   \item It was postulated that their might be enough information for the network
+%   to learn an indirect relationship between the polarity and the siesmic
+%   disturbance/UV light through the context of the image - for example Hale's law
+%   can be used to predict the polarity of the leading sunspot.
 
-  \item trying to find information where there is none
-  \item seismic maps have less data then the magnetograms
-  \item the hope was that the GAN would be able to learn this from context
-  \item i.e. polarity, shape etc 
-  \item for example learning hales law
-  \item part of the problem is that the GAN has to produce a new map every
-  single time
-  \item a better approach could be to use a recurrent neural network, so that
-  the network only has to learn how it changes.
-  \item alternatively could give the gan information about what the nearside did look
-  like before the rotation, and ideally use the Seismic map only to determine
-  what active regions have disapeared, and if any new ones have emerged
+%   \item trying to find information where there is none
+%   \item seismic maps have less data then the magnetograms
+%   \item the hope was that the GAN would be able to learn this from context
+%   \item i.e. polarity, shape etc 
+%   \item for example learning hales law
+%   \item part of the problem is that the GAN has to produce a new map every
+%   single time
+%   \item a better approach could be to use a recurrent neural network, so that
+%   the network only has to learn how it changes.
+%   \item alternatively could give the gan information about what the nearside did look
+%   like before the rotation, and ideally use the Seismic map only to determine
+%   what active regions have disapeared, and if any new ones have emerged
   
 
 
-  \item It should be noted however that the 75th percentile was still effected
-  by the solar activity, and some of this information was inadvertantly removed in this
-  process.
-  \item this could be the cause of the bias seen in the unsigned flux - gan may
-  have difficulty in determining the background solar activity since this
-  information may have been removed by the normalisation
-  \item to better account for the decrease, could have fitted the percentiles
-  with a normal distribution and exponential decay
-  \item the normal distribution would take into account the solar cycle, while
-  the exponential decay would capture the instrument degredation - and could be
-  used to adjust for it.
-  \item however this would have been more difficult to make consistent with the
-  STEREO data - which was a necessary step in producing the farside magnetogram
-  training set
-  \item an alternative to this could have been to avoid the use of the EUV data
-  alltogether, and instead train the GAN on the nearside images half of a
-  rotation later
-  \item this may have been more difficult to train as many of the active regions
-  will have shifted, however this would consist of a much simpler pipeline.
-  \item another idea could be to give the GAN information about the magnetic
-  field on the nearside before the rotation. The gan would take in information
-  about what the nearside did look like before the rotation, and ideally use the
-  Seismic map only to determine what active regions have disapeared, and if any
-  new ones have emerged
-  \item this would mean the gan would be learning only how the magnetic field
-  changes, and would not have to create a magnetogram from scratch
+%   \item It should be noted however that the 75th percentile was still effected
+%   by the solar activity, and some of this information was inadvertantly removed in this
+%   process.
+%   \item this could be the cause of the bias seen in the unsigned flux - gan may
+%   have difficulty in determining the background solar activity since this
+%   information may have been removed by the normalisation
+%   \item to better account for the decrease, could have fitted the percentiles
+%   with a normal distribution and exponential decay
+%   \item the normal distribution would take into account the solar cycle, while
+%   the exponential decay would capture the instrument degredation - and could be
+%   used to adjust for it.
+%   \item however this would have been more difficult to make consistent with the
+%   STEREO data - which was a necessary step in producing the farside magnetogram
+%   training set
+%   \item an alternative to this could have been to avoid the use of the EUV data
+%   alltogether, and instead train the GAN on the nearside images half of a
+%   rotation later
+%   \item this may have been more difficult to train as many of the active regions
+%   will have shifted, however this would consist of a much simpler pipeline.
+%   \item another idea could be to give the GAN information about the magnetic
+%   field on the nearside before the rotation. The gan would take in information
+%   about what the nearside did look like before the rotation, and ideally use the
+%   Seismic map only to determine what active regions have disapeared, and if any
+%   new ones have emerged
+%   \item this would mean the gan would be learning only how the magnetic field
+%   changes, and would not have to create a magnetogram from scratch
 
   
 
-\end{itemize}
+% \end{itemize}
 
 % Experiment with # layers etc
 
@@ -3242,6 +3300,21 @@ able to fool the descriminator into believing that
 
 
 \chapter{Conclusion}
+A complex self-regenerating dynamo creates magnetic fields on both large and
+small scales throughout the Sun. This magnetic field gives rise to active
+regions on the surface of the Sun, which can lead to eruptive events such as
+flares or coronal mass ejections. Extreme space weather events such as these can
+be hazardous to our increasingly technological society, with the potential to
+cause mass blackouts, loss of communication, or failure of satellites.
+Currently, potentially hazardous active regions can only be identified \(\sim
+7\) days before directly facing the Earth due to the rotation of the Sun.
+Farside magnetograms offer a potential solution to this, allowing for global
+coverage of the solar magnetic field. However, with STEREO no longer giving a
+view of the farside, there is currently no reliable method to generate farside
+magnetograms. A combination of farside helioseismic holography and deep learning
+may present a solution to this through the generation of magnetograms from
+seismic maps.
+
 
 
 \section{Data availability}
