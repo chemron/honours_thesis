@@ -3061,27 +3061,6 @@ resources for training. As it was, fully training a cGAN required roughly four
 days of computation time using an expensive GPU. \\
 
 
-
-If the
-descriminator network does not have enough information (based on the EUV or
-seismic data) to determine whether the magnetogram produced the generator
-network is accurate, the generator will not learn to become more accurate. This
-effectively leads to the generator `guessing' features without penalty, as long
-as they appear realistic. For example, while both GANs learnt that a positive
-magnetic field was typically associated with a negative magnetic field neither
-was able to guess the polarity better than as by using Hale's law (see Section
-\ref{sec:dynamo}). It was thought that this information may have been
-determinable from context, however this was not sufficient to consistently
-determine the correct polarity. The lack of information was a greater problem
-for the seismic GAN, which gave mixed results when attempting to determine the
-existance of active regions and of the active regions it did predict, it was
-unable to accurately determine the correct shape or polarity. It is possible
-that after more training the cGAN's may have been able to learn more complex
-relationships and some of the underlying phsyics, but this begins to cut in to
-the available resources for training. As it was, fully training a cGAN required
-roughly four days of computation time using an expensive GPU. \\
-
-
 Further restricting the amount of available information was the normalisation of
 the EUV data discussed in Section \ref{sec:UV_prep}. As part of this process,
 the EUV data was normalised by dividing by a rolling average of the 75th
@@ -3114,47 +3093,20 @@ amount of data. After some trial and error (see Section \ref{sec:train_seismic})
 we used data with a time delay of less than seven days. \\
 
 
-\item It should be noted however that the 75th percentile was still effected
-by the solar activity, and some of this information was inadvertantly removed in this
-process.
-\item this could be the cause of the bias seen in the unsigned flux - gan may
-have difficulty in determining the background solar activity since this
-information may have been removed by the normalisation
-\item to better account for the decrease, could have fitted the percentiles
-with a normal distribution and exponential decay
-\item the normal distribution would take into account the solar cycle, while
-the exponential decay would capture the instrument degredation - and could be
-used to adjust for it.
-\item however this would have been more difficult to make consistent with the
-STEREO data - which was a necessary step in producing the farside magnetogram
-training set
-\item an alternative to this could have been to avoid the use of the EUV data
+The final predictions could have been im
+
+an alternative to this could have been to avoid the use of the EUV data
 alltogether, and instead train the GAN on the nearside images half of a
 rotation later
-\item this may have been more difficult to train as many of the active regions
+this may have been more difficult to train as many of the active regions
 will have shifted, however this would consist of a much simpler pipeline.
-\item another idea could be to give the GAN information about the magnetic
+another idea could be to give the GAN information about the magnetic
 field on the nearside before the rotation. The gan would take in information
 about what the nearside did look like before the rotation, and ideally use the
 Seismic map only to determine what active regions have disapeared, and if any
 new ones have emerged
-\item this would mean the gan would be learning only how the magnetic field
+this would mean the gan would be learning only how the magnetic field
 changes, and would not have to create a magnetogram from scratch
-
-
-% Copied from earlier:
-% \item By using this rotation to our advantage, we can effectively compare
-%   farside seismic maps with not-quite-farside STEREO EUV images, albeit with
-%   some time delay between images.
-%   \item This method isn't perfect however, and has two primary drawbacks:
-%   \begin{enumerate}
-%     \item The differential rotation of the Sun means that active regions won't
-%     necessarily be in the same position after a time delay
-%     \item Active regions are constantly changing, for example new active regions may emerge on the surface over the course hours or days,
-%     while the decay of sunspots may last from days to weeks
-%     \citep{van_driel-gesztelyi_evolution_2015}.
-%   \end{enumerate}
-%   This will be discussed further in section \ref{chap:discussion}.
 
 
 
