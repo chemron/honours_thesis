@@ -3040,7 +3040,29 @@ from UV magnetograms resulted in a similar bias in the seismic magnetograms.
 This also means that the Seismic-GAN may learn `quirks' of the UV-GAN, as it's
 goal is to match the UV-GAN magnetograms rather than true magnetograms. \\ %reword
 
-Perhaps a bigger limitation however is the lack of information. If the
+Perhaps a bigger limitation however is the level of information about the
+magnetic field in the EUV or seismic data. If not enough information is
+available to determine the magnetic field, the cGAN's will not be able to
+determine the true magnetic field and instead must `guess'. This results in
+magnetograms that look realistic, but may not be correlated to the true magnetic
+field. This is especially clear in the case of the polarity of individual
+sunspots. It is likely that the siesmic disturbance and EUV light do not contain
+any information about the magnetic polarity (direction) of a given active
+region. It was thought that this information may have been determinable from
+context and that the cGAN's may have been able to learn an indirect relationship
+between the polarity and the siesmic disturbance/EUV light through the context
+of the image - for example Hale's law can be used to predict the polarity of the
+leading sunspot (see Section \ref{sec:dynamo}). While it appears that cGAN's
+were able to mimic Hale's law to some extent, they were not able to determine
+whether active regions deviated from this. It is possible that after more
+training the cGAN's may have been able to learn more complex relationships and
+some of the underlying physics, but this begins to cut in to the available
+resources for training. As it was, fully training a cGAN required roughly four
+days of computation time using an expensive GPU. \\
+
+
+
+If the
 descriminator network does not have enough information (based on the EUV or
 seismic data) to determine whether the magnetogram produced the generator
 network is accurate, the generator will not learn to become more accurate. This
@@ -3048,9 +3070,7 @@ effectively leads to the generator `guessing' features without penalty, as long
 as they appear realistic. For example, while both GANs learnt that a positive
 magnetic field was typically associated with a negative magnetic field neither
 was able to guess the polarity better than as by using Hale's law (see Section
-\ref{sec:dynamo}). This is likely a consequence of the lack of infomation, as
-the EUV and seismic data itself is unlikely contain sufficient information to
-determine the polarity. It was thought that this information may have been
+\ref{sec:dynamo}). It was thought that this information may have been
 determinable from context, however this was not sufficient to consistently
 determine the correct polarity. The lack of information was a greater problem
 for the seismic GAN, which gave mixed results when attempting to determine the
@@ -3065,7 +3085,18 @@ roughly four days of computation time using an expensive GPU. \\
 Further restricting the amount of available information was the normalisation of
 the EUV data discussed in Section \ref{sec:UV_prep}. As part of this process,
 the EUV data was normalised by dividing by a rolling average of the 75th
-percentile pixel value. While this 
+percentile pixel value. While this mainly affected the background solar
+activity, rather than the activity near active regions, this removed information
+relating to the general trend of the solar cycle (see Figure
+\ref{fig:aia_no_degradation}). To better account for the decrease, the
+percentiles could have been fitted with a cominatation of a normal distribution
+and exponential decay. By doing this, the the normal distribution would take
+into account the effects from the solar cycle while the exponential decay would
+capture the instrument degredation - and could be used to adjust for it. This
+would have been more difficult to make consistent with the STEREO data however,
+which was a necessary step in producing the farside magnetogram training set.
+Despite this however, the UV-GAN was able to reproduce the general trend of the
+solar cycle as can be seen in Figure \ref{fig:flux_sdo_uv}. \\
 
 
 As the Seismic-GAN was trained on the synthetic `STEREO magnetograms', a further
