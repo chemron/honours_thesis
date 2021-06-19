@@ -1761,6 +1761,7 @@ accounting for above effects.
 
 
 \section{Data Collection}
+\label{sec:data_collection}
 Our research required the following data sources:
 \begin{enumerate}
   \item SDO EUV images,
@@ -2079,6 +2080,7 @@ data from both sources interchangably, we must make the images consistant betwee
 these datasets.
 
 \subsection{Extreme Ultraviolet Data}
+\label{sec:UV_prep}
 As mentioned in Section \ref{sec:proj}, STEREO-A and SDO both use a CCD to image
 the Sun at a wavelength of \(\SI[]{304}[]{\angstrom}\). Each pixel in the CCD
 converts the incoming photons into electric charge, which is subsequently
@@ -2151,9 +2153,9 @@ indicative of the background Sun as opposed to individual active regions, and
 would therefore better capture the degredation of the instrument over time. It
 should be noted however that the 75th percentile was still effected by the solar
 activity, and some of this information was inadvertently removed in this
-process. This will be further discussed in Chapter \ref{chap:discussion}. The
-percentiles of the data after applying this weighting are shown in Figure
-\ref{fig:aia_no_degradation}. \\
+process. This will be further discussed in Chapter
+\ref{chap:results_and_analysis}. The percentiles of the data after applying this
+weighting are shown in Figure \ref{fig:aia_no_degradation}. \\
 
 To ensure consistency between the two EUV datasets, we need to normalise and
 correct the STEREO-A data in the same method as the SDO data. Figure
@@ -2409,8 +2411,7 @@ The architecture for each cGAN was based on the one used by \citet{Kim2019}. In
 their paper they describe a cGAN similar to the UV-GAN we train which generates
 magnetograms from EUV solar images. However while the cGAN used by
 \citet{Kim2019} was only capable of predicting magnetic field strengths of at
-most 100 G, ours does not have this issue. This will be further discussed in
-Chapter \ref{chap:discussion}. Our model consists of a U-net style generator network
+most 100 G, ours does not have this issue. Our model consists of a U-net style generator network
 \citep{ronneberger_u-net_2015}, and a fully convolutional discriminator network. Figure
 \ref{fig:solar_gans_diagram} shows a diagram of each cGAN.
 
@@ -2616,7 +2617,7 @@ magnetogram.
 \end{figure}
 
 \section{Seismic-GAN}
-
+\label{sec:train_seismic}
 
 We trained the Seismic-GAN with the same parameters as the UV-GAN using 4288
 seismic map/STEREO magnetogram image pairs. Once again images taken from
@@ -2632,6 +2633,7 @@ shown in Figure \ref{fig:default}. \\
 
 %TODO: consider instead making this about decreasing the time delay
 %TODO: also mention how many images we used:
+%TODO: time delay vs dataset size, talk about trade off
 \begin{itemize}
   \item 536 iter/epoch = 4288 images for batch
   \item 2899 for 16 kernal
@@ -2661,7 +2663,7 @@ the active regions, especially closer to the centre of the image where the
 seismic maps are more accurate. However, there was a consistent bias in the
 images, and the GAN struggled to detect active regions closer to the edge of the
 disk, and often predicted active regions near the edge that didn't exist. We
-analyse the performance of this cGAN in Chapter \ref{chap:discussion}.
+analyse the performance of this cGAN in Chapter \ref{chap:results_and_analysis}.
 
 
 
@@ -2852,18 +2854,23 @@ The unsigned magnetic flux was calculated for each of the SDO and synthetic
 magnetograms. Figure \ref{fig:flux_sdo_uv} shows the flux according to the SDO
 magnetograms and the UV-GAN using STEREO-EUV data, with vertical lines
 indicating X-class solar flares\footnote{Solar flares are classified `X' if the
-peak solar flux measured at Earth is greater than \SI{1e-4}{W.m^{-4}}.}. There
-is a clear bias between the two predicted fluxes, at the time of writing the
-cause of this is unclear.  %TODO: fix, make plot of relative flux
-Futhermore, It is clear that the magnetic flux predicted by the UV-GAN's
-synthetic magnetograms had a higher variance than that of the true magnetograms.
-Crucially however, the UV-GAN is able to produce magnetograms that
-\begin{enumerate}
-  \item accurately predict sharp changes in magnetic flux, including near X-class solar flares,
-  \item reproduce the small scale variations in the magnetic flux, and
-  \item reproduce the overall shape of the solar cycle.
-\end{enumerate}
-We now move on to the Seismic-GAN. 
+peak solar flux measured at Earth is greater than \SI{1e-4}{W.m^{-4}}.}.
+
+There is a clear bias between the two predicted fluxes, at
+the time of writing the cause of this is unclear.
+
+While this limits the ability of the UV-GAN to predict the absolute strength of
+the magnetic field, this is largely not an issue if we can accurately determine
+the change in magnetic flux, relative to some fixed point.
+%TODO: fix, make plot of relative flux
+To this end, the UV-GAN was successful in it's ability to predict peaks and dips
+in magnetic flux consistant with the true magnetograms as well as much of the
+short and large scale structure. Of particular note, the UV-GAN was able to
+reproduce the large-scale trend given by the solar cycle. This is despite
+inadvertantly removing some of this information while noramlising the EUV data
+(See Section \ref{sec:UV_prep}). Most importantly the UV-GAN was able to predict
+the sharp changes in unsigned magnetic flux, including when these sharp changes
+corresponded to X-class solar flares. We now move on to the Seismic-GAN. 
 
 %TODO: put in figure
 
@@ -3011,20 +3018,116 @@ predictions and a different magnetic flux.}
 %
 %
 
+
+With current available data, infering the solar farside magnetic field is a
+challenging task. Here we report the ability to generate realistic-looking
+magnetograms using only data extracted from nearside dopplergram observations.
+While these magnetograms do not appear to accurately represent the farside
+magnetic field, they predict an unsigned magnetic flux that peaks during times
+of intense - and often flare producing - solar activity.\\
+
+The inherent difficulty of this problem resulted in various limitations to our
+method. Perhaps the most obvious such limitation was the lack of any true
+farside magnetograms to use as a training set. Overcoming this required
+generating synthetic magnetograms based on EUV data. As these synthetic `UV'
+magnetograms themselves were not perfect, these provide an upperbound to the
+quality of magnetograms generated from farside seismic data, i.e. `seismic'
+magnetograms generated from training a cGAN on UV magnetograms will never be
+able to outperform the UV magnetograms themselves.
+%TODO: reword
+In this way the errors compound between training the two cGANs, notably the bias
+from UV magnetograms resulted in a similar bias in the seismic magnetograms.
+This also means that the Seismic-GAN may learn `quirks' of the UV-GAN, as it's
+goal is to match the UV-GAN magnetograms rather than true magnetograms. \\ %reword
+
+Perhaps a bigger limitation however is the lack of information. If the
+descriminator network does not have enough information (based on the EUV or
+seismic data) to determine whether the magnetogram produced the generator
+network is accurate, the generator will not learn to become more accurate. This
+effectively leads to the generator `guessing' features without penalty, as long
+as they appear realistic. For example, while both GANs learnt that a positive
+magnetic field was typically associated with a negative magnetic field neither
+was able to guess the polarity better than as by using Hale's law (see Section
+\ref{sec:dynamo}). This is likely a consequence of the lack of infomation, as
+the EUV and seismic data itself is unlikely contain sufficient information to
+determine the polarity. It was thought that this information may have been
+determinable from context, however this was not sufficient to consistently
+determine the correct polarity. The lack of information was a greater problem
+for the seismic GAN, which gave mixed results when attempting to determine the
+existance of active regions and of the active regions it did predict, it was
+unable to accurately determine the correct shape or polarity. It is possible
+that after more training the cGAN's may have been able to learn more complex
+relationships and some of the underlying phsyics, but this begins to cut in to
+the available resources for training. As it was, fully training a cGAN required
+roughly four days of computation time using an expensive GPU. \\
+
+
+Further restricting the amount of available information was the normalisation of
+the EUV data discussed in Section \ref{sec:UV_prep}. As part of this process,
+the EUV data was normalised by dividing by a rolling average of the 75th
+percentile pixel value. While this 
+
+
+As the Seismic-GAN was trained on the synthetic `STEREO magnetograms', a further
+limitation came from the timedelay between the seismic maps and STEREO data to
+account for the rotation of the Sun. As explained in Section
+\ref{sec:data_collection} this timedelay was based on the average rotation of
+Sunspots. However due to the differential rotation of the Sun, this still meant
+that some active regions may be in different locations after the delay, and more
+importantly, active regions may have decayed or new ones emerged during this
+period. As the data from STEREO-A was the only viable source of farside
+information to compare to the seismic maps, this was unfortunatly necessary.
+This creates a trade-off between the time-delay and the amount of data, while
+allowing only small time delays gives more accurate data this also restricts the
+amount of data. After some trial and error (see Section \ref{sec:train_seismic})
+we used data with a time delay of less than seven days. \\
+
+
+\item It should be noted however that the 75th percentile was still effected
+by the solar activity, and some of this information was inadvertantly removed in this
+process.
+\item this could be the cause of the bias seen in the unsigned flux - gan may
+have difficulty in determining the background solar activity since this
+information may have been removed by the normalisation
+\item to better account for the decrease, could have fitted the percentiles
+with a normal distribution and exponential decay
+\item the normal distribution would take into account the solar cycle, while
+the exponential decay would capture the instrument degredation - and could be
+used to adjust for it.
+\item however this would have been more difficult to make consistent with the
+STEREO data - which was a necessary step in producing the farside magnetogram
+training set
+\item an alternative to this could have been to avoid the use of the EUV data
+alltogether, and instead train the GAN on the nearside images half of a
+rotation later
+\item this may have been more difficult to train as many of the active regions
+will have shifted, however this would consist of a much simpler pipeline.
+\item another idea could be to give the GAN information about the magnetic
+field on the nearside before the rotation. The gan would take in information
+about what the nearside did look like before the rotation, and ideally use the
+Seismic map only to determine what active regions have disapeared, and if any
+new ones have emerged
+\item this would mean the gan would be learning only how the magnetic field
+changes, and would not have to create a magnetogram from scratch
+
+
+% Copied from earlier:
+% \item By using this rotation to our advantage, we can effectively compare
+%   farside seismic maps with not-quite-farside STEREO EUV images, albeit with
+%   some time delay between images.
+%   \item This method isn't perfect however, and has two primary drawbacks:
+%   \begin{enumerate}
+%     \item The differential rotation of the Sun means that active regions won't
+%     necessarily be in the same position after a time delay
+%     \item Active regions are constantly changing, for example new active regions may emerge on the surface over the course hours or days,
+%     while the decay of sunspots may last from days to weeks
+%     \citep{van_driel-gesztelyi_evolution_2015}.
+%   \end{enumerate}
+%   This will be discussed further in section \ref{chap:discussion}.
+
+
+
 \begin{itemize}
-  \item Seismic magnetograms are limited by the UV magnetograms - since that is
-  what they use to train
-  \item doesn't have to produce true magnetgrams, just produce magnetograms
-  similar to UV-magnetograms
-  \item errors compound
-  \item the bias in the uv magnetograms therefore carries over to the seismic magnetograms
-
-
-
-  \item maybe talk about good stuff first
-  \item despite normalising the UV-data it is still able to reproduce the
-  general curve given by the solar cycle.
-
   \item weren't happy with the predictive capabilities
   \item we had magnetograms that we could interogate
   \item rather than just getting out a number
@@ -3038,6 +3141,10 @@ predictions and a different magnetic flux.}
   \item If the GAN does not have enough information, it will make it up, as the
   discriminator will be unable to determine if the magnetogram is realistic
   based on the information
+
+  \item In this way the generator is not required to produce physically possible
+magnetograms that are consistent with Maxwell's equations, it just needs to be
+able to fool the descriminator into believing that
 
   \item not required to actually be consistent with maxwell's equations i.e. the
   generator does not need to produce magnetograms that are physically possible,
