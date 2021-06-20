@@ -211,18 +211,11 @@ To avoid these issues, we instead employ a method to generate synthetic
 magnetograms from farside seismic maps - images that measure perturbations on
 the far hemisphere by computing the travel-time of acoustic waves, known as
 p modes, that travel through the interior of the Sun \citep{Lindsey2017}. This
-generation is done using a cGAN similar to that used by \citet{Kim2019}, trained
-on 4288 farside seismic map/magnetogram pairs. 
-
-
-As the
-precise relationship between these seismic maps and the magnetic field is
-unknown, a cGAN similar to that used by \citet{Kim2019} is first created to
-generate farside magnetograms from seismic maps, therefore allowing earlier
-detection of dangerous active regions.
-
-
-%TODO: finish Introduction
+method consists of two steps. First, we train a cGAN to generate magnetograms
+from EUV images using data from the Solar Dynamics Observatory (SDO). This cGAN
+is then applied to EUV images from STEREO-A to create a data set of partially
+farside synthetic magnetograms. Secondly, we use these synthetic magnetograms to
+train a separate cGAN to generate magnetograms from farside seismic maps.
 
 
 
@@ -1552,8 +1545,6 @@ research into how they could be used to generate magnetograms from seismic maps.
 
 \section{Generating farside magnetograms}
 
-%TODO: write this section
-
 
 To produce synthetic magnetograms from farside seismic maps using a deep
 learning method, we require a dataset seismic map/magnetogram pairs. While
@@ -1576,7 +1567,7 @@ capable of producing magnetograms, the Extreme Ultraviolet Imager onboard can
 image the Sun at a wavelength of \SI{304}{\angstrom}. To create the required
 sample of farside magnetograms, we first learn a mapping between extreme
 ultraviolet (EUV) images and magnetograms, using a similar method to
-\citet{Kim2019}. 
+\citet{Kim2019}.\\
 
 
 The Solar Dynamics Observatory (SDO) \citep{pesnell_solar_2012} provides the
@@ -1645,9 +1636,9 @@ shows a summary of the project pipeline. \\
 
   \end{tikzpicture}
   \caption{A simplified diagram of the project pipeline. Nearside SDO
-  EUV/magnetogram image pairs are used to train the ``UV GAN'', which is then
+  EUV/magnetogram image pairs are used to train the `UV-GAN', which is then
   used to generate farside STEREO magnetograms. Farside seismic map/STEREO
-  magnetogram pairs are then used to train the ``Seismic GAN'' which can then be
+  magnetogram pairs are then used to train the `Seismic-GAN' which can then be
   used to generate farside magnetograms from nearside seismic maps without the
   need for STEREO-A data.}
   \label{fig:simple_diagram}
@@ -2242,8 +2233,8 @@ comparison between the STEREO-A and SDO datasets after normalisation. As can be
 seen, the datasets seem to be largely consistent with each other. Furthermore,
 not all information about the long-term solar activity has been lost through
 this normalisation process, as can be seen by the peak in the middle of the
-solar cycle around 2014. With the EUV data normalised, it is now time to turn to
-the Magnetogram and seismic data. %TODO: fix this sentence
+solar cycle around 2014. With the EUV data normalised, we now turn to
+the Magnetogram and seismic data.
 
 
 
@@ -2288,11 +2279,13 @@ the Magnetogram and seismic data. %TODO: fix this sentence
     \includegraphics[width=\linewidth]{AIA_no_degradation.png}% 
   }%
 
-  \caption[]{\subref{fig:aia_percentiles} The percentiles of AIA data for images
-  taken every 12 hours between May 2010 and December 2020. Due to the large
-  range of data, the 25th to 100th percentiles were plotted on a log scale.
-  \subref{fig:aia_outliers} The 75th percentile of the AIA data. A simple
-  threshold was used to remove poor quality data.}
+  \caption[]{\subref{fig:aia_percentiles} The percentiles of the SDO
+  \SI{304}{\angstrom} EUV data for images taken every 12 hours between May 2010
+  and December 2019. Due to the large range of data, the 25th to 100th
+  percentiles were plotted on a log scale. \subref{fig:aia_outliers} The 75th
+  percentile of the SDO EUV data. A simple threshold was used to remove poor
+  quality data. \subref{fig:aia_no_degredation} The percentiles of the SDO
+  EUV data after accounting for instrument degredation.}
   \label{fig:aia_data_prep}
 \end{figure}
 
@@ -2319,7 +2312,15 @@ the Magnetogram and seismic data. %TODO: fix this sentence
 \includegraphics[width=\linewidth]{STEREO_no_degradation.png}%
 }%
   
-  \caption[]{}
+  \caption[]{\subref{fig:stereo_percentiles} The percentiles of the STEREO-A
+  \SI{304}{\angstrom} EUV data for images taken every 12 hours between January 2010
+  and December 2019. The gap in the data is due to the loss of data during the
+  STEREO-A solar conjunction. \subref{fig:stereo_outliers} The 75th
+  percentile of the STEREO-A EUV data. A simple threshold was used to remove poor
+  quality data. \subref{fig:stereo_no_degredation} The percentiles of the
+  STEREO-A EUV data after accounting for instrument degredation. The dashed
+  horizontal line indicates the point above which data was clipped to ensure
+  consistent saturation.}
   \label{fig:stereo_data_prep}
 \end{figure}
 
@@ -2327,7 +2328,7 @@ the Magnetogram and seismic data. %TODO: fix this sentence
 \begin{figure}[t]
   \centering
   \includegraphics[width=\linewidth]{AIA_STEREO_normalised.png}
-  \caption{Comparison of the SDO and STEREO-A data after normalisation.}
+  \caption{Comparison of the SDO and STEREO-A EUV data after normalisation.}
   \label{fig:sdo_stereo_comparison}
 \end{figure}
 
@@ -2391,20 +2392,20 @@ image-to-image cGANs.
 %
 With our data processing done, we are finally ready to begin training our deep
 neural networks.
-% - both the UV GAN and seismic GAN
+% - both the UV-GAN and seismic GAN
 %TODO make it a story.
-%TODO fix this -- maybe introduce UV GAN and Seismic GAN earlier.
+%TODO fix this -- maybe introduce UV-GAN and Seismic-GAN earlier.
 We require two deep neural networks to generate farside magnetgorams from
 seismic maps. The first of these must generate magnetograms from EUV
 \SI{304}{\angstrom} images, which is then used to generate `STEREO-Magnetograms'
 from our STEREO-A EUV data. The second network must then generate magnetograms
 from seismic maps. In both cases, we use an image-to-image cGAN, which has
 proven to be very effective at image-to-image translation. We henceforth refer
-to these two cGANs as the `UV-GAN' and the `Seismic GAN' respectively. As
+to these two cGANs as the `UV-GAN' and the `Seismic-GAN' respectively. As
 outlined in Section \ref{sec:cgan}, each of these cGANs consist of two competing
 networks: a `generator' and a `discriminator'. The same generator and
 discriminator architecture is used for both the UV-GAN and the Seismic-GAN. In
-this chapter, we outline the architecture used for the UV and Seismic GAN and
+this chapter, we outline the architecture used for the UV and Seismic-GAN and
 describe how these deep neural networks were trained.
 
 
@@ -2413,11 +2414,11 @@ describe how these deep neural networks were trained.
 %   \item the process for creating a network capable of producing farside
 %   magnetograms from seismic maps consists of three parts.
 %   \begin{enumerate}
-%     \item The UV GAN is trained to generate magnetograms from uv images by using
+%     \item The UV-GAN is trained to generate magnetograms from uv images by using
 %     SDO UV/Magnetogram image pairs
-%     \item The now trained UV GAN is used to generate `STEREO' magnetograms from
+%     \item The now trained UV-GAN is used to generate `STEREO' magnetograms from
 %     STEREO-A UV images
-%     \item The Seismic GAN is trained to generate magnetograms from Seismic
+%     \item The Seismic-GAN is trained to generate magnetograms from Seismic
 %     images using STEREO-A magnetogram/ farside seismic image pairs.
 %   \end{enumerate}
   
@@ -2430,9 +2431,23 @@ describe how these deep neural networks were trained.
 
 \begin{figure}
   \centering
-  %TODO: this figure. see data analysis book for sketch. maybe different colours
-  %for training gan/training
-  \caption{Diagram of the UV-GAN and Seismic GAN.}
+  \centering
+  \subfigure[]{%
+    \label{fig:uv_GAN_diagram}%
+    \includegraphics[width=\linewidth]{UV-GAN.pdf}% 
+  }\\
+  \subfigure[]{%
+    \label{fig:seismic_GAN_diagram}%
+    \includegraphics[width=\linewidth]{Seismic-GAN.pdf}% 
+  }
+  \caption{\subref{fig:uv_GAN_diagram} A diagram of the UV-GAN. The generator network
+  attempts to create a synthetic magnetogram based on SDO EUV images, while the
+  discriminator network attempts to determine if a given input was a true magnetogram,
+  based on the same EUV image. At each iteration, an SDO EUV/magnetogram pair is
+  passed through the UV-GAN, and the descriminator updates the networks.
+  \subref{fig:seismic_GAN_diagram} A diagram of the Seismic-GAN. The seismic-GAN
+  operates similar to the UV-GAN except that the inputs are a seismic image and
+  a STEREO magnetogram - itself generated by the UV-GAN.}
   \label{fig:solar_gans_diagram}
 \end{figure}
 
@@ -2478,13 +2493,13 @@ evaluate the quality of its input.
 
   \begin{figure}
     \centering
-    %TODO: fill out figure
-    \caption{
-      In our case, we start with a ($1024\times 1024$) input image and at each step
-      in the downsampling path, apply convolution, batch normalisation and leaky
-      reLU activation.% TODO need to explain these
-      At each convolutional step, an additional 64 filters are used than on the
-      previous layer, maxing out at 512. The `bottom' layer 
+    \includegraphics[width=\linewidth]{unet.pdf}
+    \caption{Diagram of the generator network. The input is a ($1024\times
+      1024$) image. At each step in the downsampling path, convolution, leaky ReLU
+      activation and batch normalisation is applied until reaching a layer with
+      size $(1\times 1\times 512)$. At each step in the upsampling path,
+      convolution, cropping and batch normalisation are applied.
+      % TODO need to explain these especially relu
     }
     \label{fig:gen_model}
   \end{figure}
@@ -2536,13 +2551,13 @@ this addition, the generator cost function used was
 
 \begin{figure}
   \centering
-  %TODO: fill out figure
+  \includegraphics[width=\linewidth]{Descrim.pdf}
   \caption{
     The input consists of two ($1024\times 1024$) `channels', containing the
     magnetogram (be it real or fake) and the conditional image (either the UV
     image or seismic map depending on the GAN). 5 successive convolutional
-    layers with batch normalisation and leaky ReLU activation were applied to
-    reduce the final input to a ($126\times 126 \times 1$) tensor.
+    layers with batch normalisation and leaky ReLU activation were applied such
+    that the output layer is a ($126\times 126 \times 1$) tensor.
   }
   \label{fig:discrim_model}
 \end{figure}
@@ -2615,7 +2630,7 @@ the corresponding  The accuracy of these synthetic magnetograms will be analysed
 Chapter \ref{chap:results_and_analysis}. \\
 
 
-Using this trained UV GAN, 5017 synthetic magnetograms were generated between
+Using this trained UV-GAN, 5017 synthetic magnetograms were generated between
 March 2011 and August 2019 from the corresponding STEREO-A EUV images. We
 henceforth refer to these synthetic magnetograms as `STEREO magnetograms'. The
 images were chosen such that the time delay between the STEREO-A and farside
@@ -2638,25 +2653,29 @@ magnetogram.
 
 \begin{figure}[t]%
   \includegraphics[width=\linewidth]{aia_hmi_mag.png}
-  \caption[]{Taken on the 12th of November 2014. This image was part of the
-  testing set and so was not used in training.}
+  \caption[]{Left: SDO \SI{304}{\angstrom} EUV image taken on the 12th of
+  November 2014. Middle: SDO magnetogram taken at the same time as the EUV
+  image. Right: the magnetogram predicted by UV-GAN with the EUV image as
+  input.}
   \label{fig:aia_hmi_mag}
 \end{figure}
 
 \begin{figure}[t]
+  %TODO: maybe pick a different one since I use this later
   \centering
-  
-  \caption{%TODO: STEREO-A EUV and STEREO magnetogram
-  }
+  \subfigure[]{%
+  \label{fig:6.11.11_STE}%
+  \includegraphics[height=2in]{6.11.11_STE.png}% 
+}%
+\subfigure[]{%
+  \label{fig:6.11.11_MAG}%
+  \includegraphics[height=2in]{6.11.11_MAG.png}% 
+} \caption{\subref{fig:6.11.11_STE} a STEREO-A EUV image taken on 31st of October
+  2011. \subref{fig:6.11.11_MAG} the corresponding magnetogram generated by the
+  UV-GAN}
   \label{fig:stereo_mag}
 \end{figure}
 
-\begin{figure}[htbp]
-  \centering
-  
-  \caption{loss}
-  \label{fig:uv_loss}
-\end{figure}
 
 \section{Seismic-GAN}
 \label{sec:train_seismic}
@@ -2675,11 +2694,11 @@ the equivalent STEREO magnetogram is in Figure \ref{fig:default}. \\
 %TODO: consider instead making this about decreasing the time delay
 %TODO: also mention how many images we used:
 %TODO: time delay vs dataset size, talk about trade off
-\begin{itemize}
-  \item 536 iter/epoch = 4288 images for batch
-  \item 2899 for 16 kernel
-  \item 4288 for (7 days) default
-\end{itemize}
+% \begin{itemize}
+%   \item 536 iter/epoch = 4288 images for batch
+%   \item 2899 for 16 kernel
+%   \item 4288 for (7 days) default
+% \end{itemize}
 
 It was hypothesised that due to the 'blurriness' of the seismic images that a
 larger filter size should be used in the convolutional layers. It was thought
@@ -2695,11 +2714,11 @@ maps and the corresponding synthetic magnetograms produced by this cGAN. Despite
 the two seismic maps being taken five years apart, both generated magnetograms
 appear to be identical.\\
 
-Finally, the Seismic GAN was again trained with the smaller filter size, but now
+Finally, the Seismic-GAN was again trained with the smaller filter size, but now
 with a batch size of 8 as opposed to 1. This larger batch size means that each
 step taken through parameter space will be closer to the optimal step (see
 Section \ref{sec:learning}). Figure \ref{fig:batch} shows an example magnetogram
-generated using this Seismic GAN. This time the GAN was able to predict some of
+generated using this Seismic-GAN. This time the GAN was able to predict some of
 the active regions, especially closer to the centre of the image where the
 seismic maps are more accurate. However, there was a consistent bias in the
 images, and the GAN struggled to detect active regions closer to the edge of the
@@ -2727,13 +2746,13 @@ analyse the performance of this cGAN in Chapter \ref{chap:results_and_analysis}.
   \label{fig:6.11.11_default}%
   \includegraphics[height=2in]{6.11.11_default.png}% 
   }%
-  \caption[]{Images relating to the first attempt of training the Seismic GAN.
+  \caption[]{Images relating to the first attempt of training the Seismic-GAN.
   \subref{fig:6.11.11_def_STE} is a STEREO-A EUV image taken on 31st of October 2011,
   \subref{fig:6.11.11_def_MAG} is the corresponding magnetogram generated by
-  the UV GAN, \subref{fig:6.11.11_def_smap} is the equivalent Seismic Map taken
+  the UV-GAN, \subref{fig:6.11.11_def_smap} is the equivalent Seismic Map taken
   on 6th of November 2011 and
   \subref{fig:6.11.11_default} is the corresponding magnetogram generated by the
-  Seismic GAN.}
+  Seismic-GAN.}
   \label{fig:default}
 \end{figure}
 
@@ -2758,11 +2777,11 @@ analyse the performance of this cGAN in Chapter \ref{chap:results_and_analysis}.
   }%
   \caption[]{\subref{fig:6.11.11_ker_smap} and \subref{fig:6.11.11_kernal}
   show a seismic map taken on the 6th of November 2011 and the corresponding
-  magnetogram generated by the Seismic GAN, after training it with a larger
+  magnetogram generated by the Seismic-GAN, after training it with a larger
   kernel size. \subref{fig:16.11.06_ker_smap} shows a seismic map taken 5 years
   later on the 6th of Novermber 2016, while \subref{fig:16.11.06_kernal} shows
   the corresponding generated magnetogram. Despite the different dates and
-  seismic maps, the Seismic GAN generates the same magnetogram.}
+  seismic maps, the Seismic-GAN generates the same magnetogram.}
   \label{fig:mode_collapse}
 \end{figure}
 
@@ -2782,21 +2801,19 @@ analyse the performance of this cGAN in Chapter \ref{chap:results_and_analysis}.
     \includegraphics[height=2in]{6.11.11_smap.png}% 
   }%
   \subfigure[]{%
-  \label{fig:6.11.11_batch}%
+  \label{fig:6.11.11_SMAG}%
   \includegraphics[height=2in]{6.11.11_batch.png}% 
   }%
-  \caption[]{}
+  \caption[]{\subref{fig:6.11.11_STE} is a STEREO-A EUV image taken on 31st of October 2011,
+  \subref{fig:6.11.11_MAG} is the corresponding magnetogram generated by
+  the UV-GAN, \subref{fig:6.11.11_smap} is the equivalent Seismic Map taken
+  on 6th of November 2011 and
+  \subref{fig:6.11.11_SMAG} is the corresponding magnetogram generated by the
+  Seismic-GAN after increasing the batch size.}
   \label{fig:batch}
 \end{figure}
 
-\begin{figure}[htbp]
-  \centering
-  
-  \caption{loss}
-  \label{fig:seismic_loss}
-\end{figure}
 
-%
 %
 %
 %
@@ -2831,15 +2848,20 @@ according to Hale's law (see Section \ref{sec:dynamo}).
 %TODO: reword
 To determine the usefulness of these magnetograms we develop a metric for
 determining the accuracy of our predictions, in particular, how capable it is at
-predicting extreme magnetic fields. One such metric could be the average
-pixel-wise difference between the true and synthetic magnetograms. This is shown
-in Figure \ref{fig:uv_loss} for a given batch at each training iteration. This
-error is difficult to interpret however and does not take into account the relative
-importance of pixels. For example, a pixel near the centre of a magnetogram will
-subtend a smaller region of the solar surface than a pixel closer to the solar
-limb. This effectively means that the absolute error between images will be
-unevenly weighted towards the central pixels. A better metric for evaluation is
-the unsigned magnetic flux, \(T_{\text{flux}}\) given by
+predicting extreme magnetic fields. 
+%TODO: should I include this? I think maybe not
+%One such metric could be the average
+%pixel-wise difference between the true and synthetic magnetograms.
+%This is shownin Figure \ref{fig:uv_loss} for a given batch at each training
+%iteration.
+% This error is difficult to interpret however and does not take into account the
+% relative importance of pixels. For example, a pixel near the centre of a
+% magnetogram will subtend a smaller region of the solar surface than a pixel
+% closer to the solar limb. This effectively means that the absolute error between
+% images will be unevenly weighted towards the central pixels. A better metric for
+% evaluation is the
+For this purpose we use the unsigned magnetic flux,
+\(T_{\text{flux}}\) given by
 \begin{align}
   T_{\text{flux}} = \int \int \absolutevalue{B_z} dx dy \, ,
 \end{align}
@@ -2913,8 +2935,6 @@ inadvertently removing some of this information while normalising the EUV data
 the sharp changes in unsigned magnetic flux, including when these sharp changes
 corresponded to X-class solar flares. We now move on to the Seismic-GAN. 
 
-%TODO: put in figure
-
 \begin{figure}[t]%
   \centering
   \subfigure[]{%
@@ -2950,9 +2970,9 @@ corresponded to X-class solar flares. We now move on to the Seismic-GAN.
   \label{fig:flux_sdo_uv}
 \end{figure}
 
-\section{Seismic GAN}
+\section{Seismic-GAN}
 Qualitatively inspecting the magnetograms, we see that magnetograms produced by
-the Seismic GAN appear realistic, i.e. the magnetograms produced have the
+the Seismic-GAN appear realistic, i.e. the magnetograms produced have the
 characteristics of true magnetograms, with the shapes and polarities appearing
 very similar to what you could expect on a true magnetogram. The fine grain
 structure does not appear to correlate at all with the true structure however
@@ -2974,17 +2994,17 @@ chance. As such the magnetic flux corresponding to the Seismic-GAN has the same
 bias as with the UV-GAN. While the UV-GAN was able to reproduce much of the
 short time scale variations seen in the true magnetic flux, this is not the case
 for the Seismic-GAN. This is likely due to the way the seismic maps are created,
-with the final image being an integration over ... hours, while the SDO images
-are essentially instantaneous. %TODO: hours
-Additionally, while the UV-GAN was able to reproduce the general shape of the
-solar cycle, this long-term variation was much less pronounced for the
-Seismic-GAN. Despite these flaws, solar flares occurances had associated peaks
-indicating the potential usefulness of these magnetograms as a predictor of
-intense solar activity. Not all peaks corresponded to flares or even high levels
-of magnetic activity, for example one of the most prominent peaks near the end
-of 2018 came during a period of very low solar activity. Figure
-\ref{fig:2018_peak} shows a synthetic farside magnetogram generated during this
-time along with a true SDO nearside magnetogram twelve days later.
+with the final image being an integration over 24 hours, while the SDO images
+are essentially instantaneous. Additionally, while the UV-GAN was able to
+reproduce the general shape of the solar cycle, this long-term variation was
+much less pronounced for the Seismic-GAN. Despite these flaws, solar flares
+occurances had associated peaks indicating the potential usefulness of these
+magnetograms as a predictor of intense solar activity. Not all peaks
+corresponded to flares or even high levels of magnetic activity, for example one
+of the most prominent peaks near the end of 2018 came during a period of very
+low solar activity. Figure \ref{fig:2018_peak} shows a synthetic farside
+magnetogram generated during this time along with a true SDO nearside
+magnetogram twelve days later.
 
 
 \begin{figure}[t]%
@@ -3016,10 +3036,7 @@ time along with a true SDO nearside magnetogram twelve days later.
   \label{fig:flux_sdo_seismic}
 \end{figure}
 
-\footnotetext{Note that this is different to the figure shown during the
-seminar. A bug was discovered on 15/6 which affected how the synthetic
-magnetograms from the Seismic-GAN were produced, resulting in different
-predictions and a different magnetic flux.}
+
 
 
 \begin{figure}[t]%
@@ -3044,7 +3061,10 @@ predictions and a different magnetic flux.}
   \label{fig:2018_peak}
 \end{figure}
 
-
+\footnotetext{Note that this is different to the figure shown during the
+seminar. A bug was discovered on 15/6 which affected how the synthetic
+magnetograms from the Seismic-GAN were produced, resulting in different
+predictions and a different magnetic flux.} %TODO: make sure this lines up
 
 
 %
@@ -3069,18 +3089,15 @@ magnetic field, they predict an unsigned magnetic flux that peaks during times
 of intense - and often flare producing - solar activity.\\
 
 The inherent difficulty of this problem resulted in various limitations to our
-method. Perhaps the most obvious limitation was the lack of any true
-farside magnetograms to use as a training set. Overcoming this required
-generating synthetic magnetograms based on EUV data. As these synthetic `UV'
-magnetograms themselves were not perfect, these provide an upper bound to the
-quality of magnetograms generated from farside seismic data, i.e. `seismic'
-magnetograms generated from training a cGAN on UV magnetograms will never be
-able to outperform the UV magnetograms themselves.
-%TODO: reword
-In this way, the errors compound between training the two cGANs, notably the bias
-from UV magnetograms resulted in a similar bias in the seismic magnetograms.
-This also means that the Seismic-GAN may learn `quirks' of the UV-GAN, as its
-goal is to match the UV-GAN magnetograms rather than true magnetograms. \\ %reword
+method. Perhaps the most obvious limitation was the lack of any true farside
+magnetograms to use as a training set. Overcoming this required generating
+synthetic magnetograms based on EUV data. As these synthetic `UV' magnetograms
+themselves were not perfect, these provide an upper bound to the quality of
+magnetograms generated from farside seismic data. In this way, the errors
+compound between training the two cGANs, notably the bias from UV magnetograms
+resulted in a similar bias in the seismic magnetograms. This also means that the
+Seismic-GAN may learn `quirks' of the UV-GAN, as its goal is to match the UV-GAN
+magnetograms rather than true magnetograms. \\ %reword
 
 Perhaps a bigger limitation however is the level of information about the
 magnetic field in the EUV or seismic data. If not enough information is
@@ -3185,7 +3202,7 @@ than having to produce a magnetogram from scratch. \\
 
 %   \item poorly accounted for the long term trend from the degradation
 %   \item how we could have done it better
-%   \item could potentially improve uv gan by setting a higher lower bound on
+%   \item could potentially improve UV-GAN by setting a higher lower bound on
 %   clipping (we don't need low intensity information). Similar for seismic gan.
 
 %   \item it is likely that the seismic disturbance and UV light contain any
@@ -3289,33 +3306,34 @@ Extreme space weather events such as solar flares and coronal mass ejections can
 be hazardous to our increasingly technological society, with the potential to
 cause mass blackouts, loss of communication, or failure of satellites.
 Currently, potentially hazardous active regions can only be identified \(\sim
-7\) days before directly facing the Earth due to the rotation of the Sun. He we
+7\) days before directly facing the Earth due to the rotation of the Sun. Here we
 report the ability to generate synthetic farside magnetograms using only seismic
 maps - farside images of the Sun created by helioseismic holography. While the
 magnetograms have mixed results when locating active regions, they predict an
-unsigned magnetic flux which peaks during times of intense solar activity.
+unsigned magnetic flux that peaks during times of intense solar activity.
 
+
+\bibliographystyle{mnras.bst}
+
+\bibliography{ml.bib, imaging.bib,space_weather.bib,sun.bib,hsm.bib, Bibliography.bib, unet.bib}
 
 
 \appendix
 
 
-\section{Data availability}
+\chapter{Data availability}
 The Joint Science Operation Centre (\url{jsoc.stanford.edu}) provided the SDO
 and seismic map data while the STEREO data was provided by the Space Radiation
 Lab at California Institute of Technology (\url{www.srl.caltech.edu/STEREO}).
-Python \citep{van_rossum_python_2009} was used throughout this work, with
-the following open source packages: scikit-image
+Python \citep{van_rossum_python_2009} was used throughout this work, with the
+following open source packages: scikit-image
 \citep{van_der_walt_scikit-image_2014}, NumPy \citep{harris_array_2020}, imageio
 \citep{silvester_imageio_2020}, Pandas \citep{team_pandas-devpandas_2020},
 TensorFlow \citep{martin_abadi_tensorflow_2015}, Pillow
-\citep{clark_pillow_2015}, SunPy \citep{mumford_sunpy_2020}, OpenCV
-\citep{bradski_opencv_2000} and Matplotlib \citep{hunter_matplotlib_2007}. All
-code used in this work is available a \url{github.com/chemron/honours}
-
-\bibliographystyle{mnras.bst}
-
-\bibliography{ml.bib, imaging.bib,space_weather.bib,sun.bib,hsm.bib, Bibliography.bib, unet.bib}
+\citep{clark_pillow_2015}, SunPy \citep{mumford_sunpy_2020}, AstroPy
+\citep{astropy_collaboration_astropy_2013} OpenCV \citep{bradski_opencv_2000}
+and Matplotlib \citep{hunter_matplotlib_2007}. All code used in this work is
+available at \url{github.com/chemron/honours}.
 
 
 % \appendix
