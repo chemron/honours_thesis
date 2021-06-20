@@ -1550,164 +1550,50 @@ alike. While cGANs have already been used to generate solar magnetograms from EU
 research into how they could be used to generate magnetograms from seismic maps.
 
 
-\section{Producing magnetograms from farside seismic maps.}
+\section{Generating farside magnetograms}
 
 %TODO: write this section
 
-\begin{itemize}
-  \item This is essential, as the only currently reliable way of imaging the solar
-  farside is through farside helioseismic holography, with the generation of
-  farside seismic maps.
-  \item some research has been done on the correlation of seismic signatures and
-  magnetic field (https://iopscience-iop-org.ezproxy.lib.monash.edu.au/article/10.1086/521592)
-  \item research into detecting active regions from farside seismic maps ()
-\end{itemize}
+
+To produce synthetic magnetograms from farside seismic maps using a deep
+learning method, we require a dataset seismic map/magnetogram pairs. While
+farside seismic maps created by helioseismic holography are readily available
+(see Section \ref{sec:FHSM}), corresponding magnetograms are not. Therefore, to
+generate farside magnetograms we split this problem into two parts. Firstly, we
+create a sample of magnetograms that directly coincide with farside seismic
+maps, and secondly, we use these samples to learn a mapping from seismic
+maps to farside magnetograms. \\
+
+To solve the first problem, we make use of the Solar-Terrestrial Relations
+Observatory (STEREO). STEREO consists of two spacecraft each in a heliocentric
+orbit, STEREO-A and STEREO-B. These two spacecraft orbit the Sun at slightly
+different rates to earth, with orbital periods of 346 and 388 days respectively.
+As such, the positions of these satellites rotate about the Sun relative to the
+Earth, allowing them to image the farside for some intervals of the mission.
+While contact was lost with STEREO-B during 2014, STEREO-A is still operational
+and continues to provide data. While neither of the STEREO spacecraft are
+capable of producing magnetograms, the Extreme Ultraviolet Imager onboard can
+image the Sun at a wavelength of \SI{304}{\angstrom}. To create the required
+sample of farside magnetograms, we first learn a mapping between extreme
+ultraviolet (EUV) images and magnetograms, using a similar method to
+\citet{Kim2019}. 
 
 
-\begin{itemize}
-  \item deep learning requires lots of data
-  \item we have lots of freely available data
-\end{itemize}
-
-
-
-
-\begin{itemize}
-  \item While many Earth-based solar observatories exist, space-based
-  observatories can monitor the Sun without the limitation of
-  atmospheric absorption.
-  observing the Sun from the  Earth comes with many issues 
-  \item The best way to image the Sun is directly from space-based telescopes.
-  \item The Solar Dynamics Observatory (SDO) \citep{pesnell_solar_2012} orbits
-  the Earth with a suite of instruments including the Atmospheric Imaging
-  Assembly (AIA) \citep{lemen_atmospheric_2012} and the Helioseismic and
-  Magnetic Imager (HMI) \citep{scherrer_helioseismic_2012}. Pertinent to this
-  research, AIA is capable of taking extreme UV images of the full solar disk at
-  a wavelength of \SI{304}{\angstrom}, while HMI is capable of taking full-disk
-  magnetograms which measure the line-of-sight magnetic field, and full-disk
-  dopplergrams which measure the line-of-sight motion of the solar surface. As
-  detailed in Section \ref{sec:FHSM}, these dopplergrams can be used to generate
-  farside seismic maps. However, by nature of orbiting the Earth, SDO is unable
-  to image the solar farside except indirectly through farside helioseismic
-  holography. Only three active solar probes, Parker Solar Probe, Solar Orbiter
-  and Solar-Terrestrial Relations Observatory A (STEREO-A) measure the farside
-  at any point in their orbit, and only STEREO-A consistently takes full-disk
-  solar images. While STEREO-A does not produce magnetograms, the extreme
-  ultraviolet imager onboard images the Sun at a wavelength of
-  \SI{304}{\angstrom}. 
-
-  Therefore, an indirect
-  measurement of the magnetic field must be employed to reliably predict extreme
-  space weather events.
-  
-  \citet{Kim2019} trained an image-to-image cGAN to generate artificial
-  magnetograms from Extreme Ultraviolet (EUV) images. This training was done
-  using pairs of \SI{304}{\angstrom} EUV images and magnetograms from SDO. This
-  trained cGAN was then used to generate artificial farside magnetograms from
-  similar STEREO-A EUV images.
-
-  \item however, they used a saturation point of 100 Gauss, limiting the ability
-  to predict strong magnetic fields, especially considering that active regions
-  can have magnetic field strengths of thousands of Gauss
-
-  \item Furthermore, STEREO-A is currently on the nearside coming towards the Earth
-  and only has a partial view of the solar farside (see Figure
-  \ref{fig:stereo_pos}).
-
-  \item As such the only consistent observation of the Farside comes from
-  farside helioseismic holography.
-
-  \item To generate farside magnetograms from seismic images using an
-  image-to-image cGAN, we need to construct a dataset of seismic
-  image/magnetogram pairs. However, since we have no available farside
-  magnetograms, the creation of this dataset presents its own issue. To
-  overcome this issue, we first train an image-to-image cGAN to generate
-  magnetograms from \SI{304}{\angstrom} solar EUV images.
-
-\end{itemize}
-
-
-
-%
-% Project outline from lit review
-%
-
-To train a cGAN to generate magnetograms from seismic maps, we require a
-training set consisting of seismic maps and the corresponding magnetograms.
-While the farside seismic maps are readily available\footnote{See
-  \url{jsoc.stanford.edu/data/farside}.}, corresponding magnetograms are
-not. However, not all hope is lost. The STEREO-A spacecraft is in a heliocentric
-orbit that traverses the Sun relative to the Earth, allowing it to observe the
-farside during some points of the orbit. While STEREO-A does not capture
-magnetograms of the Sun, it does take EUV images which can be used to create
-magnetograms by using a cGAN \citep{Kim2019}.\\
-
-A small complication is that no data is available from when STEREO-A was
-directly opposite the Earth (between March and July 2015), due to the
-interference from the Sun. This limits the ability to get magnetograms that
-exactly coincide with the farside seismic maps. To compensate for this, we can
-match farside seismic maps with images taken by STEREO-A at an earlier (later)
-time when it is behind (ahead of) the farside, such that the same `face' of the
-Sun is imaged due to its rotation. After generating the magnetograms from the
-STEREO-A EUV images, we can create a dataset of seismic maps with the
-corresponding magnetogram (albeit with some time difference). This process is
-summarised in Figure \ref{fig:Project_summary}.\\
-
-
-
-\begin{figure}
-  \centering
-  \begin{tikzpicture}[node distance=5.5cm]
-    % \draw[help lines] (0,-5) grid (10,10);
-    \node (D) [cool, above=1.5cm] {SDO Dopplergram}; \node (P) [cool, right
-      of=D] {Farside \quad \quad \quad \qquad  seismic map}; \node (E) [cool]
-    {STEREO-A EUV image}; \node (M) [cool, right of=E, below=0.5cm] {STEREO
-      Magnetogram}; \node (F) [cool, right of=M, above=1cm] {Farside\\
-      Magnetogram}; \node (S) [cool, below=1.5cm] {SDO Magnetogram};
-
-    \coordinate (FF) at ([xshift=-1.5cm]F.west); % we collect the edges in
-    front of Q
-    \coordinate (MM) at ([xshift=-1.5cm]M.west); % we collect the edges in
-    front of Q
-
-    \draw [arrow] (D) -- node[anchor=south, text width=2cm] {Helioseismic
-      Holography} (P); \draw [arrow] (MM) -- node[anchor=south] {cGAN} (M);
-    \draw [line] (P) -|  (FF); \draw [line] (M) -|  (FF); \draw [line] (S) -|
-    (MM); \draw [line] (E) -|  (MM); \draw [arrow] (FF) -- node[anchor=south]
-    {cGAN} (F);
-
-  \end{tikzpicture}
-  \caption[Project Pipeline]{Summary of the project. A cGAN is trained on SDO
-    data to be able to generate EUV images. This is applied to STEREO-A EUV images
-    to generate STEREO magnetograms. These are used in conjunction with farside
-    seismic maps to train a new cGAN to generate magnetograms from seismic maps,
-    allowing constant surveillance of the farside magnetic field.}
-  \label{fig:Project_summary}
-\end{figure}
-
-
-
-%
-%
-%
-%
-\chapter{Data Preparation}
-\label{chap:data}
-%
-%
-%
-%
-
-To generate farside magnetograms from farside seismic maps, we first create two distinct
-data sets
-\begin{enumerate}
-  \item a nearside dataset consisting of EUV and magnetogram image pairs, and
-  \item a farside dataset consisting of seismic map and EUV image pairs.
-\end{enumerate}
-As detailed in Chapter \ref{chap:training}, the farside EUV images will be used
-to generate magnetograms, which can then be used to train an image-to-image cGAN
-to generate magnetograms from farside seismic maps. Figure
-\ref{fig:simple_diagram} shows a summary of the project pipeline. \\
+The Solar Dynamics Observatory (SDO) \citep{pesnell_solar_2012} provides the
+necessary data to learn such a mapping. SDO orbits the Earth with a suite of
+instruments including the Atmospheric Imaging Assembly
+\citep{lemen_atmospheric_2012} and the Helioseismic and Magnetic Imager
+\citep{scherrer_helioseismic_2012}. Pertinent to this research, the Atmospheric
+Imaging Assembly is capable of taking EUV images of the full solar disk at a
+wavelength of \SI{304}{\angstrom}, while the Helioseismic and Magnetic Imager is
+capable of taking full-disk magnetograms which measure the line-of-sight
+magnetic field. To learn a mapping between \SI{304}{\angstrom} EUV images and
+magnetograms, we train a cGAN which we hereafter call the `UV-GAN' using data
+from SDO. We then use the UV-GAN to generate `STEREO magnetograms' from STEREO-A
+\SI{304}{\angstrom} EUV images. Finally, these STEREO magnetograms are used in
+conjunction with farside seismic maps to train a new cGAN (Seismic-GAN) to
+generate farside magnetograms from seismic maps. Figure \ref{fig:simple_diagram}
+shows a summary of the project pipeline. \\
 \begin{figure}
   \centering
   \begin{tikzpicture}[node distance=4cm]
@@ -1766,6 +1652,114 @@ to generate magnetograms from farside seismic maps. Figure
   need for STEREO-A data.}
   \label{fig:simple_diagram}
 \end{figure}
+
+
+
+% , and full-disk dopplergrams which
+% measure the line-of-sight motion of the solar surface. As detailed in Section
+% \ref{sec:FHSM}, these dopplergrams can be used to generate farside seismic maps.
+% However, by nature of orbiting the Earth, SDO is unable to image the solar
+% farside except indirectly through farside helioseismic holography. Only three
+% active solar probes, Parker Solar Probe, Solar Orbiter and Solar-Terrestrial
+% Relations Observatory A (STEREO-A) measure the farside at any point in their
+% orbit, and only STEREO-A consistently takes full-disk solar images. While
+% STEREO-A does not produce magnetograms, the extreme ultraviolet imager onboard
+% images the Sun at a wavelength of \SI{304}{\angstrom}. 
+
+
+% However, not all hope is lost. The STEREO-A spacecraft is in a heliocentric
+% orbit that traverses the Sun relative to the Earth, allowing it to observe the
+% farside during some points of the orbit. While STEREO-A does not capture
+% magnetograms of the Sun, it does take EUV images which can be used to create
+% magnetograms by using a cGAN \citep{Kim2019}.\\
+
+% A small complication is that no data is available from when STEREO-A was
+% directly opposite the Earth (between March and July 2015), due to the
+% interference from the Sun. This limits the ability to get magnetograms that
+% exactly coincide with the farside seismic maps. To compensate for this, we can
+% match farside seismic maps with images taken by STEREO-A at an earlier (later)
+% time when it is behind (ahead of) the farside, such that the same `face' of the
+% Sun is imaged due to its rotation. After generating the magnetograms from the
+% STEREO-A EUV images, we can create a dataset of seismic maps with the
+% corresponding magnetogram (albeit with some time difference).
+
+
+
+% \begin{itemize}
+%   \item This is essential, as the only currently reliable way of imaging the solar
+%   farside is through farside helioseismic holography, with the generation of
+%   farside seismic maps.
+%   \item some research has been done on the correlation of seismic signatures and
+%   magnetic field (https://iopscience-iop-org.ezproxy.lib.monash.edu.au/article/10.1086/521592)
+%   \item research into detecting active regions from farside seismic maps ()
+% \end{itemize}
+
+
+
+% \begin{itemize}
+%   \item While many Earth-based solar observatories exist, space-based
+%   observatories can monitor the Sun without the limitation of
+%   atmospheric absorption.
+%   observing the Sun from the  Earth comes with many issues 
+%   \item The best way to image the Sun is directly from space-based telescopes.
+%   \item
+
+%   Therefore, an indirect
+%   measurement of the magnetic field must be employed to reliably predict extreme
+%   space weather events.
+  
+%   \citet{Kim2019} trained an image-to-image cGAN to generate artificial
+%   magnetograms from Extreme Ultraviolet (EUV) images. This training was done
+%   using pairs of \SI{304}{\angstrom} EUV images and magnetograms from SDO. This
+%   trained cGAN was then used to generate artificial farside magnetograms from
+%   similar STEREO-A EUV images.
+
+%   \item however, they used a saturation point of 100 Gauss, limiting the ability
+%   to predict strong magnetic fields, especially considering that active regions
+%   can have magnetic field strengths of thousands of Gauss
+
+%   \item Furthermore, STEREO-A is currently on the nearside coming towards the Earth
+%   and only has a partial view of the solar farside (see Figure
+%   \ref{fig:stereo_pos}).
+
+%   \item As such the only consistent observation of the Farside comes from
+%   farside helioseismic holography.
+
+%   \item To generate farside magnetograms from seismic images using an
+%   image-to-image cGAN, we need to construct a dataset of seismic
+%   image/magnetogram pairs. However, since we have no available farside
+%   magnetograms, the creation of this dataset presents its own issue. To
+%   overcome this issue, we first train an image-to-image cGAN to generate
+%   magnetograms from \SI{304}{\angstrom} solar EUV images.
+
+% \end{itemize}
+
+
+
+
+
+%
+%
+%
+%
+\chapter{Data Preparation}
+\label{chap:data}
+%
+%
+%
+%
+
+To generate farside magnetograms from farside seismic maps, we first create two distinct
+data sets
+\begin{enumerate}
+  \item a nearside dataset consisting of EUV and magnetogram image pairs, and
+  \item a farside dataset consisting of seismic map and EUV image pairs.
+\end{enumerate}
+As detailed in Chapter \ref{chap:training}, the farside EUV images will be used
+to generate magnetograms, which can then be used to train an image-to-image cGAN
+to generate magnetograms from farside seismic maps. 
+
+
 To maximise the effectiveness of each cGAN, we need to make the images consistent
 across each dataset such that the only differentiation between images is the
 change in solar activity. Furthermore, in each image-to-image translation, we
@@ -3290,42 +3284,34 @@ than having to produce a magnetogram from scratch. \\
 
 
 
-\chapter{Conclusion}
-A complex self-regenerating dynamo creates magnetic fields on both large and
-small scales throughout the Sun. This magnetic field gives rise to active
-regions on the surface of the Sun, which can lead to eruptive events such as
-flares or coronal mass ejections. Extreme space weather events such as these can
+\chapter*{Conclusion}
+Extreme space weather events such as solar flares and coronal mass ejections can
 be hazardous to our increasingly technological society, with the potential to
 cause mass blackouts, loss of communication, or failure of satellites.
 Currently, potentially hazardous active regions can only be identified \(\sim
-7\) days before directly facing the Earth due to the rotation of the Sun.
-Farside magnetograms offer a potential solution to this, allowing for global
-coverage of the solar magnetic field. However, with STEREO-A no longer giving a
-view of the farside, there is currently no reliable method to generate farside
-magnetograms. A combination of farside helioseismic holography and deep learning
-may present a solution to this through the generation of magnetograms from
-seismic maps.
+7\) days before directly facing the Earth due to the rotation of the Sun. He we
+report the ability to generate synthetic farside magnetograms using only seismic
+maps - farside images of the Sun created by helioseismic holography. While the
+magnetograms have mixed results when locating active regions, they predict an
+unsigned magnetic flux which peaks during times of intense solar activity.
 
+
+
+\appendix
 
 
 \section{Data availability}
-
-\section{Software}
-\begin{itemize}
-  \item Python
-  \item scikit image \cite{van_der_walt_scikit-image_2014}
-  \item numpy
-  \item imageio
-  \item pandas
-  \item tensorflow
-  \item PIL
-  \item sunpy
-  \item astropy
-  \item cv2
-  \item matplotlib
-  \item \url{https://github.com/chemron/honours}
-\end{itemize}
-
+The Joint Science Operation Centre (\url{jsoc.stanford.edu}) provided the SDO
+and seismic map data while the STEREO data was provided by the Space Radiation
+Lab at California Institute of Technology (\url{www.srl.caltech.edu/STEREO}).
+Python \citep{van_rossum_python_2009} was used throughout this work, with
+the following open source packages: scikit-image
+\citep{van_der_walt_scikit-image_2014}, NumPy \citep{harris_array_2020}, imageio
+\citep{silvester_imageio_2020}, Pandas \citep{team_pandas-devpandas_2020},
+TensorFlow \citep{martin_abadi_tensorflow_2015}, Pillow
+\citep{clark_pillow_2015}, SunPy \citep{mumford_sunpy_2020}, OpenCV
+\citep{bradski_opencv_2000} and Matplotlib \citep{hunter_matplotlib_2007}. All
+code used in this work is available a \url{github.com/chemron/honours}
 
 \bibliographystyle{mnras.bst}
 
