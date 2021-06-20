@@ -1805,10 +1805,10 @@ Our research required the following data sources:
   \item STEREO-A EUV images, and
   \item helioseismic holography maps.
 \end{enumerate}
-EUV images with a wavelength of \SI{304}{\angstrom} are produced by both the SDO
-and STEREO-A EUV telescopes and were therefore chosen for this project. As explained in
-Section \ref{sec:Sun}, light at \SI{304}{\angstrom} is emitted by the
-chromosphere - the atmospheric layer above the photosphere. \\
+% EUV images with a wavelength of \SI{304}{\angstrom} are produced by both the SDO
+% and STEREO-A EUV telescopes and were therefore chosen for this project. As explained in
+% Section \ref{sec:Sun}, light at \SI{304}{\angstrom} is emitted by the
+% chromosphere - the atmospheric layer above the photosphere. \\
 
 As SDO is orbiting the Earth, both the SDO EUV images and magnetograms were
 taken of the nearside. STEREO-A is instead in a heliocentric orbit, with an
@@ -2084,17 +2084,17 @@ is now necessary to take into account effects caused by each imaging instrument.
   \centering
   \subfigure[]{%
     \label{fig:heliographic}
-    \includegraphics[height=1.5in]{heliographic.png}%
+    \includegraphics[height=2in]{heliographic.png}%
   }%
   \qquad
   \subfigure[]{%
     \label{fig:helioprojective}%
-    \includegraphics[height=1.5in]{helioprojective.png}% 
+    \includegraphics[height=2in]{helioprojective.png}% 
   }%
 
-  \caption[]{\subref{fig:heliographic} shows an original seismic map with a
-  heliographic-cartesian projection. \subref{fig:helioprojective} shows the same
-  image after projection into helioprojective-cartesian coordinates.}
+  \caption[]{\subref{fig:heliographic} An original seismic map with a
+  heliographic-cartesian projection. \subref{fig:helioprojective} The same
+  seismic map after projection into helioprojective-cartesian coordinates.}
   \label{fig:projection}
 \end{figure}
 
@@ -2681,14 +2681,17 @@ magnetogram.
 \label{sec:train_seismic}
 
 We trained the Seismic-GAN with the same parameters as the UV-GAN using 4288
-seismic map/STEREO magnetogram image pairs. Once again images from November or
-December each year were set aside for evaluation. After this initial training,
-the Seismic-GAN was able to produce images that appeared physically realistic
-however did not seem to be correlated to the true magnetic field. This indicates
-that the cGAN did not actually learn any relationship between the seismic images
-and the magnetic field, and only learnt how to produce an image that `looked'
-like a magnetogram. An example of one of these generated magnetograms along with
-the equivalent STEREO magnetogram is in Figure \ref{fig:default}. \\
+seismic map/STEREO magnetogram image pairs. The maximum allowable time delay
+between the seismic maps and STEREO magnetograms was choosen to be seven days in
+order to maximise the quantity of data available. Once again images from
+November or December each year were set aside for evaluation. After this initial
+training, the Seismic-GAN was able to produce images that appeared physically
+realistic however did not seem to be correlated to the true magnetic field. This
+indicates that the cGAN did not actually learn any relationship between the
+seismic images and the magnetic field, and only learnt how to produce an image
+that `looked' like a magnetogram. An example of one of these generated
+magnetograms along with the equivalent STEREO magnetogram is in Figure
+\ref{fig:default}. \\
 
 
 %TODO: consider instead making this about decreasing the time delay
@@ -2700,31 +2703,43 @@ the equivalent STEREO magnetogram is in Figure \ref{fig:default}. \\
 %   \item 4288 for (7 days) default
 % \end{itemize}
 
-It was hypothesised that due to the 'blurriness' of the seismic images that a
-larger filter size should be used in the convolutional layers. It was thought
-that this could potentially improve the generated magnetograms allowing the
-generator to learn from the large scale structures rather than the small scale
-changes.\\
-
-The Seismic-GAN was retrained using a filter size of 16 (as opposed to 4), again
-using the same parameters as before. This resulted in mode-collapse, where
+In an attempt to improve these predictions, the maximum time delay was reduced
+to five days. %TODO: CHECK THIS
+% It was hypothesised that due to the 'blurriness' of the seismic images that a
+% larger filter size should be used in the convolutional layers. It was thought
+% that this could potentially improve the generated magnetograms allowing the
+% generator to learn from the large scale structures rather than the small scale
+% changes.\\
+% The Seismic-GAN was retrained using a filter size of 16 (as opposed to 4), again
+% using the same parameters as before.
+This left 2899 seismic map/STEREO magnetogram imapge pairs, which were used to
+retrain the Seismic-GAN. Unfortunately this resulted in mode-collapse, where
 the Generator found a local minimum by producing (almost) the same output
 image regardless of the input. Figure~\ref{fig:mode_collapse} shows two seismic
 maps and the corresponding synthetic magnetograms produced by this cGAN. Despite
 the two seismic maps being taken five years apart, both generated magnetograms
 appear to be identical.\\
 
-Finally, the Seismic-GAN was again trained with the smaller filter size, but now
-with a batch size of 8 as opposed to 1. This larger batch size means that each
-step taken through parameter space will be closer to the optimal step (see
-Section \ref{sec:learning}). Figure \ref{fig:batch} shows an example magnetogram
-generated using this Seismic-GAN. This time the GAN was able to predict some of
-the active regions, especially closer to the centre of the image where the
-seismic maps are more accurate. However, there was a consistent bias in the
-images, and the GAN struggled to detect active regions closer to the edge of the
-disk, and often predicted active regions near the edge that didn't exist. We
-analyse the performance of this cGAN in Chapter \ref{chap:results_and_analysis}.
+% Finally, the Seismic-GAN was again trained with the larger allowable time delay,
+% but now with a batch size of 8 as opposed to 1. This larger batch size means
+% that each step taken through parameter space will be closer to the optimal step
+% (see Section \ref{sec:learning}). Figure \ref{fig:batch} shows an example
+% magnetogram generated using this Seismic-GAN. This time the GAN was able to
+% predict some of the active regions, especially closer to the centre of the image
+% where the seismic maps are more accurate. However, there was a consistent bias
+% in the images, and the GAN struggled to detect active regions closer to the edge
+% of the disk, and often predicted active regions near the edge that didn't exist.
+% We analyse the performance of this cGAN in Chapter
+% \ref{chap:results_and_analysis}.
 
+Finally, the Seismic-GAN was again trained with the larger allowable time delay,
+but now with a batch size of 8 as opposed to 1. This larger batch size means
+that each step taken through parameter space will be closer to the optimal step
+(see Section \ref{sec:learning}). Figure \ref{fig:batch} shows an example
+magnetogram generated using this Seismic-GAN. This time the GAN was able to
+predict some of the active regions, albeit with mixed accuracy, and was unable
+to predict the shape and size of active. We analyse the performance of this cGAN
+in Chapter \ref{chap:results_and_analysis}.
 
 
 
