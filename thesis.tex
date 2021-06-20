@@ -128,15 +128,15 @@ height=1cm, text centered, draw=black, fill=gray!30, text width=3cm]
 Active regions on the surface of the Sun can lead to large eruptions that have
 the potential to cause significant hazards on the Earth. Images of the magnetic
 field on the Sun's surface, known as magnetograms, are a vital tool for
-predicting these events. While these are readily available for the hemisphere of
-the Sun facing the Earth, there is currently no reliable way to generate
-magnetograms for the opposite hemisphere. Consequently, potentially dangerous farside
-active regions may rotate into the view of Earth with little warning. Here we
-describe a method to generate synthetic farside magnetograms from a helioseismology data
-product using a deep learning method. While the synthetic magnetograms are
-unable to accurately predict the position or shape of active regions, they
-successfully predict sharp changes in the total unsigned magnetic field - a key
-predictor of solar eruptions.
+predicting these events. While these are readily available for the Sun's
+hemisphere that faces the Earth, there is currently no reliable way to
+generate magnetograms for the opposite hemisphere. Consequently, potentially
+dangerous farside active regions may rotate into the view of Earth with little
+warning. Here we describe a method to generate synthetic farside magnetograms
+from a helioseismology data product using a deep learning method. While the
+synthetic magnetograms are unable to accurately predict the position or shape of
+active regions, they successfully predict sharp changes in the total unsigned
+magnetic field - a key predictor of solar eruptions.
 
 
 % \chapter*{Acknowledgements}
@@ -184,7 +184,7 @@ loss of satellites, and hazardous levels of radiation exposure for astronauts
 Solar magnetograms, images of the magnetic field of the Sun, can be used to
 identify potentially high-risk active regions before they erupt
 \citep{bobra_solar_2015}. However, these magnetograms are only available for the
-`nearside': the hemisphere of the Sun facing the Earth. Due to the rotation of
+`nearside': the hemisphere of the Sun that faces the Earth. Due to the rotation of
 the Sun, active regions that emerge on the `farside' could be facing the Earth
 only seven days after becoming visible. A method for imaging the farside
 regions is necessary to identify dangerous farside magnetic activity before it
@@ -222,68 +222,8 @@ generate farside magnetograms from seismic maps, therefore allowing earlier
 detection of dangerous active regions.
 
 
-%TODO: Introduction (maybe borrow slightly from lit review)
+%TODO: finish Introduction
 
-
-%
-% Project outline from lit review
-%
-
-To train a cGAN to generate magnetograms from seismic maps, we require a
-training set consisting of seismic maps and the corresponding magnetograms.
-While the farside seismic maps are readily available\footnote{See
-  \url{jsoc.stanford.edu/data/farside}.}, corresponding magnetograms are
-not. However, not all hope is lost. The STEREO-A spacecraft is in a heliocentric
-orbit that traverses the Sun relative to the Earth, allowing it to observe the
-farside during some points of the orbit. While STEREO-A does not capture
-magnetograms of the Sun, it does take EUV images which can be used to create
-magnetograms by using a cGAN \citep{Kim2019}.\\
-
-A small complication is that no data is available from when STEREO-A was
-directly opposite the Earth (between March and July 2015), due to the
-interference from the Sun. This limits the ability to get magnetograms that
-exactly coincide with the farside seismic maps. To compensate for this, we can
-match farside seismic maps with images taken by STEREO-A at an earlier (later)
-time when it is behind (ahead of) the farside, such that the same `face' of the
-Sun is imaged due to it's rotation. After generating the magnetograms from the
-STEREO-A EUV images, we can create a dataset of seismic maps with the
-corresponding magnetogram (albeit with some time difference). This process is
-summarised in Figure \ref{fig:Project_summary}.\\
-
-
-
-\begin{figure}
-  \centering
-  \begin{tikzpicture}[node distance=5.5cm]
-    % \draw[help lines] (0,-5) grid (10,10);
-    \node (D) [cool, above=1.5cm] {SDO Dopplergram}; \node (P) [cool, right
-      of=D] {Farside \quad \quad \quad \qquad  seismic map}; \node (E) [cool]
-    {STEREO EUV image}; \node (M) [cool, right of=E, below=0.5cm] {STEREO
-      Magnetogram}; \node (F) [cool, right of=M, above=1cm] {Farside\\
-      Magnetogram}; \node (S) [cool, below=1.5cm] {SDO Magnetogram};
-
-    \coordinate (FF) at ([xshift=-1.5cm]F.west); % we collect the edges in
-    front of Q
-    \coordinate (MM) at ([xshift=-1.5cm]M.west); % we collect the edges in
-    front of Q
-
-    \draw [arrow] (D) -- node[anchor=south, text width=2cm] {Helioseismic
-      Holography} (P); \draw [arrow] (MM) -- node[anchor=south] {cGAN} (M);
-    \draw [line] (P) -|  (FF); \draw [line] (M) -|  (FF); \draw [line] (S) -|
-    (MM); \draw [line] (E) -|  (MM); \draw [arrow] (FF) -- node[anchor=south]
-    {cGAN} (F);
-
-  \end{tikzpicture}
-  \caption[Project Pipeline]{Summary of the project. A cGAN is trained on SDO
-    data to be able to generate EUV images. This is applied to STEREO EUV images
-    to generate STEREO magnetograms. These are used in conjunction with farside
-    seismic maps to train a new cGAN to generate magnetograms from seismic maps,
-    allowing constant surveillance of the farside magnetic field.}
-  \label{fig:Project_summary}
-\end{figure}
-
-
-% get some
 
 
 
@@ -524,8 +464,6 @@ generated by the solar dynamo.
 
 
 
-%
-% TODO: is this still a relevant title?
 \subsection{The Solar Magnetic field}
 %
 \label{sec:dynamo}
@@ -650,7 +588,6 @@ equation of magnetohydrodynamics is the ideal induction equation, which can be e
   \nabla \crossproduct \left(\bm{v}\crossproduct \bm{B}\right)\,.
   \label{eqn:ideal_induction}
 \end{align}
-% TODO: should I include this? probably not
 % A full derivation of the induction equation is shown in Appendix
 % \ref{sec:induction_eqn}.
 Any successful dynamo theory must therefore provide a
@@ -1605,7 +1542,9 @@ alike. While cGANs have already been used to generate solar magnetograms from EU
 research into how they could be used to generate magnetograms from seismic maps.
 
 
-%TODO: link
+\section{Producing magnetograms from farside seismic maps.}
+
+%TODO: write this section
 
 \begin{itemize}
   \item This is essential, as the only currently reliable way of imaging the solar
@@ -1625,8 +1564,6 @@ research into how they could be used to generate magnetograms from seismic maps.
 
 
 
-
-\section{Imaging the Sun}
 \begin{itemize}
   \item While many Earth based solar observatories exist, space-based
   observatories are able to monitor the Sun without the limitation of
@@ -1684,12 +1621,63 @@ research into how they could be used to generate magnetograms from seismic maps.
 
 
 
-\begin{itemize}
-  \item 
-\end{itemize}
+%
+% Project outline from lit review
+%
 
-% Lit review stuff
-% TODO: summary of what we will be doing
+To train a cGAN to generate magnetograms from seismic maps, we require a
+training set consisting of seismic maps and the corresponding magnetograms.
+While the farside seismic maps are readily available\footnote{See
+  \url{jsoc.stanford.edu/data/farside}.}, corresponding magnetograms are
+not. However, not all hope is lost. The STEREO-A spacecraft is in a heliocentric
+orbit that traverses the Sun relative to the Earth, allowing it to observe the
+farside during some points of the orbit. While STEREO-A does not capture
+magnetograms of the Sun, it does take EUV images which can be used to create
+magnetograms by using a cGAN \citep{Kim2019}.\\
+
+A small complication is that no data is available from when STEREO-A was
+directly opposite the Earth (between March and July 2015), due to the
+interference from the Sun. This limits the ability to get magnetograms that
+exactly coincide with the farside seismic maps. To compensate for this, we can
+match farside seismic maps with images taken by STEREO-A at an earlier (later)
+time when it is behind (ahead of) the farside, such that the same `face' of the
+Sun is imaged due to it's rotation. After generating the magnetograms from the
+STEREO-A EUV images, we can create a dataset of seismic maps with the
+corresponding magnetogram (albeit with some time difference). This process is
+summarised in Figure \ref{fig:Project_summary}.\\
+
+
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}[node distance=5.5cm]
+    % \draw[help lines] (0,-5) grid (10,10);
+    \node (D) [cool, above=1.5cm] {SDO Dopplergram}; \node (P) [cool, right
+      of=D] {Farside \quad \quad \quad \qquad  seismic map}; \node (E) [cool]
+    {STEREO EUV image}; \node (M) [cool, right of=E, below=0.5cm] {STEREO
+      Magnetogram}; \node (F) [cool, right of=M, above=1cm] {Farside\\
+      Magnetogram}; \node (S) [cool, below=1.5cm] {SDO Magnetogram};
+
+    \coordinate (FF) at ([xshift=-1.5cm]F.west); % we collect the edges in
+    front of Q
+    \coordinate (MM) at ([xshift=-1.5cm]M.west); % we collect the edges in
+    front of Q
+
+    \draw [arrow] (D) -- node[anchor=south, text width=2cm] {Helioseismic
+      Holography} (P); \draw [arrow] (MM) -- node[anchor=south] {cGAN} (M);
+    \draw [line] (P) -|  (FF); \draw [line] (M) -|  (FF); \draw [line] (S) -|
+    (MM); \draw [line] (E) -|  (MM); \draw [arrow] (FF) -- node[anchor=south]
+    {cGAN} (F);
+
+  \end{tikzpicture}
+  \caption[Project Pipeline]{Summary of the project. A cGAN is trained on SDO
+    data to be able to generate EUV images. This is applied to STEREO EUV images
+    to generate STEREO magnetograms. These are used in conjunction with farside
+    seismic maps to train a new cGAN to generate magnetograms from seismic maps,
+    allowing constant surveillance of the farside magnetic field.}
+  \label{fig:Project_summary}
+\end{figure}
+
 
 
 %
@@ -1802,7 +1790,6 @@ accounting for above effects.
 %           \item farside helioseismic holography maps
 %         \end{itemize}
 %   \item magnetograms measure the radial magnetic field, using filtegrams
-%   \item %TODO: expand on how hmi works http://soi.stanford.edu/papers/dissertations/giles/thesis/PDF/chapter03.pdf
 %   \item % https://link.springer.com/content/pdf/10.1007/s11207-011-9834-2.pdf
 %   \item figure showing positions and trajectory of stereo, sun earth, SDO and
 %         imaginary satellite for acoustic maps
@@ -1979,12 +1966,12 @@ the resultant image is a projection of the Sun onto the parallel tangent plane o
 celestial sphere.
 % gnomonic projection
 For both SDO and STEREO-A, the angle subtended by the solar disk is
-approximately \SI[]{0.3}[]{\degree} and so we can instead approximate the image
-to be projected against the celestial sphere itself.  %TODO: check 0.3
-This is a very good approximation, and at a distance of 1 AU (approximately the
-orbital radius of SDO and STEREO-A) the angles describing the Sun on the tangent
-plane match the angles on the celestial sphere to at least five significant
-figures \citep{thompson_w_t_coordinate_2006}. This projection is known as a
+approximately \SI[]{0.5}[]{\degree} and so we can instead approximate the image
+to be projected against the celestial sphere itself. This is a very good
+approximation, and at a distance of 1 AU (approximately the orbital radius of
+SDO and STEREO-A) the angles describing the Sun on the tangent plane match the
+angles on the celestial sphere to at least five significant figures
+\citep{thompson_w_t_coordinate_2006}. This projection is known as a
 helioprojective-cartesian projection, and measures positions in terms of the
 longitude \(\theta_x\) and latitude \(\theta_y\) of the celestial sphere.\\
 
@@ -2018,7 +2005,6 @@ image metadata. This process is less straight forward for the farside data.
 %   distance of 1 AU (approximately the orbital radius of SDO and STEREO), the
 %   angles on the tangent plane are the same as the angles on the celestial sphere
 %   to at least five significant figures \cite{thompson_w_t_coordinate_2006}
-%   %TODO: is this actually approximated like this?
 %   \item The helioprojective latitude and longitude of each pixel on the EUV and
 %   magnetogram images could be found using the metadata from each image.
 %   \item The instruments used to create these images are rotated relative to each

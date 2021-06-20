@@ -1,0 +1,581 @@
+ Abstract Active regions on the surface of the Sun can lead to large eruptions that have the potential to cause significant hazards on the Earth. Images of the magnetic field on the Sun's surface, known as magnetograms, are a vital tool for predicting these events. While these are readily available for the hemisphere of the Sun facing the Earth, there is currently no reliable way to generate magnetograms for the opposite hemisphere. Consequently, potentially dangerous farside active regions may rotate into the view of Earth with little warning. Here we describe a method to generate synthetic farside magnetograms from a helioseismology data product using a deep learning method. While the synthetic magnetograms are unable to accurately predict the position or shape of active regions, they successfully predict sharp changes in the total unsigned magnetic field - a key predictor of solar eruptions.
+
+
+Introduction
+
+Active regions are areas of intense magnetic field on the surface of the Sun. These are known to cause significant eruptions, such as coronal mass ejections or solar flares. These extreme events can eject fast-moving particles into interstellar space which have the potential to cause mass electrical blackouts, loss of satellites, and hazardous levels of radiation exposure for astronauts Mewaldt2005,council_severe_2008.
+
+Solar magnetograms, images of the magnetic field of the Sun, can be used to identify potentially high-risk active regions before they erupt bobra_solar_2015. However, these magnetograms are only available for the 'nearside': the hemisphere of the Sun facing the Earth. Due to the rotation of the Sun, active regions that emerge on the 'farside' could be facing the Earth only seven days after becoming visible. A method for imaging the farside regions is necessary to identify dangerous farside magnetic activity before it reaches Earth.
+
+Using a conditional generative adversarial network (cGAN), a deep learning technique useful for image-to-image translation, were able to create magnetograms based on extreme ultraviolet (EUV) images taken by NASA's Solar Terrestrial Relations Observatory (STEREO)(STEREO actually consists of two spacecraft, STEREO ahead (A) and STEREO behind (B), however, contact with STEREO-B was lost in 2016, and so the images used were taken by STEREO-A.). The orbit of STEREO-A allows it to move around the Sun relative to the Earth, and take EUV images on the farside during some points of its orbit, which can then be used to generate farside magnetograms. However STEREO-A currently only has a partial view of the farside, a view that will only decrease until it passes the Earth in 2023. By then, STEREO-A will be more than 16 years into its planned 2-year mission and may have lost contact with the Earth. Futhermore used a saturation point of 100 Gauss when generating these magnetograms. As many active regions have magnetic fields stronger than 1000 G, this severely limits the ability to predict extreme events.
+
+
+To avoid these issues, we instead employ a method to generate synthetic magnetograms from farside seismic maps - images that measure perturbations on the far hemisphere by computing the travel-time of acoustic waves, known as p-modes, that travel through the interior of the Sun. This generation is done using a cGAN similar to that used by, trained on 4288 farside seismic map/magnetogram pairs.
+
+As the precise relationship between these seismic maps and the magnetic field is unknown, a cGAN similar to that used by is first created to generate farside magnetograms from seismic maps, therefore allowing earlier detection of dangerous active regions.
+
+Background
+
+The Sun
+
+The formation of the Sun began around 4.6 billion years ago, with a giant molecular gas cloud approximately 65 light-years wide montmerle_solar_2006, which consisted of predominantly hydrogen, as well as helium and trace amounts of lithium.
+
+If one such cloud reaches a critical mass, the internal gas pressure will be unable to continue supporting it, causing the cloud to undergo gravitational collapse. This collapse leads to the formation of potentially thousands of stars. Under the right conditions, massive ( ), short-lived stars in this cluster may explode as supernovae, sending a shock through the molecular cloud at high speeds. This can trigger the creation of more stars, which may go on to also produce supernovae, giving rise to self-propagating star formation mueller_propagating_1976. The Solar System itself was likely formed in this process, as part of a since dispersed cluster with a mass of around williams_astrophysical_2010,zwart_lost_2009.
+
+As the Sun-forming fragment of molecular cloud collapses, it spins faster due to the conservation of angular momentum. The molecules within begin colliding at an increasing frequency, converting some of their kinetic energy to heat. The centre of this collapsing nebula collects the majority of the mass to become an increasingly hot and dense protostar, while the surrounding nebula flattens into a protoplanetary disc. This mass becomes the building material for the solar system, with the planets forming from the protoplanetary disk greaves_disks_2005.
+
+As the Sun continues to contract, the temperature and pressure in the core increases, eventually leading to fusion, at which point the Sun reaches it's current stage of life as a main-sequence star. Proton-proton chain reaction (pp chain) dominates this fusion process, accounting for approximately of the Sun's energy, while the CNO cycle generates the remaining of the energy. The pp chain process can be summarised as
+
+where Equations and must each occur twice to create enough for Equation to occur. The energy released by the fusion process comes in the form of gamma-ray photons, heating the Sun from the inside, giving rise to the luminous hot ball of plasma that we observe today.
+
+
+Observation of the Sun is typically done through the use of either ground or space-based telescopes. The Sun's atmosphere can be imaged at a range of depths by viewing the Sun at different wavelengths, due to the variation in the Sun's temperature and composition. Of particular note in this thesis is light with a wavelength of , which is emitted in the chromosphere (the layer of atmosphere between the photosphere and corona) by at a temperature of around herbert_friedman_solar_1962.
+
+While electromagnetic radiation is effective for imaging the solar atmosphere, past the photosphere (the Sun's visual surface, and henceforth referred to as the surface) the Sun is no longer transparent to light, and so information about the nature of the Sun below this surface must be inferred indirectly.
+
+Helioseismology
+
+In,noticed oscillations of the Sun's surface varied with a period of minutes. While initially assumed to be surface flows from solar granules, further work found that the observed motion was due to the superposition of resonant modes of oscillation in the Sun. These oscillations were later found to be a surface signature of pressure-modes (p-modes); standing waves generated by the turbulent convective motion a few hundred kilometres below the surface. Pressure is the dominant restoring force of p-modes (hence the name), effectively making them sound waves (albeit at a far lower frequency than what is audible), with frequencies ranging between 1 and 5 mHz. Unless propagating exactly radially, these acoustic waves are continuously refracted as they travel deeper into the Sun due to the changing speed of sound, eventually making their way back to the surface. When they reach the surface, they are reflected back towards the centre, effectively trapping them in a resonating cavity.
+
+In addition to p-modes, two other types of modes exist in the Sun: gravity-modes (g-modes) and surface gravity modes (f-modes). G-modes are confined to the convectively stable radiative zone (from the core to a radius of ), with buoyancy as the restoring force. F-modes also have buoyancy as their restoring force, but instead travel along the surface of the Sun.
+
+Each mode can be characterised by three quantum numbers: the radial order, , the angular degree (), and the azimuthal order m ( ). Each mode has a resonant frequency which increases monotonically with , and can be measured by taking a Fourier transform of the observed oscillations. In spherically symmetric conditions, the frequencies of these modes would be independent of , however, this is not observed, with the internal rotation of the Sun breaking this symmetry. P-modes make up the high-frequency modes (with ), while g-modes make up the low-frequency modes (with ). F-modes are then the intermediate mode, with . Figure shows a power spectrum of the p-mode oscillations, as a function of frequency and angular degree.
+
+
+hsm_power Power spectrum of the Sun's p-mode oscillations. Each ridge corresponds to a different value of . Image by Warrick Ball, using data from the Michelson Doppler Imager (MDI) aboard the Solar and Heliospheric Observatory (SOHO). Distributed under a CC BY-SA 4.0 license. sound_speed The speed of sound () inside the Sun as a function of the fractional radius ().
+
+These modes are influenced by the structure and gravity inside the Sun, as well as the large scale flows and magnetic fields. When the perturbations from these resonating waves reach the surface of the Sun, the motion creates surface oscillations, while the local change in pressure causes a fluctuation in the temperature. Detecting the modes can therefore be achieved by observing either the luminosity or the Doppler shift.
+
+The goal of helioseismology is to observe these modes and deduce the causal factors that influence them, thereby obtaining information about the solar interior. While g-modes offer the potential to probe the inner core of the Sun, the amplitude of the resulting perturbations will be very low by the time they reach the surface. Consequently, the detection of g-modes has so far proved elusive, with only a few possible exceptions (for example,). P-modes on the other hand, while unable to probe as deep into the Sun, have proven much easier to observe and examine.
+
+By measuring the frequency of p-modes in the Sun, helioseismology can be used to determine the speed of sound as a function of the radius, christensen-dalsgaard_speed_1985, which can in itself be used to determine the temperature as a function of the radius, , due to the relationship
+
+where is the gas constant, is the adiabatic exponent, and is the mean molecular weight. The 'bump' seen in Figure around indicates the point where the Sun becomes convectively unstable, and the dominant form of energy transport transitions from radiation to convection, allowing helioseismology to determine the precise depth of the convective zone christensen-dalsgaard_speed_1985. Similarly, the dip in the sound speed at the centre of the Sun is a signature of the fusion in the core, which gives insight into both the current fusion process and the history of nuclear reactions.
+
+From the frequency splittings of p-modes, it is possible to determine the angular velocity of the Sun as a function of radius and latitude schou_helioseismic_1998. Figure shows the result of such a process, based on Doppler data from the Michelson Doppler Imager (MDI) aboard the Solar and Heliospheric Observatory (SOHO). From this process, it is now known that the convective zone is differentially rotating with rotation rates that vary with latitude. Within the convective zone, the period of the rotation is approximately 25 days at the equator and approximately 35 days near the poles. This is in agreement with surface measurements of the rotation based on the motion of sunspots across the Sun.
+
+Beneath the convection zone in the radiative zone and core, the Sun appears to exhibit almost solid-body rotation. However, the uncertainties on these measurements become much greater towards the core. There is a thin layer ( thick) separating the convective and radiative zone which experiences a large shear due to the rapid change of rotation spiegel1992. This transition region is called the tachocline and is widely thought to be the location where the Sun's large scale magnetic fields are generated by the solar dynamo.
+
+internal_rotation The rotation of the convective zone in the Sun, as inferred by global helioseismology . tacholine_rotation The rotation rate as a function of latitude and depth, showing differential rotation in the convective zone and nearly uniform rotation in the radiative zone. Image Courtesy of Global Oscillation Network Group (GONG).
+
+The Solar Magnetic field
+
+gong.nso.edu
+
+By using the Zeeman effect-the splittings of the spectral lines in the presence of a strong magnetic field-we can observe magnetic fields on the surface of the Sun. This was first done by, who noticed the intense magnetic fields of sunspots, and presently can be used to make full-disk solar magnetograms, such as the one shown in Figure .
+
+
+Magnetogram taken by the Solar Dynamics Observatory's Helioseismic Magnetic Imager on 17 November, 2014. Image courtesy of NASA.
+
+These sunspots are now known to be surface manifestations of a large scale solar magnetic field consisting of a poloidal (north-south) and toroidal (east-west) component originating inside the Sun. suggested that these large scale magnetic fields are generated by the inductive motion of the highly conductive plasma, as part of a solar 'dynamo'. For such a dynamo to exist, it must convert the kinetic energy of the differentially rotating plasma into a self-regenerating magnetic field, with the poloidal component somehow creating and strengthening the toroidal component and vice versa.
+
+While there are currently many dynamo theories (see charbonneau_dynamo_2020 for example), there is currently no consensus as to the exact mechanism of the dynamo. Perhaps the biggest clue for finding a dynamo model comes from sunspot observations. A successful dynamo model must be able to replicate the almost 400 years of scientific observations from galilei_sunspots_2010 to the present day. Importantly, such a model must account for the following phenomena:
+
+Sunspot activity takes place over 11 year 'solar cycles', where the size and number of sunspots on rises to a 'solar maximum', then falls to a 'solar minimum'. Figure shows this solar cycle over the last 400 years, including the 'Maunder Minimum', a period of around 70 years which saw very few sunspots.
+
+As can be seen in Figure , the location of sunspot formation is restricted to two latitudinal bands approximately wide, mirrored each side of the equator. These bands converge toward the equator over the course of the solar cycle, ultimately covering around in latitude before starting over again in the next cycle . This is known as Sporer's law.
+
+Sunspots tend to form in pairs of opposite polarity. Over the course of the solar cycle, the polarity of the leading sunspots of each pair (with respect to the rotation of the Sun) is typically the same across the hemisphere, and opposite to the leading sunspots in the opposite hemisphere . For example, in solar cycle 24 (2008 to 2019) leading sunspots typically had a negative polarity in the northern hemisphere and a positive polarity in the southern hemisphere, while in solar cycle 25, this is reversed. This is known as Hale's law and is shown in Figure , over the duration of four solar cycles.
+
+Large sunspot pairs often emerge with a systematic tilt, with the leading sunspot closer to the equator than the trailing sunspot . This is known as Joy's law.
+
+
+sunspot_area The number of sunspots observed on the solar surface as a function of time, over the course of the past 400 years. Image by Robert A. Rohde, as part of the Global Warming Art project. distributed under a CC BY-SA 3.0 license. butterfly diagram A 'Butterfly diagram' of the Sun, showing the evolution of sunspots over the course of many solar cycles. Image courtesy of NASA. mag_butterfly A Butterfly diagram of the Sun, this time showing the magnetic field of the sunspots. Image courtesy of NASA.
+
+Furthermore, as can be seen in Figure near the poles, the sign of the poloidal magnetic field flips in the middle of each solar cycle, near the point of maximum solar activity, while the sign of the toroidal field flips between each cycle, as indicated by Hales law. As such, the solar dynamo must complete a full cycle over the course of 22 years (two solar cycles), with the poloidal () and toroidal () fields been generated as follows:
+
+where () and () are the signs of the magnetic fields.
+
+Putting even more constraints on a dynamo model, showed that 'An axis-symmetric magnetic field cannot be maintained by dynamo action'. Subsequent 'antidynamo' theorems by and others have concluded that a dynamo powering the Sun's magnetic field must not possess a high degree of symmetry and so necessarily must be the result of a more complex mechanism.
+
+
+To find such a mechanism, we require an understanding of the interplay between the motion of the highly conductive plasma and the changing magnetic field. Magnetohydrodynamics gives us this necessary insight by combining the equations of fluid dynamics with that of electromagnetism. Perhaps the principle equation of magnetohydrodynamics is the ideal induction equation, which can be expressed as
+
+
+Any successful dynamo theory must therefore provide a velocity field, , and a magnetic field, , that satisfies this equation.
+
+Using the induction equation it can be shown that in the limit of infinite electrical conductivity, magnetic field lines are 'frozen' into the Sun's plasma and must move along with it. The consequence of this is a continuous struggle between the magnetic field and flow of the plasma, where strong magnetic fields will pull on the plasma, while strong currents will pull on the magnetic field. These magnetic field lines may therefore organise into 'flux tubes': cylindrical boundaries along magnetic field lines that move with the plasma.
+
+As depicted in Figure (b), because of this effect, as well as the differential rotation of the Sun, the plasma pulls on initially poloidal field lines more strongly the closer they are to the equator. After many rotations, this results in the twisting of the poloidal field lines into toroidal ones (Figure c). This process is called the The depth where this mechanism occurs is subject to some debate, with dynamo theories placing it in either the tachocline (for example deluca_dynamo_1988) or the convective zone (for example chen_emergence_2017). The accounts for the first half of the dynamo mechanism () and is relatively well understood.
+
+
+While the mechanism for generating a poloidal field from a toroidal field ( ) is much more contentious, it is very likely tied to the formation and evolution of sunspots. The current leading model of sunspot formation was first introduced by. In this model, a toroidal flux 'rope' consisting of many individual flux tubes becomes buoyant and rises to the surface of the Sun. The balance of pressures inside and outside this flux rope is given by,
+
+where is the internal magnetic pressure, is the internal gas pressure and is the external gas pressure. By definition of the respective pressures, this can be formulated in terms of the densities as follows:
+
+where is the magnetic permeability, is Boltzmann's constant, is the mean molecular weight, and are the internal and external density, and and are the internal and external temperatures.
+
+As the first term on the right-hand side of Equation is always positive, we have:
+
+If the internal and external temperatures are equal, the internal density will be less than the external density. Furthermore, if the flux rope is rising through the Sun, it will typically have a higher temperature than its surroundings as it comes from a hotter region of the Sun. Therefore, Equation reduces to:
+
+and so the flux rope will experience an upward buoyancy force. This buoyancy force competes with a magnetic tension in the flux rope, causing it to stretch as rises.
+
+As such a flux rope begins to rise, it may begin to twist due to cork-screw-shaped 'cyclonic' vortices in the turbulent flow in the convective region. The Coriolis effect causes vortices in the northern hemisphere to spin in the opposite direction to those in the southern hemisphere due to the rotation of the Sun, analogous to how cyclones behave on the Earth. These twisting flux ropes would break off from the toroidal field, and form loops in the meridional plane as can be seen in Figure (c). Importantly, this process would break the axis symmetry prohibited by the aforementioned antidynamo theorems, and also explain the equatorial tilt that constitutes Joy's law. The net effect of these loops around the Sun would be to create a toroidal current according to Ampere's law, which in turn would contribute to the large scale poloidal magnetic field. This process was first introduced by and comprises the In principle, a combination of the and the can complete the dynamo process shown in Equation . As the flux rope breaks the surface, it forms an '-loop' and creates an active region with sunspots of opposite polarity at each entry point.
+
+While the stability and rise of these flux ropes is now reasonably well understood, the process in which the large scale magnetic field produces the necessarily concentrated toroidal flux ropes remains unknown. However at the very least, if we assume that sunspots rise approximately radially and that a stronger toroidal field generates stronger and more frequent sunspots, the location and strength of sunspots can provide a map of the toroidal magnetic field. Under this assumption, 'Butterfly' diagrams, such as the ones shown in Figures and , provide a useful tool for mapping the long term trends and of the toroidal magnetic field throughout each solar cycle, aiding numerical simulations.
+
+
+(a) An initial poloidal magnetic field. Due to the this field is pulled in the toroidal direction (b), eventually creating a toroidal field (c). This toroidal field results in the formation of sunspots (c), which in turn generate the large scale poloidal field (d).
+
+Another process that contributes toward the poloidal magnetic field is the Babcock-Leighton mechanism. Due to the tilt observed in Joy's-law, some component of the magnetic dipole in a bipolar-sunspot-pair is in the north-south direction. As the sunspot pair disperses over time, the surface flows release some amount of this dipole moment, contributing to the overall poloidal field babcock_topology_1961,leighton_transport_1964. This can be seen in Figure , near the top of each hemisphere. In principle, this can in itself lead to a working dynamo, by generating the poloidal field from the toroidally generated sunspots.
+
+
+Despite many years of research into the solar dynamo, there is much that still remains unclear, with many questions remaining. In particular, this includes:
+
+What mechanism is predominantly responsible for converting a toroidal field to a poloidal one?
+
+Is the Babcock-Leighton mechanism a crucial part of the dynamo mechanism, or just a side-effect of decaying Sunspots?
+
+How constraining is the butterfly diagram? I.e can the structure of the toroidal field be directly inferred from the distribution of the Sunspots?
+
+Is the tachocline a crucial part of the dynamo mechanism?
+
+What is the cause of periods such as the Maunder Minimum? A better understanding of the dynamo will lead to a better understanding of the Sun and all stars in general. Furthermore, a stronger grasp of the working of the solar magnetic field, and therefore of sunspots, will be critical in our ability to predict and prepare for extreme space weather events.
+
+Space weather
+
+Magnetic activity on the surface of the Sun can at times cause large eruptions on the solar surface, potentially emitting high-intensity x-rays or ejecting plasma out into the heliosphere and beyond. While ordinarily harmless, extreme space weather events can have major consequences, for instance hazardous radiation exposure to astronauts or significant damage to terrestrial electricity grids. The most extreme of these space weather events are solar flares and coronal mass ejections.
+
+
+These eruptive events occur in active regions, which as the name suggests, are magnetically active regions of the Sun that typically consist of one or more sunspots. Like the bipolar sunspot pairs discussed in Section , these active regions are generated by the toroidal magnetic field and rise through the convective layer of the Sun as flux ropes. As these flux ropes rise, they can twist and kink, often forming knots, leading to the formation of the more complex active regions. As they surface, these newly formed active regions undergo horizontal expansion, known as 'pancaking', releasing some of the accumulated magnetic energy toriumi_flare-productive_2019.
+
+Any current in an active region is unable to dissipate efficiently due to the high conductivity of the plasma. This leads to the build-up in magnetic energy, as the forces of magnetic pressure, magnetic tension, and gravity cause the flux ropes in an active region to twist and shear. If the active region is unable to disperse this energy, this ultimately results in a magnetic reconnection event, where twisted field lines pointing in opposite directions converge and explosively realign causing a large release of built-up magnetic energy. This eruption pushes the flux rope into the higher atmosphere, carrying with it much of the overhead coronal magnetic field. If the flux rope is ejected successfully, it forms the magnetic structure of a coronal mass ejection, propelling particles and electromagnetic radiation outwards into space. This process is known as the 'CSHKP' model, named after the leading researches behind it . A visual depiction of the CSHKP model is shown in Figure .
+
+
+The release of energy in these magnetic reconnection events creates a localised flash of intense light in the corona, constituting a solar flare priest_solar_1984. X-rays from such a flare can heat the outer atmosphere of the Earth and increase the drag on satellites at low orbits Oliveira2019, while energetic protons released by a solar flare can pose a radiation hazard to potential astronauts . This is of particular relevance now, with the recent announcement of planned missions to land astronauts on the Moon again by 2024, and Mars in the 2030s.
+
+
+Coronal mass ejections pose an even greater hazard to human activity. When a coronal mass ejection collides with the Earth's magnetic field, it creates a geomagnetic storm. This deforms the magnetic field and can induce currents in conductive materials on the Earth in an extreme event. While this has only a small effect locally, over large scales (such as the long power lines connecting cities), the cumulative effect can be potentially catastrophic. The Carrington Event in 1859 carrington_description_1859, hodgson_curious_1859 was the largest such event ever recorded, causing disruptions to North American and European telegraph systems, with some telegraph operators experiencing electric shocks (National Research Council, council_severe_2008). A smaller geomagnetic storm was observed in 1989 and resulted in communication blackouts due to radio interference, loss of control from multiple satellites, and mass power outages in Quebec odenwald_day_2015. Due to the large scale electrical grids currently in place around the world, an event of similar magnitude to the Carrington Event has the potential to overwhelm electrical grids on a much greater scale. The National Research Council (council_severe_2008) estimated that the recovery of a severe geomagnetic storm would take between 4 and 10 years, and cost between one and two trillion USD in the first year alone.
+
+
+Prediction and early warning of potentially eruptive active regions is therefore vital due to the potential hazards. To this end, it is helpful to classify the different types of active regions. The commonly used Mount Wilson classification is as follows:
+
+: a unipolar sunspot group, : a bipolar sunspot group with a clear division between the polarities, : a complex active region where no single continuous line can separate the polarities, and : a complex active region with no simple division between the polarities. The qualifier is used when at least two sunspots of opposite polarity have umbrae (the centre of the sunspot) separated by less than two degrees.
+
+The probability of eruption increases with the complexity and size of the active region in the order listed above. This relationship is clearly seen in Figure . Modern predictive methods typically use machine learning, based on a set of chosen parameters, to determine the probability of an active region eruption, and therefore identify potentially dangerous active regions. For example, bobra_solar_2015 used a machine learning algorithm, called support vector machines, to classify active regions as either flaring or non-flaring. This was based on magnetograms taken by the Solar Dynamics Observatory's Helioseismic magnetic imager, using 25 different features of the active region, such as the area and the total unsigned magnetic flux.
+
+
+However methods such as this have a severe limitation in that any active region will only be visible for days before directly facing the Earth due to the rotation of the Sun. To give more advanced warning of potentially dangerous active regions, a method of imaging the farside magnetic field is needed.
+
+
+flare_occurance The peak flare intensity compared to size, for the different active region classes. flare_model The CSHKP model for a solar flare with a coronal mass ejection. The black circles represent regions that can be directly probed with hard x-ray observations.
+
+Farside Helioseismic Holography
+
+In Section we discussed global helioseismology, the study of the precise frequencies of the Sun's resonant modes. This can be used to infer properties about the Sun, such as structure or rotation, as a function of radial depth and latitude, but gives no details about how these aspects may change with latitude. Local helioseismology on the other hand instead looks at spatially compact anomalies in the observed p-modes, caused by some disturbance braun_absorption_1988. Where global helioseismology is analogous to 'hearing' the Sun, local helioseismology is analogous to 'seeing' the Sun. Of particular interest in this thesis is farside helioseismic holography, which uses the interaction between p-modes and active regions to map the farside of the Sun.
+
+
+A computational model of the Sun's surface and interior must first be constructed for any helioseismic holography study. Any acoustic sources or waves in this model are expressed in terms of an acoustic field, . Disturbances in propagate outwards with 'bubble'-like wavefronts (see Figure ). The only part of this model that can be directly observed is the disturbances that reach the surface, . A record of these surface disturbances, , is then applied to the model. This model is then run backwards in time, giving a time-reversed acoustic field, (also called the 'coherent acoustic egression'), which gives a measure for the disturbances on a 'sampling surface' that travels backward in time with the acoustic egression through the solar interior (see Figure ). The acoustic power on this surface is then given by .
+
+
+skips Depiction of p-modes propagating through the solar interior. egression Disturbances on the solar surface (dark blue) can be computationally propagated backward in time to a sampling surface. The acoustic power is then given by the squared magnitude of this coherent acoustic egression.Lindsey2011
+
+Farside helioseismic holography uses this same concept but also takes advantage of the diffraction of the p-modes that occurs in the Sun. The diffraction of sound waves when crossing between two different mediums is given by Snell's law,
+
+where and are the speed of sound and the angle from the normal in the initial medium, while and are the speed of sound and angle from the normal in the medium the wave travels to respectively(The normal referenced is the normal to the surface separating the two mediums,). Rearranging this in terms of a constant , we get
+
+Approximating the Sun as spherically symmetric, with a sound speed dependent only on the radial distance from the centre, , Snell's law transforms to
+
+with the initial condition, , and the new constant,
+
+The consequence of this is that p-modes travel in the curved paths shown in Figure , 'skipping' when they reach the surface due to the specular reflection. Figure illustrates how the acoustic waves can travel to (green arrows) and from (yellow arrows) the 'focus' on the farside.
+
+Active regions are strong absorbers of acoustic waves unless the waves approach in a direction close to the normal of the surface , as is the case of those with skip distances like that of the ones shown in Figure . However, while they do not absorb these approximately normally incident waves, they do impart a phase shift of a fraction of a radian upon them, which in turn, causes the echo to reach the nearside a few seconds earlier than it otherwise would have. This may be due to a physical depression observed in sunspots, called the Wilson depression.
+
+To detect farside active regions, the p-modes travelling from the nearside to the focus are compared to the echo that comes back to the nearside. While the echo is modelled with coherent acoustic egression introduced above (), the waves travelling toward the farside are modelled with 'coherent acoustic ingression', , which is the time-forward equivalent. By comparing these two for various pupils, a map of the phase-shifts and therefore a map of potential farside active regions can be created. Composite images of the farside seismic map and the corresponding nearside magnetograms are shown in Figure .
+
+The spatial resolution of this technique is limited by the Abbe diffraction limit,
+
+where is the wavelength of the p-mode and is the 'opening angle' of the focus (see Figure 7a). For a double skip, such as the one shown in Figure , we have an opening angle of , which gives a spatial resolution of of the Sun's surface. For a single skip, we have , giving the significantly worse spatial resolution of .
+
+
+pupil Diagram showing the paths taken by the wavefronts travelling to the focus (green) before echoing back from the focus (yellow) .
+
+phase_map Images showing both a farside seismic map created using farside helioseismic holography (yellow) and a nearside magnetogram (blue). As the Sun rotates, active regions can be seen moving from the farside to nearside. The seismic map is measured by the time perturbation, caused by potential active regions.
+
+In practice, farside helioseismic holography has been used to produce farside seismic maps every 12 hours by Stanford's Joint Science Operations Center(See jsoc.stanford.edu/data/farside.). Both and are calculated over 24 hour (overlapping) periods, using dopplergrams taken by the Solar Dynamics Observatory's Helioseismic Magnetic Imager (SDO/HMI). This process takes hours, due to the hour travel time of the acoustic waves.
+
+
+While there is a known correlation between the seismic signatures and the magnetic flux of an active region, a direct relationship between the phase shift and the magnetic field is unknown, preventing accurate prediction of potentially dangerous active regions. However, due to the large amounts of data available, recent machine learning techniques offer the potential of finding such a relationship.
+
+Deep learning
+
+Machine learning is the process of a computer algorithm improving at some task through 'experience'. In supervised learning (as opposed to unsupervised learning), this task is to learn some function based on training examples, each consisting of an input, , and a corresponding desired output, . After training, the resulting function would ideally be able to take a new input, , and return an appropriate output, .
+
+In supervised deep learning this function takes the form of an artificial neural network, essentially a large composite function:
+
+where each function is a 'layer' with parameters , and is the total number of layers. The 'deep' in deep learning refers to the large number of layers between the input and output. Training is therefore the process of tuning the parameters of the neural network until it behaves as desired.
+
+The past two decades have seen significant improvements in computational capability and the availability of large data sets. Recent improved deep learning algorithms have capitalised on this, using their immense flexibility to tackle problems such as object detection or speech recognition. To understand how these algorithms work, we must look deeper into the structure of neural networks.
+
+
+Structure
+
+A neural network consists of many connected 'neurons': nodes in the network each holding some value, originally inspired by biological neurons in the brain mcculloch1943. In 'feedforward' neural networks, these neurons are organised into sequential layers as described above. The data is processed through the neural network beginning at the input layer, with the outputs of one layer (the neurons) becoming the inputs to the next, as shown in Figure . These layers can take a variety of forms.
+
+Input The first layer of a neural network is the input, which has neurons with values that directly correspond to the data. This is often organised into either a one-dimensional array or a two-dimensional matrix, with the latter primarily used when analysing images, where each neuron in the matrix would correspond to a pixel. Optionally, multiple 'channels' can be used, which adds another dimension to the data. This is typically used if the input is an RGB image, in which case each pixel would have three values (one for the intensity of each colour). In this case, three channels would be used, with each channel representing the intensity of the given colour.
+
+Data is often sent into the network in 'batches'. This adds another dimension to the input corresponding to the size of the batch. This has the advantage of allowing much of the data to be fed through in parallel.
+
+nn A feedforward neural network with a single hidden layer. Image courtesy of Wikimedia commons. perceptatron A diagram of a single perceptron with inputs, , weights, , a bias, , an activation function,, and output, . Image courtesy of Dr Andrew Casey. https://upload.wikimedia.org/wikipedia/commons/4/46/Colored_neural_network.svg
+
+
+Fully Connected Layer Neurons in a fully connected layer are modelled after the perceptron, originally conceived by, and take the form shown in Equation . This consists of a weighted sum over the inputs , with some bias, , and an activation function, , as shown below reagen2017:
+
+This can be represented with a graph such as the one in Figure . The use of the activation function was originally inspired by the activation of organic neurons, with the idea that the artificial neuron is only 'activated' when the weighted sum of the inputs is high enough. Rectified Linear Units (ReLUs) are perhaps the most widely used activation function in modern neural networks and have been shown to outperform traditional sigmoid activation functions. Figure shows the sigmoid (left) and ReLU (right) activation functions.
+
+Comparison of ReLU (left) and sigmoid (right) activation functions. In a fully connected layer all neurons from one layer are connected to all neurons in the next, hence the name. An example of one such fully connected layer shown in Figure . A single layer, , in a neural network can be represented by a matrix of weights, , a vector of biases , and the activations (value of the neurons) of that layer . The activations of the next layer, are then given by
+
+In component form, this is equivalent to
+
+where would be the input of the network, would be the output of the network, and is the number of layers. In this case, the weights and biases would be the parameters of the model, i.e. *
+
+The first two (fully connected) layers in a neural network represented as a graph. Each circular node represents a neuron, while the arrows and weights show the connections between them. Convolutional layers Convolutional layers in neural networks are typically (although not necessarily) used when analysing inputs with more than one dimension, such as images or videos. A neural network consisting of mostly convolutional layers is called a convolutional neural network.
+
+
+hubel_receptive_1959 found that neurons in a cat's visual cortex fired in response to properties of the sensory inputs, such as edges. This was the inspiration for early convolutional architectures fukushima_neocognitron_1980. Unlike fully connected layers, the neurons in a convolutional layer are organised into tensors of two or more dimensions. This is then convolved with a 'filter': a tensor that takes up a small portion of the input. This filter is moved across the input in steps or 'strides' of some size, and the dot product between the filter and the section of input is computed, which then makes up part of the input for the following layer (see Figure ). This gives a measure for the difference between the filter and the input area, with the idea that the filter will pick up some feature from the input, for example, an edge in an image. This process typically reduces the size of inputs between layers, and in this case, is called downsampling. If the input is first 'padded' with extra zeros, the same process can increase the size of the inputs between layers in which case the process is called upsampling or deconvolution (see Figure ). Furthermore, multiple filters may be used to create multiple output layers or equivalently multiple slices of a higher-dimensional output layer. For example, if two different filters were used on a two dimensional () input, the output would be a () layer with the last dimension corresponding to each of the two filters. It should be noted that convolutional layers are equivalent to a fully connected layer with specific weights held at zero and non-zero weights (which correspond to a filter) are copied such that the same filter is applied across the image (see again Figure ). This mathematical equivalence means that the process of training a network is the same regardless of whether convolutional or fully connected layers are used.
+
+[convolution Diagram of a convolutional layer upsampling Diagram of an upsampling layer]convolution Diagram of a convolutional layer showing the input (blue) and the output (green). A filter is applied to a subset of the input (shaded blue) and the dot product between the entries of the filter and input is returned (shaded green).
+
+upsampling Diagram of an upsampling layer, showing the input (blue) with padding (white) and the output (green). Convolution is applied to this in the same way as in convolution, however the padding allows for the output to be larger then the original input.
+
+Both images generated from: github.com/vdumoulin/conv_arithmetic.
+
+Learning Typically a neural network learns its parameters, , via supervised learning. The network is first trained using known input/output pairs , and the model can then be used for inference to estimate the output () of new inputs (). This can be represented as follows: * This training is typically done by using gradient descent, an iterative method for finding a local minimum in a differentiable function. At each iteration, beginning at some starting point, the gradient at the current point is calculated, and a step is taken in the direction of the negative of the gradient i.e. a step in the direction of the sharpest decline. A depiction of gradient descent is shown in Figure using a contour map. This has been applied to neural-network-like models since the 1960s bryson1962steepest, where the differentiable function in this case is the cost function, , a function in parameter space which gives a measure for the distance between the outputs of the current model and the desired outputs. By finding a minimum of this cost function, we effectively find a point in parameter space with minimal distance between the actual outputs and the desired outputs, i.e. we have a good model(This isn't actually guaranteed, as gradient descent only finds a local minima, and not necessarily the global minimum.).
+
+A cost function can be calculated for the individual input/output pairs . The total cost function, , is then given by the average of the cost functions for all input/output pairs in the data, as shown in Equation , where is the total number of input/output pairs in the training data.
+
+These cost functions will often take the form of either the quadratic cost, also known as the mean squared error, (Equation ), or the cross entropy(Usually cross entropy is used when the outputs can be represented as probability functions, i.e. and ) (Equation ).
+
+By minimising the cost function using gradient descent, the neural network ideally learns the parameters that give a sensible output. To use traditional gradient descent, the gradient of the total cost function would be calculated at each step, requiring all the training data to be fed through the network before taking a single step in parameter space, in addition to increasing the computational cost of calculating the gradient.
+
+To avoid this, stochastic gradient descent is typically used, where an estimation of the gradient is used instead. This estimation of the gradient is calculated by only looking at a subset of the data (a batch) and finding the gradient of the average cost function of this batch, i.e. finding the gradient of:
+
+where is the number of input/output pairs in the batch. Backpropagation rumelhart_learning_1986 is typically used to calculate the gradient of this average cost function.
+
+Diagram showing gradient descent on a contour map. Image courtesy of wikimedia commons.
+
+Backpropagation By definition, the gradient of the average cost function is given by
+
+The goal of backpropagation is therefore to calculate the derivative in Equation for each parameter Goodfellow-et-al-2016.
+
+From Equations and , we know that the cost function is dependent on the output of the network, , and the desired output, . While is fixed and does not depend on the parameters of the network, the output is the activation of the last layer of neurons (i.e. ), and is itself a function of the previous layer of neurons, , the weights of that layer, , and the biases of that layer, (see Equation ).
+
+Using the chain rule, each derivative can then be framed in terms of the activation of the neuron that depends on the parameter :
+
+While the derivative can be directly computed using Equation , the derivative requires more discussion.
+
+If (i.e. the neuron is an output neuron in the last layer), then the cost function will be defined explicitly in terms of the activation of this neuron (Equations and ), and we can easily calculate the derivative,
+
+However in general, this will not be the case and we must instead use an iterative process to calculate this derivative. Since the activation of a neuron in some layer, say , is a linear combination of the activation of the neurons in the previous layer (see Equation ), we can start with Equation , and 'propagate' backwards one layer at a time to find the partial derivative of with respect to the activation of each neuron in the previous layer,
+
+We can therefore iterate through the following until we get to the layer (or equivalently ):
+
+Using Equation , we can explicitly calculate each derivative
+
+allowing us to calculate the gradient of the average cost function for the batch using Equation . Finally, with the gradient found, we can now update the parameters of the network by taking a step in the direction of parameter space.
+
+Deep learning techniques based on the fully connected or convolutional neural networks described above have been very successful at labelling problems such as speech recognition,, or image classification, Krizhevsky2012. However using these techniques to generate data had only experienced limited success before the recent introduction of generative adversarial networks (GANs).
+
+Generative Adversarial Networks Goodfellow2014 introduced GANs as a way of generating new data that 'imitates' data from a given set. Rather than use a single network, a GAN uses two separate neural networks, a generative network (the generator) and a discriminative network (the discriminator), that compete against each other such that the success of one network becomes the loss for the other. In this process, the generative network learns to generate data similar to the dataset while the discriminative network learns to distinguish between samples either taken from the data distribution or generated by the generative network. The objective of the generative network is therefore to increase the error-rate of the discriminative network. Notably, the generator never actually sees the data it's trying to emulate, only the success of the discriminator network. The only input to the generator is random noise, which allows it to generate a new output each time.
+
+An analogy of this process given by is that the generative network is a counterfeiter, trying to produce a fake currency without being detected, while the discriminative network is the police, trying to detect the counterfeit currency.
+
+In a traditional GAN, the input of the generator, G, is some noise, , drawn from some predefined prior (), while the output, is a mapping to the data distribution. Meanwhile the input to the discriminator, D, is either samples, , from the data distribution, , or outputs of the generator, . The output of the discriminator, , then represents the probability that the input came from the data distribution () and not from the generator . The discriminator can therefore be trained to maximise the probability of correctly identifying it's input with the following cost function (see Section )
+
+and so minimising this cost function will maximise the probability of the discriminator correctly identifying its input.
+
+Conversely, the cost function for the generator is given by
+
+Early on in training, Equation might not be best suited as a cost function, since the discriminator will easily be able to reject the early generator outputs as they will be clearly distinct from the dataset Goodfellow2014. To avoid this, it may be more efficient to instead use the following cost function at the start of training:
+
+Typically, training is done by alternating between training the generative network and training the discriminative network until convergence. However GANs that operate as described above are unable to take in any auxiliary information that could allow it to condition the output of the generator.
+
+Conditional Generative Adversarial Networks In, first introduced the idea of a conditional generative adversarial network (cGAN) as a way to condition a GAN on some additional information, , such as a label or related data. While a traditional GAN is unsupervised and only needs an input dataset which it learns to emulate, a cGAN is supervised and requires a labelled dataset, i.e. many pairs. This extra information is fed into both networks allowing it to associate its output with this additional information. A comparison between a GAN and a cGAN is shown in Figure .
+
+Comparison between a GAN (a) and a cGAN (b). In the GAN, noise () is fed into the generator (). The input to the discriminator () is then either the 'fake' output of the GAN () or the 'real' data (). The discriminator decides if the input it has been given is real or fake. In the cGAN, both the generator and discriminator have an additional input () which 'conditions' the data . In the case of an image-to-image GAN, this conditional data is an image, which is the only input to the generator.
+
+By conditioning a cGAN on images, this idea can be extended to image-to-image translation. In this case, the only input to the generator is the image , from which the generator must produce an image that closely matches . For an image-to-image cGAN, the cost function for the discriminator becomes
+
+while the cost function for the generator becomes
+
+
+Image-to-image cGANs have a large potential for disruption in solar physics due to the large number of images taken by spacecraft and terrestrial observatories alike. While cGANs have already been used to generate solar magnetograms from EUV images Kim2019, and vice versa, there has been no research into how they could be used to generate magnetograms from seismic maps.
+
+Producing magnetograms from farside seismic maps.
+
+This is essential, as the only currently reliable way of imaging the solar farside is through farside helioseismic holography, with the generation of farside seismic maps. some research has been done to the correlation of seismic signitures and magnetic field (https://iopscience-iop-org.ezproxy.lib.monash.edu.au/article/10.1086/521592) research into detecting active regions from farside seismic maps ()
+
+
+machine learning requires lots of data we have lots of freely available data
+
+While many Earth based solar observatories exist, space-based observatories are able to monitor the Sun without the limitation of atmospheric absorption. observing the Sun from Earth comes with many issues The best way to image the Sun is directly from space-based telescopes. The Solar Dynamics Observatory (SDO) orbits the Earth with a suite of instruments including the Atmospheric Imaging Assembly (AIA) and the Helioseismic and Magnetic Imager (HMI). Pertinent to this research, AIA is capable of taking extreme UV images of the full solar disk at a wavelength of 304, while HMI is capable of taking full-disk magnetograms which measure the line-of-sight magnetic field, and full-disk dopplergrams which measure the line-of-sight motion of solar surface. As detailed in Section , these dopplergrams can be used to generate farside seismic maps. However by the nature of orbiting Earth, SDO is unable to image the solar farside except indirectly through farside helioseismic holography. Only three active solar probes, Parker Solar Probe, Solar Orbiter and Solar-Terrestrial Relations Observatory A (STEREO-A) measure the farside at any point in their orbit, and only STEREO-A consistently takes full-disk solar images. While STEREO-A does not produce magnetograms, the extreme ultraviolet imager on board images the Sun at a wavelenth of 304.
+
+Therefore, an indirect measurement of the magnetic field must be employed to reliably predict extreme space weather events. trained an image-to-image cGAN to generate artificial magnetograms from Extreme Ultraviolet (EUV) images. This training was done using pairs of 304 EUV images and magnetograms from SDO. This trained cGAN was then used to generate artificial farside magnetograms from similar STEREO-A EUV images.
+
+however they used a saturation point of 100 Gauss, limiting the ability to predict strong magnetic fields, especially considering that active regions can have magnetic field strengths of thousands of Gauss
+
+Furthermore, STEREO-A is currently on the nearside coming towards Earth and only has a partial view the solar farside (see Figure ).
+
+As such the only consistent observation of the Farside comes from farside helioseismic holography.
+
+To generate farside magnetograms from seismic images using an image-to-image cGAN, we need to construct a dataset of seismic image/magnetogram pairs. However since we have no available farside magnetograms, the creation of this dataset presents it's own issue. To overcome this issue, we first train an image-to-image cGAN to generate magnetograms from 304 solar EUV images.
+
+To train a cGAN to generate magnetograms from seismic maps, we require a training set consisting of seismic maps and the corresponding magnetograms. While the farside seismic maps are readily available(See jsoc.stanford.edu/data/farside.), corresponding magnetograms are not. However, not all hope is lost. The STEREO-A spacecraft is in a heliocentric orbit that traverses the Sun relative to the Earth, allowing it to observe the farside during some points of the orbit. While STEREO-A does not capture magnetograms of the Sun, it does take EUV images which can be used to create magnetograms by using a cGAN.
+
+A small complication is that no data is available from when STEREO-A was directly opposite the Earth (between March and July 2015), due to the interference from the Sun. This limits the ability to get magnetograms that exactly coincide with the farside seismic maps. To compensate for this, we can match farside seismic maps with images taken by STEREO-A at an earlier (later) time when it is behind (ahead of) the farside, such that the same 'face' of the Sun is imaged due to it's rotation. After generating the magnetograms from the STEREO-A EUV images, we can create a dataset of seismic maps with the corresponding magnetogram (albeit with some time difference). This process is summarised in Figure .
+
+[Project Pipeline]Summary of the project. A cGAN is trained on SDO data to be able to generate EUV images. This is applied to STEREO EUV images to generate STEREO magnetograms. These are used in conjunction with farside seismic maps to train a new cGAN to generate magnetograms from seismic maps, allowing constant surveillance of the farside magnetic field.
+
+
+Data Preparation
+
+To generate farside magnetograms from farside seismic maps, we first create two distinct data sets
+
+a nearside dataset consisting of EUV and magnetogram image pairs, and a farside dataset consisting of seismic map and EUV image pairs. As detailed in Chapter , the farside EUV images will be used to generate magnetograms, which can then be used to train an image-to-image cGAN to generate magnetograms from farside seismic maps. Figure shows a summary of the project pipeline.
+
+A simplified diagram of the project pipeline. Nearside SDO EUV/magnetogram image pairs are used to train the "UV GAN", which is then used to generate farside STEREO magnetograms. Farside seismic map/STEREO magnetogram pairs are then used to train the "Seismic GAN" which can then be used to generate farside magnetograms from nearside seismic maps without the need for STEREO data. To maximise effectiveness of each cGAN, we need to make the images consistent across each dataset such that the only differentiation between images is the change in solar activity. Furthermore, in each image-to-image translation we need to ensure that the active regions are located in the same position in both the input and output images. We must therefore account for the following effects [i] changes in time of image capture, changes in location of image capture, the solar cycle in which the image was taken, position of the sun in images, orientation of the Sun in images, projection used in image, corrupted images or images with data artifacts, instrument degradation over time, instrument saturation, and amplitude of pixel values between image data-sets. In this chapter we detail how we obtain our data and prepare it for training, accounting for above effects.
+
+Data Collection Our research required the following data sources:
+
+SDO EUV images, SDO magnetograms, STEREO-A EUV images, and helioseismic holography maps. EUV images with a wavelength of 304 are produced by both the SDO and STEREO EUV telescopes and were therefore choosen for this project. As explained in Section , light at 304 is emitted by the chromosphere - the atmospheric layer above the photoshpere.
+
+As SDO is orbiting the Earth, both the SDO EUV images and magnetograms were taken of the nearside. STEREO-A is instead in a heliocentric orbit, with an orbital period of 346 days. As such, it has rotated about the Sun relative to Earth taking some images of the farside over the course of it's 14 year life. Figure shows the location of STEREO-A over the course of the mission. Finally, the seismic maps are generated from SDO dopplergrams, and image the farside of the Sun as detailed in Section .
+
+Of particular importance when collecting the data is the time of image capture, the location of image capture, and the solar cycle in which the image was taken in. Here we detail what decisions were made in regards to these factors.
+
+
+Nearside Data As all the nearside data comes from SDO the position of the telescope does not change between data types. Furthermore, SDO captures EUV images and magnetograms with a cadence of 12 and 45 seconds respectively, allowing us to compare these with very little time difference. The images were provided by the Joint Science Operation Centre(See http://jsoc.stanford.edu) and were collected for every 12 hours between April 2010, when the first SDO data became available, and December 2019 - the end of Solar cycle 24. Since all data was taken during this solar cycle, we did not have to take into acount the flipping of the global magnetic field which occurs between solar cycles (see Section ). Due to a combination of missing or poor quality images (see Section ) this process resulted in a total of 4247 nearside EUV/magnetogram pairs. While the nearside data was taken from only a single data source (SDO), making the data collection relatively simple, this is not the case for the farside data.
+
+Farside Data Unlike the nearside data, the farside data comes from two seperate sources. STEREO-A provides the farside EUV images, while the SDO provides the dopplergrams that are used to generate the farside seismic maps. Complicating matters further, for the majority of it's mission STEREO-A is not directly facing the farside and only has a partial view. Futhermore, STEREO-A experienced reduced telemetry rates between August 2014 and January 2016, with complete instrument shut off between March and July 2015 due to STEREO-A's superior solar conjunction. Figure shows the trejectory of STEREO-A relative to earth with the points of reduced or no telemetry indicated.
+
+To overcome this limitation, we can leverage the rotation of the Sun and compare farside seismic maps to STEREO-A images with a time delay, such that both images capture the same 'face' of the Sun. For example, if STEREO imaged the Sun while 45 from the solar farside, after approximately 3 days the Sun would have rotated such that the same face of the Sun would now be on the farside, and could be imaged by farside helioseismic holography. By using such a method, we can effectively compare farside seismic maps with not-quite-farside STEREO EUV images. This method isn't perfect however, and has two obvious drawbacks
+
+the differential rotation of the Sun means that active regions won't necessarily be in the same position after a time delay, and active regions are constantly changing, for example new active regions may emerge on the surface over the course hours or days, while the decay of sunspots may last from days to weeks . These limitations will be further discussed in Chapter .
+
+In order to implement this correction, we must first determine the rotational rate of the Sun. As can be seen from Figure , the majority of the active regions in solar cycle 24 are at latitudes between . Futhermore the rotation of the Sun is roughly homogoneous at these latitudes, varying between 425nHz and 450nHz (see Figure ). We chose to estimate this rotation rate based on the Carrington rotational period of 27.2753days. This corresponds to the average synodic rotational period of sunspots, or equivalently, the synodic solar rotation at a latitude of approximately carrington_observations_1863. It should be noted that the synodic rotation is measured relative to Earth (and therefore the solar farside). An appropriate choice of coordinates for the correction calculations is therefore the heliocentric Earth equatorial coordinate system. In these coordinates, the -axis is aligned with the axis of solar rotation, while the -axis points from the centre of the sun the earth (see again Figure ). The time delay between a STEREO-A image and the farside is then given by
+
+where is the aforementioned Carrignton rotational period, is the angle between STEREO-A and the solar farside, and is the position of STEREO-A at time in heliocentric Earth equatorial coordinates. It should be noted that and therefore are negative while STEREO-A is 'behind' the solar rotation, and positive while STEREO-A is 'ahead' of the solar rotation. We can therefore calculate the equivalent farside time () for a given as follows
+
+This was used to calculate the 'farside equivalent' time at each point in STEREO-A's orbit, using STEREO-A position data provided by the Space Radiation Lab at California Institute of Technology(See http://www.srl.caltech.edu/STEREO.).
+
+The Joint Science Operation Centre has been producing farside seismic maps with a cadence of 12 hours since April 2010. These images were downloaded from Stanford's Joint Science Operations Center(See http://jsoc.stanford.edu/data/farside/Phase_Maps.). The equivalent time for STEREO-A was found for each image and the 304 EUV image that best matched this time was found. If the image time disagreed with the ideal time by more than 2 hours the image was discarded. As STEREO-A produces 304 EUV images with a cadence of 10minutes this only effected images produced during periods of reduced telemetry. The remaining images were downloaded from the Virtual Solar Observatory(See virtualsolar.org.).
+
+However before using these images we need to ensure that the Sun is represented consistently across each dataset such that any solar features appear in the same location.
+
+[STEREO A Trajectory]Trajectory of STEREO A between October 2006 and January 2021 in the Heliocentric Earth Equatorial coordinate system. In these coordinates, the Sun is at the origin with the Earth fixed on X axis. Each 'bump' in STEREO's Trajectory correspond to a year on Earth. Image generated using data provided by the Space Radiation Lab at California Institute of Technology.
+
+Image Projections
+
+
+To ensure consistency between image datasets we need to take into account the position and orientation of the Sun as well as how the Sun is represented on each image. As there are many ways to project three dimensional data onta a two dimensional image consistent represenation of the Sun is not gaurenteed. Therefore to effectively compare different images of the Sun we must take into account the projection used to construct the image.
+
+Nearside Data Fortunately, both SDO EUV images and magnetograms use the same projection. For these images, each pixel directly corresponds to a pixel on the camera sensor, which in the case of SDO and STEREO-A images is a charge-coupled device or CCDkaiser_stereo_2008,lemen_atmospheric_2012. As the CCD is flat plane, the resultant image is a projection of the Sun onto the parallel tangent plane of the celestial sphere.
+
+For both SDO and STEREO-A, the angle subtended by the solar disk is approximately 0.5 and so we can instead approximate the image to be projected against the celestial sphere itself. This is a very good approximation, and at a distance of 1 AU (approximately the orbital radius of SDO and STEREO-A) the angles describing the Sun on the tangent plane match the angles on the celestial sphere to at least five significant figures thompson_w_t_coordinate_2006. This projection is known as a helioprojective-cartesian projection, and measures positions in terms of the longitude and latitude of the celestial sphere.
+
+SDO uses two distinct instruments to create the EUV and magnetogram data (Atmospheric Imaging Assembly and the Helioseismic and Magnetic Imagerrespectively) which have different orientations. The helioprojective latitude and longitude were found for each pixel using image metadata which was then used to rotate the images such that the uppermost section of the image corresponded to the northenmost solar disk region, thus aligning the images consistently.
+
+However the distance to the Sun changes throughout SDO's orbit due to the eccentricty of Earth, changing the relative size of the solar disk. To remove this discrepancy, while also removing unnecessary pixels, the images were cropped to the radius of the sun, again using information extracted from the image metadata. This process is less straight forward for the farside data.
+
+Farside Data While the STEREO-A EUV data uses the same helioprojective-cartesian projection as the nearside SDO data, this is not the case for the farside seismic maps. The seismic maps instead us a Carrignton heliographic projection, where positions are measured in solar latitude () and Carrington longitude (). This coordinate system rotates with the Sun such that the prime meridian of these coordinates faces Earth approximately every 27 days(To be precise, the prime meridian rotates such that it aligns with the solar central meridian (according to an observer on Earth) once every Carrignton rotation (27.2753 days).). To directly compare STEREO-A EUV images with farside seismic maps we must therefore re-project the seismic maps into helioprojective-cartesian coordinates.
+
+To transform the seismic maps, we need to find the points in the original heliographic projection that correspond to each pixel in the final helioprojective image. In general, these points will not dirrectly correspond to the centre of a pixel and so we must first apply an image interpolation method to construct a continuous version of the original heliographic image. To find these points we use an intermediate transformation to heliocentric-cartesian coordinates, i.e. * Heliocentric-cartesian coordinates give the true spatial position of an object (, , ) with the origin at the centre of the Sun, the z-axis pointed toward the observer, and the y-axis in the plane containing the z-axis and the rotational axis of the Sun. The x-axis is oriented such that the all three axes create an orthogonal right-handed coordinate system.
+
+
+To convert helioprojective-cartesian coordinates into heliocentric-cartesian coordinates, we use the following transformation, provided by thompson_w_t_coordinate_2006:
+
+Where is the distance is the distance between the observer and the point being observed, and is the distance between the observer and the centre of the Sun. After some trigonometry, it can be shown that if the point being observed is on the surface of the Sun, then
+
+Similarly, we can convert from heliocentric-cartesian coordinates to Carrignton heliographic coordinates as follows:
+
+and and are the Carrington heliographic latitude and longitude of the Observer.
+
+
+Since we are directly comparing the seismic maps to STEREO-A EUV images, we choose values , and according an observer at STEREO-A, with the longitude adjusted to be opposite Earth (i.e. the centre of the farside). These exact values were obtained from the STEREO-A image metadata. The seismic maps were re-projected using this transformation with a bi-linear interpolation. Figure shows a seismic map before and after this transformation.
+
+Now with consistant projection, the STEREO-A EUV images were prepared in the same manner as for the nearside, by first rotating the images such that the northenmost region of the solar disk was at the uppermost point in the image, then cropping the images to the radius of the Sun. This step was not required for the re-projected seismic maps as they were already correctly aligned as a by-product of the transformation. With all images correctly aligned, it is now necessary to take into account effects caused by each imaging instrument.
+
+heliographic shows an original seismic map with a heliographic-cartesian projection. helioprojective shows the same image after projection into helioprojective-cartesian coordinates.
+
+Data pre-processing
+
+Before using the images we need to first take into account various factors and inconsistancies that arise during the imaging process. Of particular importance is the EUV data which comes from two data sources, SDO and STEREO-A. To use data from both sources interchangably, we must make the images consistant between these datasets.
+
+Extreme Ultraviolet Data As mentioned in Section , STEREO-A and SDO both use a CCD to image the Sun at a wavelength of . Each pixel in the CCD converts the incoming photons into electric charge, which is subsequently measured. The value of each pixel in units of digital number (DN), is given by the integral
+
+were is the spectral radiance of pixel at point and wavelength , and represents the efficiency of the 304 channel in the telescope, measured in units of DN per unit flux. Informally, is equivalent to the ratio of the signal strength (in DN) of the CCD to the total electromagnetic flux at wavelength incident on pixel . As we are attempting to measure the flux at 304, would ideally be large for wavelengths close to 304, vanishing as we move away from this wavelength. Approximating to be zero for , Equation reduces to
+
+is the electromagnetic flux at wavelength incident on pixel . And so we find our pixel values are linearly proportional to the EUV flux to a reasonable approximation.
+
+
+Each raw image is processed to remove data artifacts caused by the the imaging, and the resulting image is then made available for use. This image processing is not perfect however, and we still have make some corrections ourselves before we are ready to use the images.
+
+From the 4313 SDO EUV images used between 2010 and 2020, the pixel values for the AIA data range from to . To get a handle on this data, a range of the pixel value percentiles were calculated for each image. Figure shows these percentiles plotted as a function of time. Corrupted or otherwise poor quality images could then be identified due to the large irregularity in the percentiles of those images, as can be clearly seen in Figure . After reviewing the offending images, a simple threshold was used to remove the outliers.
+
+Also apparent from Figure is decreasing exposure of the images between 2010 and 2020. This is consistant with the degredation of the SDO's 304 EUV channel found by. Figure shows a comparison in the exposures of images taken in 2011, 2015 and 2019 respectively, in which the reduced exposure can be clearly seen. To account for this, the pixel values of each image were given a weighting factor depending on the time the image was taken, i.e.
+
+where is the initial pixel value, p_f is the final pixel value, and is the weighting factor at time . The weighting factor was choosen to be the reciprocal of a 50-point rolling average of the 75th percentile at time , i.e.
+
+where is the 75th percentile pixel value of the image taken at time , and is the time between images, in our case 12 hours. The 75th percentile was picked as it had the lowest 50-point relative variance of the percentiles calculated. This indicated that the 75th percentile was more indicative of the background Sun as opposed to individual active regions, and would therefore better capture the degredation of the instrument over time. It should be noted however that the 75th percentile was still effected by the solar activity, and some of this information was inadvertently removed in this process. This will be further discussed in Chapter . The percentiles of the data after applying this weighting are shown in Figure .
+
+To ensure consistency between the two EUV datasets, we need to normalise and correct the STEREO-A data in the same method as the SDO data. Figure shows the initial percentiles of pixel values for the STEREO-A data, with the times of reduced and no telemetry clearly visible from the gaps in the dataset. Once again, poor quality images could be identified by the large deviations in the percentile values, and were removed using a simple cutoff criteria (see Figure ).
+
+It was found that approximately of the pixels in the SDO data had a value below 0, while the same percentage of pixels from STEREO-A images had a value below . Accordingly, the STEREO-A pixels were decreased by before dividing by the rolling average of the 75th percentile. Figure shows the pixel value percentiles of the STEREO-A images after this process. At this stage in the normalisation process both SDO and STEREO-A datasets had approximately of the data had a value below 0DN, and of the data with a value below 1DN. As the pixel values are (approximately) linearly proportional to the EUV flux (see Equation ), these two points are enough to constrain the two datasets such that a given pixel value will correspond to the same level of EUV flux for images in either dataset taken at roughly the same time.
+
+
+One last discrepeny between the two datasets is the saturation points at which the CCD cannot record any value above. While both instruments initialy have a saturation point at (see Figures and ), this has been distorted during our image processing, as can be seen in Figures and . To make this consistant between the STEREO-A and SDO images, we introduce our own artificial saturation point. To choose this upper bound, we found the minimum of a 50 rolling average of the 100th percentile of pixel value for the STEREO-A data, which was 32DN. The upper-bound can be seen in Figure . To avoid lossing information about regions of intense solar activity, it was important to make this upperbound as high as possible while keeping the two datasets consistant. This constraint did not apply to a lower bound, which was chosen to have a value of 0DN. Finally both datasets were normalised by dividing by the upperbound such that all pixels had a value between 0 and 1. Figure shows a comparison between the STEREO-A and SDO datasets after normalisation. As can be seen, the datasets seem to be largely consistent with each other. Furthermore, not all information about the long-term solar activity has been lost through this normalisation process, as can be seen by the peak in the middle of the solar cycle around 2014. With the EUV data normalised, it is now time to turn to the Magnetogram and seismic data.
+
+Images taken by SDO AIA on the first of January in 2011 aia_2011, 2015 aia_2015 and 2019 aia_2019. Due to the degradation of the instrument, the exposure reduces over time. Images courtesy of NASA.
+
+aia_percentiles The percentiles of AIA data for images taken every 12 hours between May 2010 and December 2020. Due to the large range of data, the 25th to 100th percentiles where plotted on a log scale. aia_outliers The 75th percentile of the AIA data. A simple threshold was used to remove poor quality data.
+
+Comparison of the SDO and STEREO data after normalisation.
+
+Magnetogram and Seismic Data Figure shows the percentiles of pixel values for the SDO magnetogram data. Each pixel on a magnetogram image measures the average radial magnetic field () in units of Gauss (G) on the surface of the sun subtended by the pixel. Similarly, Figure shows the percentiles of pixel values for the seismic maps. As explained in Section , seismic maps measure the relative phase shift experienced by p-modes as they travel to and from the solar farside.
+
+Fortunately neither of these datasets exhibited the instrument degredation or image saturation seen in the EUV data. The magnetogram data was normalised by dividing it by the absolute maximum pixel value across all the data, which in this case was , limiting the pixel values to between and . Importantly this process is completely reversible, with information loss only from rounding errors. The raw seismic data had a range between -0.9Rad and 0.8Rad. As such normalising this data was deemed unnecessary. With our data prepared and normalised we now turn to training each of the image-to-image cGANs.
+
+hmi_p shows the percentiles of the pixel values for the magnetogram data. seismic_p shows the percntile of pixel values for the seismic data.
+
+
+Training
+
+With our data processing done, we are finally ready to begin training our deep neural networks.
+
+
+We require two deep neural networks in order to generate farside magentgorams from seismic maps. The first of these must generate magnetograms from EUV 304 images, which is then used to generate 'STEREO-Magnetograms' from our STEREO-A EUV data. The second network must then generate magnetograms from seismic maps. In both cases we use an image-to-image cGAN, which has proven to be very effective at image-to-image translation. We henceforth refer to these two cGANs as the 'UV-GAN' and the 'Seismic GAN' respectively. As outlined in Section , each of these cGANs actually consist of two competing networks: a 'generator' and a 'discriminator'. The same generator and discrimnator architecture is used for both the UV-GAN and the Seismic-GAN. In this chapter we outline the architecture used for the UV and Seiscmic GAN and discribe how these deep neural networks were trained.
+
+Diagram of the UV-GAN and Seismic GAN.
+
+Architecture
+
+The architecture for each cGAN was based on the one used by. In their paper they describe a cGAN similar to the UV-GAN we train which generates magnetograms from EUV solar images. However while the cGAN used by Kim2019 was only capable of predicting magnetic field strengths of at most 100 G, ours does not have this issue. Our model consists of a U-net style generator network ronneberger_u-net_2015, and a fully convolutional discriminator network. Figure shows a diagram of each cGAN.
+
+Generator The generator network must be capable of tranlating the conditional image (either an EUV image or seismic map) into a magnetogram. For this purpose we chose a U-net. U-nets were originally developed for biomedical image segmentation, however have been used in a wide range of Astrophysics applications (for example felipe_improved_2019,bekki_quantifying_2021,baso_solar_2019). U-nets consist of a down sampling path where the width and hight of each layer are reduced at each step, followed by and upsampling path where the width and height are get larger at each step until reaching the original size. Many 'skip connections' join layers of the same size either side of the 'U'. The model used in this work is shown in Figure . By implemeting a U-net the generator is can perform image-to-image translation that retains the shape and large scale structures of the input image while still capturing complex relationships between the input and output. While the generator network must be able to translate between image types, the discriminator network must be able to evaluate the quality of it's input.
+
+In our case, we start with a () input image and at each step in the down sampling path, apply convolution, batch normalisation and leaky reLU activation. At each convoluitonal step an additional 64 filters are used than on the previous layer, maxing out at 512. The 'bottom' layer
+
+Discriminator The discrimnator network is given two inputs: a magnetogram (either real or generated) and the corresponding conditional image - an EUV image for the UV-GAN or a seismic map for the Seismic-GAN. The network then attempts to determine if the magnetogram input is real, based on the conditional image. The architecture of the discrimnator network we used is shown in Figure . The output of the discrimnator is a () array, where each element has a value between 0 and 1. The training objective of the discrimnator network is to maximise it's output for a true magnetogram input, and minimise it's input for a generated magnetogram input. A 'perfect' descrimnator would then output an array of only 's for a fake magnetogram input, and an array of 's for a true magnetogram. On the other hand, the training objective of the generator is to increase the error-rate of the discrimnator. Informally, the generator can be thought of trying to 'fool' the discrimnator into thinking that the magnetogram it generated is real. Similar to Section , the discrimnator's cost function is given by
+
+for a 'true' magnetogram input, and
+
+for a 'fake' magnetogram input where is the 'conditional' input, is the discriminator output with a real () or fake () magnetogram as an input, and is a tensor full of 's with the same shape as . In each expression the 'log' is taken element-wise, before the mean of all tensor elements is taken. The total discriminator cost function is then
+
+As detailed in Section , the discriminator also provides the cost function for the generator. Unlike an additional term was added to minimise the absolute difference between the real and fake magnetograms. With this addition, the generator cost function used was
+
+The input consits of two () 'channels', containing the magnetogram (be it real or fake) and the conditional image (either the UV image or seismic map depending on the GAN). 5 successive convolutional layers with batch normalisation and leaky ReLU activation were applied to reduce the final input to a () tensor.
+
+UV-GAN With our architecture specified, we move on to training the UV-GAN. After data processing we were left with 4247 pairs of normalised SDO EUV and magnetogram images, captured between April 2010 and December 2019. Images taken in November and December each year were set aside for evaluation, while the remaining 3505 image pairs were used for training the network. Before training, the weights (parameters) of the convolutional layers for both the discriminator and generator where initialised by
+
+while the weights for batch normalisation were initialised by
+
+A kernal (filter) size of was used for the convoluitonal layers (see Section ). The UV-GAN was trained for iterations, with a batch size of 1, i.e. one magnetogram/EUV image pair per batch. At each itteration, an EUV image is passed through the generator to produce a fake magnetogram. The real and fake magnetograms are then both passed through the discriminator which produces it's output. The parameters of both networks are then updated using the Adam optimizer, according to the loss functions given by Equations and . A learning rate (step size during gradient descent) of was used during the optimisation, with 'momentum' parameters , .
+
+After the first attempt at training the UV-GAN it was found that it was not able to reproduce the structure of the active regions. This was thought to be due to the large dynamic range both the EUV images and magnetograms. This range is clearly seen in Figures and , where which in both cases show that approximately of the pixels in each image were at least an order of magnitude smaller than the maximum pixel value. This essentially results in images that are too dark, causing the GAN to largely focus on the few bright pixels. Previous work have used saturation limits to deal with this problem by clipping data above a certain point,for example used saturation limits of for generating magnetograms. However this comes at the cost of utility, with the peak magnetic field in many sunspots exceeding . To avoid such a cut-off we instead artificially increased the saturation by amplifying lower intensity pixels. For the EUV images (both from SDO and STEREO-A) this artificial saturation was done by taking the square-root of the pixel values. This ensured that the pixel values remained between the normalised bounds of 0DN and 1DN, while increasing the intensity of the under-represented pixels. For the magentograms which had pixel values between this artificial saturation took the form
+
+amplifying pixels that corresponded to less intense magnetic fields. Importantly, just as with the normalisation, this process is completely reversible and the true magnetic field can be easily obtained. Figure shows the percentiles pixel values before and after applying this artificial saturation.
+
+
+A new cGAN was trained with the same parameters, this time with the artificial saturation. This time, the UV-GAN was able to produce seemingly realistic magnetograms, and appear to correctly identify the shape and location of active regions. Figure shows a generated magnetogram along with the corresponding The accuracy of these synthetic magentograms will be analysed in Chapter .
+
+
+Using this trained UV GAN, 5017 synthetic magnetograms where generated between March 2011 and August 2019 from the corresponding STEREO-A EUV images. We henceforth refer to these synthetic magnetograms as 'STEREO magnetograms'. The images were chosen such that the time delay between the STEREO-A and farside images was less than seven days, i.e. STEREO-A was roughly less than one quater of a solar rotation away from the farside (see Figure ). A mask was applied to each of the STEREO magnetograms, setting the value of any pixels outside the solar disk to zero. Figure shows a STEREO-A 304 EUV image and the corrosponding synthetic STEREO magnetogram.
+
+
+Percentiles of UV and magnetogram data before and after the artificial saturation
+
+
+Taken on the 12th of November 2014. This image was part of the testing set and so was not used in training.
+
+loss Seismic-GAN
+
+We trained the Seismic-GAN with the same parameters as the UV-GAN using 4288 seismic map/STEREO magnetogram image pairs. Once again images taken from November or December each year where set aside for evaluation. After this initial training, the Seismic-GAN was able to produce images that appeared physically realistic however did not seem to be correlated to the true magnetic field. This indicates that the cGAN did not actually learn any relationship between the seismic images and the magnetic field, and only learnt how to produce an image that 'looked' like a magnetogram. An example of one of these generated magnetograms along with the equivalent STEREO magnetogram is shown is shown in Figure .
+
+536 iter/epoch = 4288 images for batch 2899 for 16 kernal 4288 for (7 days) default
+
+It was hypothesised that due to the 'blurriness' of the seismic images that a larger filter size should be used in the convolutional layers. It was thought that this could potentially improve the generated magnetograms allowing the generator to learn from the large scale structures rather than the small scale changes.
+
+The Seismic-GAN was retrained using a filter size of 16 (as apposed to 4), again using the same parameters as before. This resulted in mode-collapse, where the Generator found a local minimum by producing (almost) the same output image regardless of the input. Figure shows two seismic maps and the corresponding synthetic magnetograms produced by this cGAN. Despite the two seismic maps being taken five years apart, both generated magnetograms appear to be identical.
+
+Finally the Seismic GAN was again trained with the smaller filter size, but now with a batch size of 8 as opposed to 1. This larger batch size means that each step taken through parameter space will be closer to the optimal step (see Section ). Figure shows an example magnetogram generated using this Seismic GAN. This time the GAN was able to predict some of the active regions, especially closer to the centre of the image where the seismic maps are more accurate. However, there was a consistent bias in the images, and the GAN struggled to detect active regions closer to the edge of the disk, and often predicted active regions near the edge that didn't exist. We analyse the performance of this cGAN in Chapter .
+
+Images relating to the first attempt of training the Seismic GAN. 6.11.11_def_STE is a STEREO EUV image taken on 31st of October 2011, 6.11.11_def_MAG is the corresponding magnetogram generated by the UV GAN, 6.11.11_def_smap is the equivalent Siesmic Map taken on 6th of November 2011 and 6.11.11_default is the corresponding magnetogram generated by the Seismic GAN.
+
+6.11.11_ker_smap and 6.11.11_kernal show a seismic map taken on the 6th of November 2011 and the corresponding magnetogram genreated by the Seismic GAN, after training it with a larger kernal size. 16.11.06_ker_smap shows a seismic map taken 5 years later on the 6th of Novermber 2016, while 16.11.06_kernal shows the corresponding generated magnetogram. Despite the different dates and seismic maps, the Seismic GAN generates the same magnetogram.
+
+
+
+loss
+
+Results Analysis
+
+Both the UV-GAN and Seismic-GAN are able to produce magnetograms that appear physically realistic to the eye. The purpose of generating these magnetograms was to monitor the level of farside magnetic activity to give some warning of potential extreme solar events. In this chapter we detail how we can get a quantitative prediction from these magnetograms, and use these to assess the validity of our model.
+
+UV-GAN By qualitatively inspecting the magnetograms generated by the UV-GAN, (for example Figure ) we can see that the cGAN is able to successfuly reproduce the position and the shape of active regions. Notably however, it is unable to determine the absolute magnetic field strenghth and often struggles to reproduce the polarity of individual sunspots, but seems to guess the polarity in accordance with Hale's law (see Section ).
+
+To actually determine the usefulness of these magnetograms, we need to develop a metric for determining the accuracy of our predictions, in particular how capable it is at predicting extreme magnetic fields. One such metric could be the average pixel-wise difference between the true and synthetic magnetograms. This is shown in Figure for a given batch at each training iteration. This error is uninterateble however and does not take into account the relative importance of pixels. For example a pixel near the centre of a magnetogram will subtend a smaller region of the solar surface than a pixel closer to the solar limb. This effectively means that the absolute error between images will be unevenly weighted towards the central pixels. A better metric for evaluation is the unsigned magnetic flux, given by
+
+where is the line-of-sight magnetic field, i.e. the pixel values of the magnetograms. For indivual active regions, this is typically used as a predictor for solar flares, for example song_statistical_2009,yuan_solar_2010,lan_automated_2012,chen_identifying_2019. By comparing the total unsigned magnetic flux of the true SDO magnetograms to the unsigned magnetic flux of the predicted magnetograms, we evaluate the accuracy and predictive capability of the synthetic magnetograms. We approximate the total unsigned magnetic flux by
+
+where is the line-of-sight magnetic field corresponding to pixel and is the surface area of the Sun subtended by pixel . Thus, to calculate the total unsigned magnetic flux we first calculate for each pixel.
+
+For a given pixel at position in the magnetogram, the equivalent helioprojective coordinates are given by
+
+where are the angles subtended by the pixel in arcseconds, and are the coordinates of the centre of the disk. Both of these quantaties are available from image metadata. To find the surface area corresponding to a given pixel we now need to find the coordinates for the corners of each pixel. These can be found by appropriately adding or subtracting . For each of the four corners of a given pixel, defined such that is diagonally opposite , we find the equivelent heliocentric coordinates on the surface of the Sun using Equation . To approximate the area subtended by a given pixel, we split these four points into two triangles defined by the vectors and . The areas of these triangles can be found according to
+
+where , are the vectors defining the triangle. By summing over the areas of both triangles, we obtain an estimate of the surface area corresponding to each pixel. Multiplying the area each pixel by the magnitude of the magnetic field measured for that pixel (i.e. the unsigned pixel value), we obtain the unsigned the magnetic flux of the pixel. Summing over all pixels gives us the total unsigned magnetic flux, , for that image. Figure shows an example of the unsigned magnetic field of a magnetogram in addition to the area and unsigned magnetic flux for each pixel.
+
+
+The unsigned magnetic flux was calculated for each of the SDO and synthetic magnetograms. Figure shows the flux according to the SDO magnetograms and the UV-GAN using STEREO-EUV data, with vertical lines indicating X-class solar flares(Solar flares are classified 'X' if the peak solar flux measured at Earth is greater than 1e-4W.m^-4.).
+
+There is a clear bias between the two predicted fluxes, at the time of writing the cause of this is unclear.
+
+While this limits the ability of the UV-GAN to predict the absolute strength of the magnetic field, this is largely not an issue if we can accurately determine the change in magnetic flux, relative to some fixed point.
+
+To this end, the UV-GAN was successful in it's ability to predict peaks and dips in magnetic flux consistant with the true magnetograms as well as much of the short and large scale structure. Of particular note, the UV-GAN was able to reproduce the large-scale trend given by the solar cycle. This is despite inadvertantly removing some of this information while noramlising the EUV data (See Section ). Most importantly the UV-GAN was able to predict the sharp changes in unsigned magnetic flux, including when these sharp changes corresponded to X-class solar flares. We now move on to the Seismic-GAN.
+
+The unsigned magnetic field tumf_calc_1, area tumf_calc_2 and unsigned magnetic flux tumf_calc_3 calculated from an SDO magnetogram, taken on 5th May, 2010.
+
+The total unsigned magnetic flux according to SDO (blue) and the UV-GAN using STEREO-A EUV data (orange). The solid line's show the respective average over 27 days (approximately one rotation). Solid lines represent the average across 27 days (roughly one rotational period) while dots represent individual magnetograms. The vertical grey lines indicate X-class solar flares, using data provided by www.spaceweatherlive.com/. Seismic GAN Qualitatively inspecting the magnetograms, we see that magnetograms produced by the Seismic GAN appear realistic, i.e. the magnetograms produced have the characteristics of true magnetograms, with the shapes and polarities appearing very similar to what you could expect on a true magnetogram. The fine grain structure does not appear to correlate at all with the true structure however and the seismic-GAN appears to be 'guessing' the details. Futhermore, the ability of the seismic-GAN to predict the occurance of active regions is mixed at best, for example in Figure the seismic magnetogram does correctly identify two active regions, however misses one and predicts an active region where none exist. While we would have liked these to be more accurate, the purpose of these magnetograms is to get some indication of the magnetic activity on the solar farside. To this end, we once again calculated the total unsigned magnetic flux for each of these synthetic magnetograms.
+
+Figure shows the unsigned magnetic flux of the magnetograms as a function of time, again with vertical lines indicating X-class solar flares. As the Seismic-Gan is trained on data from the UV-GAN it is unable to produce magnetograms more realistic than those of the UV-GAN unless by chance. As such the magnetic flux corresponding to the Seismic-GAN has the same bias as with the UV-GAN. While the UV-GAN was able to reproduce much of the short time scale variations seen in the true magnetic flux, this is not the case for the Seismic-GAN. This is likely due to the fact that the seismic images are generated by integrating over a period of ... hours, while the SDO iamges are essentially instantaneous. Additionally, while the UV-GAN was able to reproduce the general shape of the solar cycle, this long-term variation was much less pronounced for the Seismic-GAN. Notebly however, most of the solar flares had associated peaks indicating the potential usefulness of these magnetograms as a predictor of intense solar activity. Not all peaks corresponded to flares or even high levels of magnetic activity, for example one of the most prominent peaks near the end of 2018 came during a period of very low solar activity. Figure shows a synthetic farside magnetogram generated during this time period along with a true SDO nearside magnetogram twelve days later.
+
+
+The total unsigned magnetic flux according to SDO (blue) and the seismic-GAN using Helioseismic data (orange). Solid lines represent the average across 27 days (roughly one rotational period) while dots represent individual magnetograms. The vertical grey lines indicate X-class solar flares. Note that this is different to the figure shown during the seminar. A bug was discovered on 15/6 which effected how the synthetic magnetograms from the Seismic-GAN were produced, resulting in different predictions and a different magnetic flux.
+
+
+The seismic map smap_2018peak and synthetic farside magnetogram smag_2018peak taken on 23/10/2018, corresponding to a large peak in the magnetic flux predicted by the Sesimic-GAN. Despite predicting intense active regions, none are present on the nearside SDO magnetogram hmi_2018peak taken on twelve days later.
+
+Discussion
+
+With current available data, infering the solar farside magnetic field is a challenging task. Here we report the ability to generate realistic-looking magnetograms using only data extracted from nearside dopplergram observations. While these magnetograms do not appear to accurately represent the farside magnetic field, they predict an unsigned magnetic flux that peaks during times of intense - and often flare producing - solar activity.
+
+The inherent difficulty of this problem resulted in various limitations to our method. Perhaps the most obvious such limitation was the lack of any true farside magnetograms to use as a training set. Overcoming this required generating synthetic magnetograms based on EUV data. As these synthetic 'UV' magnetograms themselves were not perfect, these provide an upperbound to the quality of magnetograms generated from farside seismic data, i.e. 'seismic' magnetograms generated from training a cGAN on UV magnetograms will never be able to outperform the UV magnetograms themselves.
+
+In this way the errors compound between training the two cGANs, notably the bias from UV magnetograms resulted in a similar bias in the seismic magnetograms. This also means that the Seismic-GAN may learn 'quirks' of the UV-GAN, as it's goal is to match the UV-GAN magnetograms rather than true magnetograms.
+
+Perhaps a bigger limitation however is the level of information about the magnetic field in the EUV or seismic data. If not enough information is available to determine the magnetic field, the cGAN's will not be able to determine the true magnetic field and instead must 'guess'. This results in magnetograms that look realistic, but may not be correlated to the true magnetic field. This is especially clear in the case of the polarity of individual sunspots. It is likely that the siesmic disturbance and EUV light do not contain any information about the magnetic polarity (direction) of a given active region. It was thought that this information may have been determinable from context and that the cGAN's may have been able to learn an indirect relationship between the polarity and the siesmic disturbance/EUV light through the context of the image - for example Hale's law can be used to predict the polarity of the leading sunspot (see Section ). While it appears that cGAN's were able to mimic Hale's law to some extent, they were not able to determine whether active regions deviated from this. It is possible that after more training the cGAN's may have been able to learn more complex relationships and some of the underlying physics, but this begins to cut in to the available resources for training. As it was, fully training a cGAN required roughly four days of computation time using an expensive GPU.
+
+
+Further restricting the amount of available information was the normalisation of the EUV data discussed in Section . As part of this process, the EUV data was normalised by dividing by a rolling average of the 75th percentile pixel value. While this mainly affected the background solar activity, rather than the activity near active regions, this removed information relating to the general trend of the solar cycle (see Figure ). To better account for the decrease, the percentiles could have been fitted with a cominatation of a normal distribution and exponential decay. By doing this, the the normal distribution would take into account the effects from the solar cycle while the exponential decay would capture the instrument degredation - and could be used to adjust for it. This would have been more difficult to make consistent with the STEREO data however, which was a necessary step in producing the farside magnetogram training set. Despite this however, the UV-GAN was able to reproduce the general trend of the solar cycle as can be seen in Figure .
+
+
+As the Seismic-GAN was trained on the synthetic 'STEREO magnetograms', a further limitation came from the timedelay between the seismic maps and STEREO data to account for the rotation of the Sun. As explained in Section this timedelay was based on the average rotation of Sunspots. However due to the differential rotation of the Sun, this still meant that some active regions may be in different locations after the delay, and more importantly, active regions may have decayed or new ones emerged during this period. As the data from STEREO-A was the only viable source of farside information to compare to the seismic maps, this was unfortunatly necessary. This creates a trade-off between the time-delay and the amount of data, while allowing only small time delays gives more accurate data this also restricts the amount of data. After some trial and error (see Section ) we used data with a time delay of less than seven days.
+
+
+Many of these issues may have been solved if we simply used a neural network to predict the unsigned magnetic flux for a given seismic image, rather than trying to generate a magnetogram from scratch. This comes at the cost of interperability however, generating magnetograms as we did allowed us to interogate the outputs and understand why the network predicted a given flux. Perhaps a better method would have been to avoid the use of the EUV data alltogether, and instead train a cGAN to generate magnetograms from seismic data based on the nearside images half of a rotation later. While this suffers from the same issue of emerging and decaying active regions, the shifting of the active regions would be consistant across the whole dataset. This does not solve the problem of insufficient informatin however. To overcome this, the cGAN could be given the magnetogram half a rotation earlier as an additional input. The cGAN would then only have to learn about changes in the magnetic field rather than having to produce a magnetogram from scratch.
+
+Conclusion A complex self-regenerating dynamo creates magnetic fields on both large and small scales throughout the Sun. This magnetic field gives rise to active regions on the surface of the Sun, which can lead to eruptive events such as flares or coronal mass ejections. Extreme space weather events such as these can be hazardous to our increasingly technological society, with the potential to cause mass blackouts, loss of communication, or failure of satellites. Currently, potentially hazardous active regions can only be identified days before directly facing the Earth due to the rotation of the Sun. Farside magnetograms offer a potential solution to this, allowing for global coverage of the solar magnetic field. However, with STEREO no longer giving a view of the farside, there is currently no reliable method to generate farside magnetograms. A combination of farside helioseismic holography and deep learning may present a solution to this through the generation of magnetograms from seismic maps.
+
+
+Data availability
+
+Software
+
+Python scikit image numpy imageio pandas tensorflow PIL sunpy astropy cv2 matplotlib https://github.com/chemron/honours
+
+mnras.bst
+
+
