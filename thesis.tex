@@ -190,32 +190,37 @@ only seven days after becoming visible. A method for imaging the farside
 regions is necessary to identify dangerous farside magnetic activity before it
 reaches the Earth. \\
 
-Using a conditional generative adversarial network (cGAN), a deep learning
-technique useful for image-to-image translation, \citet{Kim2019} were able to
-create magnetograms based on extreme ultraviolet (EUV) images taken by NASA's
-Solar Terrestrial Relations Observatory (STEREO)\footnote{STEREO
-consists of two spacecraft, STEREO ahead (A) and STEREO behind (B), however,
-contact with STEREO-B was lost in 2016, and so the images used were taken by
-STEREO-A.}. The orbit of STEREO-A allows it to move around the Sun relative to
-the Earth, and take farside EUV images during some points of its orbit,
-which can then be used to generate farside magnetograms. However STEREO-A
-currently only has a partial view of the solar farside, a view that will only decrease
-until it passes the Earth in 2023. By then, STEREO-A will be more than 16 years
-into its planned 2-year mission and may have lost contact with the Earth.
-Furthermore \citet{Kim2019} used a saturation point of 100 Gauss when generating
-these magnetograms. As many active regions have magnetic fields stronger than
-1000 G, this severely limits the ability to predict extreme events.\\
 
 
-To avoid these issues, we instead employ a method to generate synthetic
-magnetograms from farside seismic maps - images that measure perturbations on
-the far hemisphere by computing the travel-time of acoustic waves, known as
-p modes, that travel through the interior of the Sun \citep{Lindsey2017}. This
-method consists of two steps. First, we train a cGAN to generate magnetograms
-from EUV images using data from the Solar Dynamics Observatory (SDO). This cGAN
-is then applied to EUV images from STEREO-A to create a data set of partially
-farside synthetic magnetograms. Secondly, we use these synthetic magnetograms to
-train a separate cGAN to generate magnetograms from farside seismic maps.
+% TODO: probably just remove this part about kim
+
+% Using a conditional generative adversarial network (cGAN), a deep learning
+% technique useful for image-to-image translation, \citet{Kim2019} were able to
+% create magnetograms based on extreme ultraviolet (EUV) images taken by NASA's
+% Solar Terrestrial Relations Observatory (STEREO)\footnote{STEREO
+% consists of two spacecraft, STEREO ahead (A) and STEREO behind (B), however,
+% contact with STEREO-B was lost in 2016, and so the images used were taken by
+% STEREO-A.}. The orbit of STEREO-A allows it to move around the Sun relative to
+% the Earth, and take farside EUV images during some points of its orbit,
+% which can then be used to generate farside magnetograms. However STEREO-A
+% currently only has a partial view of the solar farside, a view that will only decrease
+% until it passes the Earth in 2023. By then, STEREO-A will be more than 16 years
+% into its planned 2-year mission and may have lost contact with the Earth.
+% Furthermore \citet{Kim2019} used a saturation point of 100 Gauss when generating
+% these magnetograms. As many active regions have magnetic fields stronger than
+% 1000 G, this severely limits the ability to predict extreme events.\\
+
+
+% To avoid these issues, we instead 
+We employ a method to generate synthetic magnetograms from farside seismic maps
+- images that measure perturbations on the far hemisphere by computing the
+travel-time of acoustic waves, known as p modes, that travel through the
+interior of the Sun \citep{Lindsey2017}. Our method consists of two steps.
+First, we train a cGAN to generate magnetograms from EUV images using data from
+the Solar Dynamics Observatory (SDO). This cGAN is then applied to EUV images
+from STEREO-A to create a data set of partially farside synthetic magnetograms.
+Secondly, we use these synthetic magnetograms to train a separate cGAN to
+generate magnetograms from farside seismic maps.
 
 
 
@@ -1544,14 +1549,14 @@ research into how they could be used to generate magnetograms from seismic maps.
 
 
 \section{Generating farside magnetograms}
-
+\label{sec:outlook}
 
 To produce synthetic magnetograms from farside seismic maps using a deep
 learning method, we require a dataset seismic map/magnetogram pairs. While
 farside seismic maps created by helioseismic holography are readily available
 (see Section \ref{sec:FHSM}), corresponding magnetograms are not. Therefore, to
 generate farside magnetograms we split this problem into two parts. Firstly, we
-create a sample of magnetograms that directly coincide with farside seismic
+create a dataset of magnetograms that directly coincide with farside seismic
 maps, and secondly, we use these samples to learn a mapping from seismic
 maps to farside magnetograms. \\
 
@@ -1740,8 +1745,8 @@ shows a summary of the project pipeline. \\
 %
 %
 
-To generate farside magnetograms from farside seismic maps, we first create two distinct
-data sets
+To generate farside magnetograms from farside seismic maps, we first create two
+distinct data sets
 \begin{enumerate}
   \item a nearside dataset consisting of EUV and magnetogram image pairs, and
   \item a farside dataset consisting of seismic map and EUV image pairs.
@@ -1798,25 +1803,26 @@ accounting for the above effects.
 
 \section{Data Collection}
 \label{sec:data_collection}
-Our research required the following data sources:
-\begin{enumerate}
-  \item SDO EUV images,
-  \item SDO magnetograms,
-  \item STEREO-A EUV images, and
-  \item helioseismic holography maps.
-\end{enumerate}
+As detailed in Section \ref{sec:outlook}, our research required data from the
+Solar Dynamics Observatory (SDO) and the Solar Terrestrial Relations Observator A
+(STEREO-A) in addition to farside seismic maps.
+% created using SDO dopplergrams.
+% \begin{enumerate}
+%   \item SDO EUV images,
+%   \item SDO magnetograms,
+%   \item STEREO-A EUV images, and
+%   \item helioseismic holography maps.
+% \end{enumerate}
 % EUV images with a wavelength of \SI{304}{\angstrom} are produced by both the SDO
 % and STEREO-A EUV telescopes and were therefore chosen for this project. As explained in
 % Section \ref{sec:Sun}, light at \SI{304}{\angstrom} is emitted by the
 % chromosphere - the atmospheric layer above the photosphere. \\
-
 As SDO is orbiting the Earth, both the SDO EUV images and magnetograms were
 taken of the nearside. STEREO-A is instead in a heliocentric orbit, with an
 orbital period of 346 days. As such, it has rotated about the Sun relative to
-the Earth taking some images of the farside throughout its 14-year life.
-Figure \ref{fig:stereo_pos} shows the location of STEREO-A over the course of
-the mission. Finally, the seismic maps are generated from SDO dopplergrams and
-image the farside of the Sun as detailed in Section \ref{sec:FHSM}. \\
+the Earth taking parital images of the farside throughout its 14-year life.
+Finally, the seismic maps are generated from SDO dopplergrams and image the
+farside of the Sun as detailed in Section \ref{sec:FHSM}. \\
 
 Of particular importance when collecting the data is the time and location of
 the image capture. Here we detail what decisions were made in regards to these
@@ -1828,7 +1834,7 @@ factors.
 
 
 \subsection{Nearside Data}
-As all the nearside data comes from SDO the position of the telescope does not
+As all the nearside data comes from SDO, the position of the telescope does not
 change between data types. Furthermore, SDO captures EUV images and magnetograms
 with a cadence of 12 and 45 seconds respectively, allowing us to compare these
 with very little time difference. The images were provided by the Joint Science
@@ -1897,7 +1903,7 @@ The time delay between a STEREO-A image and the farside is then given by
 where $T$ is the aforementioned Carrington rotational period, $\theta(t_s)$ is
 the angle between STEREO-A and the solar farside, and $(x(t_s), y(t_s))$ is the
 position of STEREO-A at time $t_s$ in heliocentric Earth equatorial coordinates.
-It should be noted that $\theta(t_s)$ and therefore $\Delta_t$ are negative
+It should be noted that $\theta(t_s)$ and therefore $\Delta t$ are negative
 while STEREO-A is `behind' the solar rotation, and positive while STEREO-A is
 `ahead' of the solar rotation. We can therefore calculate the equivalent farside
 time ($t_f$) for a given $t_s$ as follows
@@ -1912,17 +1918,19 @@ Lab at California Institute of Technology\footnote{See
 The Joint Science Operation Centre has been producing farside seismic maps with
 a cadence of 12 hours since April 2010\footnote{See
 \url{jsoc.stanford.edu/data/farside/Phase_Maps}.}. For each of these images, the
-equivalent time for STEREO-A was found for each image and the
-\SI{304}{\angstrom} EUV image that best matched this time was found. If the
-image time disagreed with the ideal time by more than 2 hours the image was
-discarded. As STEREO-A produces \SI{304}{\angstrom} EUV images with a cadence of
-\SI{10}{minutes} this only affected images produced during periods of reduced
-telemetry. The remaining images were downloaded from the Virtual Solar
-Observatory\footnote{See \url{virtualsolar.org}.}. \\
+equivalent time for STEREO-A was calculated and the \SI{304}{\angstrom} EUV image
+that best matched this time was found. If the image time disagreed with the
+ideal time by more than 2 hours the image was discarded. As STEREO-A produces
+\SI{304}{\angstrom} EUV images with a cadence of \SI{10}{minutes} this only
+affected images produced during periods of reduced telemetry. The remaining
+images were downloaded from the Virtual Solar Observatory\footnote{See
+\url{virtualsolar.org}.}. \\
 
-However, before using these images we need to ensure that the Sun is represented
-consistently across each dataset such that any solar features appear in the
-same location.
+With the dataset of images obtained, we now turn our attention to ensuring
+consistancy between images.
+% However, before using these images we need to ensure that the Sun is represented
+% consistently across each dataset such that any solar features appear in the
+% same location.
 
 \begin{figure}[ht]
   \centering
@@ -1944,7 +1952,7 @@ same location.
 To ensure consistency between image datasets we need to take into account the
 position and orientation of the Sun as well as how the Sun is represented on
 each image. As there are many ways to project three-dimensional data onto a
-two-dimensional image consistent representation of the Sun is not gauranteed.
+two-dimensional image, consistent representation of the Sun is not gauranteed.
 Therefore to effectively compare different images of the Sun we must take into
 account the projection used to construct the image.
 
@@ -1952,7 +1960,7 @@ account the projection used to construct the image.
 Fortunately,  both SDO EUV images and magnetograms use the same projection. For
 these images, each pixel directly corresponds to a pixel on the camera sensor,
 which in the case of SDO and STEREO-A images is a charge-coupled device or
-CCD\citep{kaiser_stereo_2008,lemen_atmospheric_2012}. As the CCD is a flat plane,
+CCD \citep{kaiser_stereo_2008,lemen_atmospheric_2012}. As the CCD is a flat plane,
 the resultant image is a projection of the Sun onto the parallel tangent plane of the
 celestial sphere.
 % gnomonic projection
@@ -1971,14 +1979,15 @@ SDO uses two distinct instruments to create the EUV and magnetogram data
 Helioseismic and Magnetic Imager \citep{scherrer_helioseismic_2012}
 respectively) which have different orientations. The helioprojective latitude
 and longitude were found for each pixel using image metadata which was then used
-to rotate the images such that the uppermost section of the image corresponded to
-the northernmost solar disk region, thus aligning the images consistently.\\
+to rotate the images such that the uppermost section of the image corresponded
+to the northernmost region of the solar disk, thus aligning the images
+consistently.\\
 
 However, the distance to the Sun changes throughout SDO's orbit due to the
 eccentricity of the Earth, changing the relative size of the solar disk. To remove
 this discrepancy, while also removing unnecessary pixels, the images were
 cropped to the radius of the Sun, again using information extracted from the
-image metadata. This process is less straightforward for the farside data.
+image metadata. This process was less straightforward for the farside data.
 
 % not sure if I want to keep it like this or change it to below:
 %   \item Fortunately both EUV and magnetogram images are taken by SDO at very similar
@@ -2036,7 +2045,7 @@ coordinates, we use the following transformation, provided by
 \citet{thompson_w_t_coordinate_2006}:
 \begin{align}
   x &= d \cos \theta_y \sin \theta_x \, , \\
-  y &= d \sin \theta_y \, and \\
+  y &= d \sin \theta_y \, \text{and} \\
   z &= D_\odot - \cos \theta_y \cos \theta_x \, .
   \label{eqn:heliop_to_helioc}
 \end{align}
@@ -2072,13 +2081,13 @@ and after this transformation. \\
 %TODO: overlay stereo and seismic maps or at least show stereo as well. Also
 %maybe inbetween image
 
-Now with consistent projection, the STEREO-A EUV images were prepared in the
+Now with consistent projections, the STEREO-A EUV images were prepared in the
 same manner as for the nearside, by first rotating the images such that the
 northernmost region of the solar disk was at the uppermost point in the image,
 then cropping the images to the radius of the Sun. This step was not required
 for the re-projected seismic maps as they were already correctly aligned as a
-by-product of the transformation. With all images correctly aligned, it
-is now necessary to take into account effects caused by each imaging instrument.
+by-product of the transformation. With all images correctly aligned, it is now
+necessary to take into account effects from the individual imaging instruments.
 
 \begin{figure}[t]%
   \centering
@@ -2171,7 +2180,7 @@ factor depending on the time the image was taken, i.e.
 \begin{align}
   p_f = w(t) p_i \, ,
 \end{align}
-where $p_i$ is the initial pixel value, p_f is the final pixel value and $w(t)$
+where $p_i$ is the initial pixel value, $p_f$ is the final pixel value and $w(t)$
 is the weighting factor at time $t$. The weighting factor was chosen to be the 
 reciprocal of a 50-point rolling average of the 75th
 percentile at time $t$, i.e.
@@ -2227,14 +2236,14 @@ which was \SI[]{32}[]{DN}. The upper bound can be seen in Figure
 intense solar activity, it was important to make this upper bound as high as
 possible while keeping the two datasets consistent. This constraint did not
 apply to a lower bound, which was chosen to have a value of \SI{0}{DN}. Finally,
-both datasets were normalised by dividing by the upper bound such that all pixels
-had a value between 0 and 1. Figure \ref{fig:sdo_stereo_comparison} shows a
-comparison between the STEREO-A and SDO datasets after normalisation. As can be
-seen, the datasets seem to be largely consistent with each other. Furthermore,
-not all information about the long-term solar activity has been lost through
-this normalisation process, as can be seen by the peak in the middle of the
-solar cycle around 2014. With the EUV data normalised, we now turn to
-the Magnetogram and seismic data.
+both datasets were normalised by dividing by the upper bound such that all
+pixels had a value between 0 and 1. Figure \ref{fig:sdo_stereo_comparison} shows
+a comparison between the STEREO-A and SDO datasets after normalisation. As can
+be seen, the datasets seem to be largely consistent with each other.
+Furthermore, not all information about the long-term solar activity has been
+lost through this normalisation process, as the general trend of the solar cycle
+is still visible, with solar activity peaking in 2014. With the EUV data
+normalised, we now turn to the Magnetogram and seismic data.
 
 
 
@@ -2284,8 +2293,8 @@ the Magnetogram and seismic data.
   and December 2019. Due to the large range of data, the 25th to 100th
   percentiles were plotted on a log scale. \subref{fig:aia_outliers} The 75th
   percentile of the SDO EUV data. A simple threshold was used to remove poor
-  quality data. \subref{fig:aia_no_degredation} The percentiles of the SDO
-  EUV data after accounting for instrument degredation.}
+  quality data. \subref{fig:aia_no_degradation} The percentiles of the SDO
+  EUV data after accounting for instrument degradation.}
   \label{fig:aia_data_prep}
 \end{figure}
 
@@ -2317,8 +2326,8 @@ the Magnetogram and seismic data.
   and December 2019. The gap in the data is due to the loss of data during the
   STEREO-A solar conjunction. \subref{fig:stereo_outliers} The 75th
   percentile of the STEREO-A EUV data. A simple threshold was used to remove poor
-  quality data. \subref{fig:stereo_no_degredation} The percentiles of the
-  STEREO-A EUV data after accounting for instrument degredation. The dashed
+  quality data. \subref{fig:stereo_no_degradation} The percentiles of the
+  STEREO-A EUV data after accounting for instrument degradation. The dashed
   horizontal line indicates the point above which data was clipped to ensure
   consistent saturation.}
   \label{fig:stereo_data_prep}
@@ -2336,12 +2345,12 @@ the Magnetogram and seismic data.
 
 \subsection{Magnetogram and Seismic Data}
 Figure \ref{fig:hmi_p} shows the percentiles of pixel values for the SDO
-magnetogram data. Each pixel on a magnetogram image measures the average radial
-magnetic field ($\mathbf{B}\cdot\mathbf{\hat{r}}$) in units of Gauss (G) on the
-surface of the Sun subtended by the pixel. Similarly, Figure \ref{fig:seismic_p}
-shows the percentiles of pixel values for the seismic maps. As explained in
-Section \ref{sec:HSM}, seismic maps measure the relative phase shift experienced
-by p modes as they travel to and from the solar farside. \\
+magnetogram data. Each pixel on a magnetogram image measures the average
+line-of-sight magnetic field ($\mathbf{B}\cdot\mathbf{\hat{r}}$) in units of
+Gauss (G) on the surface of the Sun subtended by the pixel. Similarly, Figure
+\ref{fig:seismic_p} shows the percentiles of pixel values for the seismic maps.
+As explained in Section \ref{sec:HSM}, seismic maps measure the relative phase
+shift experienced by p modes as they travel to and from the solar farside. \\
 
 Fortunately, neither of these datasets exhibited the instrument degradation or
 image saturation seen in the EUV data. The magnetogram data was normalised by
@@ -2397,16 +2406,16 @@ neural networks.
 %TODO fix this -- maybe introduce UV-GAN and Seismic-GAN earlier.
 We require two deep neural networks to generate farside magnetgorams from
 seismic maps. The first of these must generate magnetograms from EUV
-\SI{304}{\angstrom} images, which is then used to generate `STEREO-Magnetograms'
-from our STEREO-A EUV data. The second network must then generate magnetograms
-from seismic maps. In both cases, we use an image-to-image cGAN, which has
-proven to be very effective at image-to-image translation. We henceforth refer
-to these two cGANs as the `UV-GAN' and the `Seismic-GAN' respectively. As
-outlined in Section \ref{sec:cgan}, each of these cGANs consist of two competing
-networks: a `generator' and a `discriminator'. The same generator and
-discriminator architecture is used for both the UV-GAN and the Seismic-GAN. In
-this chapter, we outline the architecture used for the UV and Seismic-GAN and
-describe how these deep neural networks were trained.
+\SI{304}{\angstrom} images, which can then be used to generate `STEREO
+Magnetograms' from our STEREO-A EUV data. The second network must then generate
+magnetograms from seismic maps. In both cases, we use an image-to-image cGAN,
+which has proven to be very effective at image-to-image translation. We
+henceforth refer to these two cGANs as the `UV-GAN' and the `Seismic-GAN'
+respectively. As outlined in Section \ref{sec:cgan}, each of these cGANs consist
+of two competing networks: a `generator' and a `discriminator'. The same
+generator and discriminator architecture is used for both the UV-GAN and the
+Seismic-GAN. In this chapter, we outline the architecture used for the UV and
+Seismic-GAN and describe how these deep neural networks were trained.
 
 
 
@@ -2478,14 +2487,14 @@ The generator network must be capable of translating the conditional image
 (either an EUV image or seismic map) into a magnetogram. For this purpose, we
 chose a U-net \citep{ronneberger_u-net_2015}. U-nets were originally developed
 for biomedical image segmentation, however have been used in a wide range of
-Astrophysics applications (for example
+astrophysics applications (for example
 \citet{felipe_improved_2019,bekki_quantifying_2021,baso_solar_2019}). U-nets
 consist of a downsampling path where the width and height of each layer are
 reduced at each step, followed by an upsampling path where the width and height
 increase at each step until reaching the original size. Many `skip
 connections' join layers of the same size at either side of the `U'. The model used
 in this work is shown in Figure \ref{fig:gen_model}. By implementing a U-net the
-generator is can perform image-to-image translation that retains the shape and
+generator can perform image-to-image translation that retains the shape and
 large scale structures of the input image while still capturing complex
 relationships between the input and output. While the generator network must be
 able to translate between image types, the discriminator network must be able to
@@ -2555,7 +2564,7 @@ this addition, the generator cost function used was
   \caption{
     The input consists of two ($1024\times 1024$) `channels', containing the
     magnetogram (be it real or fake) and the conditional image (either the UV
-    image or seismic map depending on the GAN). 5 successive convolutional
+    image or seismic map depending on the cGAN). 5 successive convolutional
     layers with batch normalisation and leaky ReLU activation were applied such
     that the output layer is a ($126\times 126 \times 1$) tensor.
   }
@@ -2599,7 +2608,7 @@ due to the large dynamic range of both the EUV images and magnetograms. This
 range can be seen in Figures \ref{fig:sdo_stereo_comparison} and
 \ref{fig:hmi_p}, where in both cases approximately $99\%$ of the pixels were at
 least an order of magnitude smaller than the maximum pixel value for each image.
-This essentially results in images that are too dark, causing the GAN to largely
+This essentially results in images that are too dark, causing the cGAN to largely
 focus on the few bright pixels. Previous work on EUV to magnetogram translation
 has used saturation limits to deal with this problem by clipping data above a
 certain point, for example, \citet{Kim2019} used saturation limits of $\pm 100G$
@@ -2609,9 +2618,9 @@ a cut-off we instead artificially increased the saturation by amplifying lower
 intensity pixels. For the EUV images (both from SDO and STEREO-A) this
 artificial saturation was done by taking the square root of the pixel values.
 This ensured that the pixel values remained between the normalised bounds of
-\SI{0}{DN} and \SI{1}{DN}, while increasing the intensity of the
+0 and 1, while increasing the intensity of the
 under-represented pixels. For magnetograms, which had pixel values between
-$\pm \SI{1}{DN}$, this artificial saturation took the form
+$\pm 1$, this artificial saturation took the form
 \begin{align}
   p^{(\text{new})} = \text{Sign}(p)\sqrt{\absolutevalue{p}}\, ,
 \end{align}
@@ -2626,8 +2635,8 @@ A new cGAN was trained with the same parameters, this time with the artificial
 saturation. This time, the UV-GAN was able to produce seemingly realistic
 magnetograms, and appear to correctly identify the shape and location of active
 regions. Figure \ref{fig:aia_hmi_mag} shows a generated magnetogram along with
-the corresponding  The accuracy of these synthetic magnetograms will be analysed in
-Chapter \ref{chap:results_and_analysis}. \\
+the corresponding SDO EUV image and magnetogram. The accuracy of these synthetic
+magnetograms will be analysed in Chapter \ref{chap:results_and_analysis}. \\
 
 
 Using this trained UV-GAN, 5017 synthetic magnetograms were generated between
@@ -2664,14 +2673,14 @@ magnetogram.
   %TODO: maybe pick a different one since I use this later
   \centering
   \subfigure[]{%
-  \label{fig:6.11.11_STE}%
+  \label{fig:6.11.11_STE2}%
   \includegraphics[height=2in]{6.11.11_STE.png}% 
 }%
 \subfigure[]{%
-  \label{fig:6.11.11_MAG}%
+  \label{fig:6.11.11_MAG2}%
   \includegraphics[height=2in]{6.11.11_MAG.png}% 
-} \caption{\subref{fig:6.11.11_STE} a STEREO-A EUV image taken on 31st of October
-  2011. \subref{fig:6.11.11_MAG} the corresponding magnetogram generated by the
+} \caption{\subref{fig:6.11.11_STE2} a STEREO-A EUV image taken on 31st of October
+  2011. \subref{fig:6.11.11_MAG2} the corresponding magnetogram generated by the
   UV-GAN}
   \label{fig:stereo_mag}
 \end{figure}
@@ -2712,8 +2721,8 @@ to five days. %TODO: CHECK THIS
 % changes.\\
 % The Seismic-GAN was retrained using a filter size of 16 (as opposed to 4), again
 % using the same parameters as before.
-This left 2899 seismic map/STEREO magnetogram imapge pairs, which were used to
-retrain the Seismic-GAN. Unfortunately this resulted in mode-collapse, where
+This left 2899 seismic map/STEREO magnetogram image pairs, which were used to
+re-train the Seismic-GAN. Unfortunately this resulted in mode-collapse, where
 the Generator found a local minimum by producing (almost) the same output
 image regardless of the input. Figure~\ref{fig:mode_collapse} shows two seismic
 maps and the corresponding synthetic magnetograms produced by this cGAN. Despite
@@ -2736,10 +2745,10 @@ Finally, the Seismic-GAN was again trained with the larger allowable time delay,
 but now with a batch size of 8 as opposed to 1. This larger batch size means
 that each step taken through parameter space will be closer to the optimal step
 (see Section \ref{sec:learning}). Figure \ref{fig:batch} shows an example
-magnetogram generated using this Seismic-GAN. This time the GAN was able to
-predict some of the active regions, albeit with mixed accuracy, and was unable
-to predict the shape and size of active. We analyse the performance of this cGAN
-in Chapter \ref{chap:results_and_analysis}.
+magnetogram generated using this Seismic-GAN. This time the cGAN was able to
+predict some of the active regions, albeit with mixed accuracy, but was unable
+to predict the shape and size of active regions. We analyse the performance of
+this cGAN in Chapter \ref{chap:results_and_analysis}.
 
 
 
@@ -2846,7 +2855,7 @@ in Chapter \ref{chap:results_and_analysis}.
 \label{chap:results_and_analysis}
 
 Both the UV-GAN and Seismic-GAN produce magnetograms with varying levels of
-accuracy, but appear physically realistic to the eye. The purpose of generating
+accuracy that appear physically realistic to the eye. The purpose of generating
 these magnetograms was to monitor the level of farside magnetic activity to give
 some warning of potential extreme solar events. In this chapter, we detail how
 we can get a quantitative prediction from these magnetograms, and use these to
@@ -2876,7 +2885,7 @@ predicting extreme magnetic fields.
 % images will be unevenly weighted towards the central pixels. A better metric for
 % evaluation is the
 For this purpose we use the unsigned magnetic flux,
-\(T_{\text{flux}}\) given by
+\(T_{\text{flux}}\), given by
 \begin{align}
   T_{\text{flux}} = \int \int \absolutevalue{B_z} dx dy \, ,
 \end{align}
@@ -2933,13 +2942,12 @@ magnetograms. Figure \ref{fig:flux_sdo_uv} shows the flux according to the SDO
 magnetograms and the UV-GAN using STEREO-EUV data, with vertical lines
 indicating X-class solar flares\footnote{Solar flares are classified `X' if the
 peak solar flux measured at the Earth is greater than \SI{1e-4}{W.m^{-4}}.}.
-
 There is a clear bias between the two predicted fluxes, at
-the time of writing the cause of this is unclear.
+the time of writing the cause of this is unclear.\\
 
 While this limits the ability of the UV-GAN to predict the absolute strength of
 the magnetic field, this is largely not an issue if we can accurately determine
-the change in magnetic flux, relative to some fixed point.
+the change in magnetic flux relative to some fixed point.
 %TODO: fix, make plot of relative flux
 To this end, the UV-GAN was successful in its ability to predict peaks and dips
 in magnetic flux consistent with the true magnetograms as well as much of the
@@ -3003,14 +3011,14 @@ magnetograms.\\
 
 Figure \ref{fig:flux_sdo_seismic} shows the unsigned magnetic flux of the
 magnetograms as a function of time, again with vertical lines indicating X-class
-solar flares. As the Seismic-Gan is trained on data from the UV-GAN it is unable
+solar flares. As the Seismic-Gan is trained on data from the UV-GAN, it is unable
 to produce magnetograms more realistic than those of the UV-GAN unless by
 chance. As such the magnetic flux corresponding to the Seismic-GAN has the same
 bias as with the UV-GAN. While the UV-GAN was able to reproduce much of the
 short time scale variations seen in the true magnetic flux, this is not the case
 for the Seismic-GAN. This is likely due to the way the seismic maps are created,
 with the final image being an integration over 24 hours, while the SDO images
-are essentially instantaneous. Additionally, while the UV-GAN was able to
+are essentially instantaneous snapshots. Additionally, while the UV-GAN was able to
 reproduce the general shape of the solar cycle, this long-term variation was
 much less pronounced for the Seismic-GAN. Despite these flaws, solar flares
 occurances had associated peaks indicating the potential usefulness of these
@@ -3036,7 +3044,11 @@ magnetogram twelve days later.
     \label{fig:smag_2011_11_15}%
     \includegraphics[height=1.8in]{SMAG_2011_11_15.png}% 
   }%
-  \caption[]{}
+  \caption[]{\subref{fig:uv_mag_2011_11_15} is a ssynthetic STEREO magnetogram
+  generated by the UV-GAN, from a EUV image taken on the 15th of November 2011.
+  \subref{fig:smap_2011_11_15} is the equivalent seismic map.
+  \subref{fig:smag_2011_11_15} is the synthetic magnetogram generated by the
+  seismic-GAN based on the seismic map.}
   \label{fig:seismic_2011_11_15}
 \end{figure}
 
@@ -3153,34 +3165,34 @@ solar cycle as can be seen in Figure \ref{fig:flux_sdo_uv}. \\
 
 
 As the Seismic-GAN was trained on the synthetic `STEREO magnetograms', a further
-limitation came from the time delay between the seismic maps and STEREO-A data to
-account for the rotation of the Sun. As explained in Section
-\ref{sec:data_collection} this time delay was based on the average rotation of
-Sunspots. However due to the differential rotation of the Sun, this still meant
-that some active regions may be in different locations after the delay, and more
-importantly, active regions may have decayed or new ones emerged during this
-period. As the data from STEREO-A was the only viable source of farside
-information to compare to the seismic maps, this was unfortunately necessary.
-This creates a trade-off between the time delay and the amount of data, while
-allowing only small time delays gives more accurate data this also restricts the
-quantity of data. After some trial and error (see Section \ref{sec:train_seismic})
-we used data with a time delay less than seven days. \\
+limitation came from the time delay between the seismic maps and STEREO-A data.
+As explained in Section \ref{sec:data_collection} this time delay was based on
+the average rotation of Sunspots. However due to the differential rotation of
+the Sun, this still meant that some active regions may be in different locations
+after the delay, and more importantly, active regions may have decayed or new
+ones emerged during this period. As the data from STEREO-A was the only viable
+source of farside information to compare to the seismic maps, this was
+unfortunately necessary. This creates a trade-off between the time delay and the
+amount of data, while allowing only small time delays gives more accurate data
+this also restricts the quantity of data. After some trial and error (see
+Section \ref{sec:train_seismic}) we used data with a time delay of less than
+seven days. \\
 
 
 Many of these issues may have been solved if we simply used a neural network to
 predict the unsigned magnetic flux for a given seismic image, rather than trying
-to generate a magnetogram from scratch. This comes at the cost of
-interpretability however, generating magnetograms as we did allowed us to
-interrogate the outputs and understand why the network predicted a given flux.
-Perhaps a better method would have been to avoid the use of the EUV data
-altogether, and instead, train a cGAN to generate magnetograms from seismic data
-based on the nearside images half of a rotation later. While this suffers from
-the same issue of emerging and decaying active regions, the shifting of the
-active regions would be consistent across the whole dataset. This does not solve
-the problem of insufficient information however. To overcome this, the cGAN could
-be given the magnetogram half a rotation earlier as an additional input. The
-cGAN would then only have to learn about changes in the magnetic field rather
-than having to produce a magnetogram from scratch. \\
+to first generate a magnetogram. This comes at the cost of interpretability
+however, generating magnetograms as we did allowed us to interrogate the outputs
+and understand why the network predicted a given flux. Perhaps a better method
+would have been to avoid the use of the EUV data altogether, and instead, train
+a cGAN to generate magnetograms from seismic data based on the nearside images
+half of a rotation later. While this suffers from the same issue of emerging and
+decaying active regions, the shifting of the active regions would be consistent
+across the whole dataset. This does not solve the problem of insufficient
+information however. To overcome this, the cGAN could be given the magnetogram
+half a rotation earlier as an additional input. The cGAN would then only have to
+learn about changes in the magnetic field rather than having to produce a
+magnetogram from scratch. \\
 
 
 
