@@ -128,16 +128,14 @@ height=1cm, text centered, draw=black, fill=gray!30, text width=3cm]
 Active regions on the Sun's surface can lead to large eruptions with the
 potential to cause significant hazards on Earth. Images of the magnetic field on
 the Sun's surface, known as magnetograms, are a vital tool for predicting these
-events. While these are readily available for the Sun's hemisphere that faces
-the Earth, there is currently no reliable way to generate magnetograms for the
-opposite hemisphere. Consequently, dangerous farside active regions
-may rotate into the view of the Earth with little warning. Here we describe a
-method to generate synthetic farside magnetograms from helioseismology data
-products using a deep learning method. While the synthetic magnetograms are
-unable to accurately predict the position or shape of active regions, they
-successfully predict sharp changes in the total unsigned magnetic field - a key
-predictor of solar eruptions.
-
+events. While these are readily available for the near hemisphere of the Sun,
+there is currently no reliable way to generate magnetograms for the far
+hemisphere. Consequently, dangerous farside active regions may rotate towards
+Earth with little warning. Here we describe a method to generate synthetic
+farside magnetograms using a deep learning method applied to helioseismology
+data. While the synthetic magnetograms fail to accurately determine the position
+or shape of active regions, they successfully predict sharp changes in the total
+unsigned magnetic field - a key predictor of solar eruptions.
 
 % \chapter*{Acknowledgements}
 %TODO:
@@ -174,16 +172,34 @@ predictor of solar eruptions.
 %
 %
 
-Active regions are areas of intense magnetic field on the surface of the Sun.
-These are known to cause significant eruptions, such as coronal mass ejections
-or solar flares. These extreme events can eject fast-moving particles into
-interstellar space with the potential to cause electrical blackouts,
-loss of satellites, and hazardous levels of radiation exposure for astronauts
-\citep{Mewaldt2005, council_severe_2008}. \\
+%TODO: rewrite! this is just getting it down quickly
+A complex and self-regenerating dynamo produces a continuously changing solar
+magnetic field beneath the Sun's surface. Flux ropes produced by this field may
+% what are flux ropes
+rise and penetrate through the solar surface, forming an active region. These
+active regions can have magnetic fields exceeding 1000 Gauss. The extreme
+conditions in active regions can create a build up of magnetic energy. If the
+active region is unable to dissapate this energy, this can lead to an energetic
+magnetic reconnection event causing an explosive release of built up energy.
+Such erruptions can cause solar flares or coronal mass ejections and pose a
+danger to earth.\\
+
+X-rays released by coronal mass ejections can heat the Earth's atmosphere
+atmosphere causing drag on satellites and can pose a radiation hazard to
+Astronauts. Coronal mass ejections that collide with the Earth create a
+geomagnetic storm with the potnetial to overwhelm terrestrial electrical grids
+causing blackouts. This has historically resulted in blackouts for example in
+Quebec \citep{odenwald_day_2015}
+
+magnetograms are a vital tool for predicting such events, and the related
+magnetic flux ... etc are used as predictors.
+While magnetograms are available for the nearside, these 
 
 Solar magnetograms, images of the magnetic field of the Sun, can be used to
 identify potentially high-risk active regions before they erupt
-\citep{bobra_solar_2015}. However, these magnetograms are only available for the
+\citep{bobra_solar_2015}. predictors such as magnetic flux etc ...
+
+However, these magnetograms are only available for the
 `nearside': the hemisphere of the Sun that faces the Earth. Due to the rotation of
 the Sun, active regions that emerge on the `farside' could be facing the Earth
 only seven days after becoming visible. A method for imaging the farside
@@ -191,24 +207,71 @@ regions is necessary to identify dangerous farside magnetic activity before it
 reaches the Earth. \\
 
 
+The STEREO mission consits of two space craft which observe the Sun on a
+heliocentric orbit. these spacecraft rotate about the Sun relative to Earth and
+observe the farside at some points in their mission.  \citet{Kim2019} were able to
+create magnetograms based on extreme ultraviolet (EUV) images taken by NASA's
+Solar Terrestrial Relations Observatory (STEREO)\footnote{STEREO
+consists of two spacecraft, STEREO ahead (A) and STEREO behind (B), however,
+contact with STEREO-B was lost in 2016, and so the images used were taken by
+STEREO-A.}. The orbit of STEREO-A allows it to move around the Sun relative to
+the Earth, and take farside EUV images during some points of its orbit,
+which can then be used to generate farside magnetograms. However STEREO-A
+currently only has a partial view of the solar farside, a view that will only decrease
+until it passes the Earth in 2023. By then, STEREO-A will be more than 16 years
+into its planned 2-year mission and may have lost contact with the Earth.
+Furthermore \citet{Kim2019} used a saturation point of 100 Gauss when generating
+these magnetograms. As many active regions have magnetic fields stronger than
+1000 G, this severely limits the ability to predict extreme events.\\
+
+
+An alternative way to image the farside of the sun is given by farside
+helioseismic holography. This is a helioseismic technique
+
+We employ a method to generate synthetic magnetograms from farside seismic maps
+- images that measure perturbations on the far hemisphere by computing the
+travel-time of acoustic waves, known as p-modes, that travel through the
+interior of the Sun \citep{Lindsey2017}. Our method consists of two steps.
+First, we train a cGAN to generate magnetograms from EUV images using data from
+the Solar Dynamics Observatory (SDO). This cGAN is then applied to EUV images
+from STEREO-A to create a data set of partially farside synthetic magnetograms.
+Secondly, we use these synthetic magnetograms to train a separate cGAN to
+generate magnetograms from farside seismic maps.
+
+
+
+
+\begin{itemize}
+  \item maybe dynamo
+  \item active regions
+  \item space weather
+  \item cmes
+  \item blackouts
+  \item etc
+  \item problem
+  \item rotation of the sun
+  \item what do we need
+  \item furthermore provide boundary conditions (maybe)
+  \item deep learning
+  \item what has been done
+  \item kim
+  \item problem with stereo
+  \item helioseismology
+  \item farside helioseismic holography
+  \item what we do
+  \item signpost?
+\end{itemize}
+
+Active regions are areas of intense magnetic field on the surface of the Sun.
+These are known to cause significant eruptions, such as coronal mass ejections
+or solar flares. These extreme events can eject fast-moving particles into
+interstellar space with the potential to cause electrical blackouts,
+loss of satellites, and hazardous levels of radiation exposure for astronauts
+\citep{Mewaldt2005, council_severe_2008}. \\
+
 
 % TODO: probably just remove this part about kim
 
-% Using a conditional generative adversarial network (cGAN), a deep learning
-% technique useful for image-to-image translation, \citet{Kim2019} were able to
-% create magnetograms based on extreme ultraviolet (EUV) images taken by NASA's
-% Solar Terrestrial Relations Observatory (STEREO)\footnote{STEREO
-% consists of two spacecraft, STEREO ahead (A) and STEREO behind (B), however,
-% contact with STEREO-B was lost in 2016, and so the images used were taken by
-% STEREO-A.}. The orbit of STEREO-A allows it to move around the Sun relative to
-% the Earth, and take farside EUV images during some points of its orbit,
-% which can then be used to generate farside magnetograms. However STEREO-A
-% currently only has a partial view of the solar farside, a view that will only decrease
-% until it passes the Earth in 2023. By then, STEREO-A will be more than 16 years
-% into its planned 2-year mission and may have lost contact with the Earth.
-% Furthermore \citet{Kim2019} used a saturation point of 100 Gauss when generating
-% these magnetograms. As many active regions have magnetic fields stronger than
-% 1000 G, this severely limits the ability to predict extreme events.\\
 
 
 % To avoid these issues, we instead 
