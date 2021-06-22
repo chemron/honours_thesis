@@ -1,0 +1,131 @@
+#!/bin/bash
+
+################################################################################################################################################
+# A shell script to automatically re-order the references in a specified cite command in a specified tex file by the year entry in the specified bibtex text file.  Written by Matthew Denwood (m.denwood@vet.gla.ac.uk) February 2010.  This script is distributed 'as is', both FREELY and WITHOUT CHARGE, under the GNU general public license (see http://www.gnu.org/copyleft/gpl.html).  I am therefore not liable for any damage to your computer, xgrid cluster, or sanity caused by using it.  
+################################################################################################################################################
+
+# Arguments:
+
+file=$1
+bibfile=$2
+citecommand=$3
+
+if [ ! -f $file ]; then
+	echo "$file does not exist!">&2
+	exit 1
+fi
+if [ ! -f $bibfile ]; then
+	echo "$bibfile does not exist!">&2
+	exit 1
+fi
+
+
+# Use tmpdir to create a temp directory:
+tmpdir=`mktemp -d -t temp` && success=1 || success=0
+
+if [ $success == 0 ]; then
+	echo "Unable to create temporary working directory" >&2
+	exit 1
+fi
+
+# Assure the file is removed at program termination or after we received a signal:
+trap 'rm -rf "$tmpdir" >/dev/null 2>&1' 0
+trap "exit 2" 1 2 3 15
+
+
+echo ""
+echo "Re-ordering references cited in $file using the $citecommand command using the bibliogrpahy database in $bibfile"
+echo ""
+
+# Backup the file first just in case:
+cp $file $file.backup
+
+matches=${tmpdir}/matches
+smatches=${tmpdir}/smatches
+newfile=${tmpdir}/new
+
+cat $file | grep -o --regexp="\\$citecommand{[^}]*}" > $matches
+
+orderfile=${tmpdir}/order
+orderedfile=${tmpdir}/ordered
+
+touch $smatches
+linenos=`cat $matches | wc -l`
+linenos=`echo $linenos | sed 's/ //g'`
+
+ORIGIFS=$IFS
+#save the current value of ifs
+
+IFS=$(echo -en "\n\b\r")
+#reset ifs to end of line stuff
+
+exec 3<&0
+#save current value of stdin
+
+exec 0<$matches
+#set stdin to read from the temporary file
+
+lineno=1
+reordered=0
+string=""
+while read line
+do
+	nrefs=$[`echo $line | sed 's/[^,]//g' | awk '{print length($0)}'`+1]
+	if [ $nrefs -gt 1 ]; then
+		echo "" > $orderfile
+		cleanedline=`echo $line | sed "s/$citecommand{//g" | sed 's/}//g' | sed 's/,/ /g'`
+		for (( refn=1; refn<=$nrefs; refn++ )); do
+			reference=`echo $cleanedline | awk -v refn=$refn '{print $refn}'`
+			startline=`cat $bibfile | grep -n @[a-z]*{$reference, | awk -F: '{print $1}'`
+			for (( i=$startline; ; i++ )); do
+				year=`cat $bibfile | awk "NR==$i || NR==$i" | grep 'Year = '`
+				if [ ! "$year" == "" ]; then
+					year=`echo $year | sed 's/[^0-9]//g'`
+					echo "$year $refn" >> $orderfile
+					break
+				fi
+			done
+		done
+		cat $orderfile | sort > $orderedfile
+		
+		newline=$citecommand"{"
+		# refnstarts at 2 as first is blank
+		for (( refn=2; refn<=$[$nrefs+1]; refn++ )); do
+			selected=`cat $orderedfile | awk "NR==$refn || NR==$refn" | awk '{print $2}'`
+			refstr=`echo $cleanedline | awk -v selected=$selected '{print $selected}'`
+			if [[ $refn -lt $[$nrefs+1] ]]; then
+				newline=`echo "$newline$refstr, "`
+			else
+				newline=`echo "$newline$refstr}"`
+			fi
+		done 
+		
+		cat $file | sed "s/$line/$newline/g" > $newfile
+		mv $newfile $file
+	
+	else
+		newline=$line
+	fi
+	
+	if [ $line == $newline ]; then
+		echo "Done $lineno of $linenos (Not re-ordered)"
+	else
+		echo "Done $lineno of $linenos (Re-ordered)"
+		reordered=$[$reordered+1]
+	fi
+	
+	lineno=$[$lineno+1]
+	
+done
+
+exec 0<&3 3<&-
+# restore stdin and free up fd#6 for other processes to use
+
+IFS=$ORIGIFS
+# restore $IFS which was used to determine what the field separators are
+
+echo ""
+echo "Done.  A total of $reordered references were re-ordered."
+echo ""
+
+exit 0
