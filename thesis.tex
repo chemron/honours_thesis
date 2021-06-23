@@ -172,65 +172,39 @@ unsigned magnetic field - a key predictor of solar eruptions.
 %
 %
 
-
-\begin{itemize}
-  \item dangers of the sun
-  \item monitering the magnetic activity on the farside of the sun is vital
-  \item NASA's STEREO mission moniters the farside of the Sun
-  \item not capable of taking mangetograms  
-  \item farside seismic maps
-  \item Ganzalez Hernadez et al tried to calibrate the magnetic flux as a
-  function of the seismic signature
-  \item positive correlation was found between the seismic signal and magnetic
-  flux, but the correlation found was poor.
-  \item deep learning methods offer the ability to find complex and indirect relationships
-  that may improve the model due to the large number of parameters 
-  \item for example kim et al did the stereo thing
-  \item however stereo is lacking
-  \item felipe
-  \item magnetic field
-  \item what we did
-\end{itemize}
-
-The rich and complex solar magnetic field is the result of a self-regenerating
-dynamo within the Sun. Flux ropes produced by a toroidal field may % what are flux ropes
-rise and penetrate through the solar surface, forming an active region. These
-active regions are home to extreme magnetic fields, with strengths typically
-exceeding 1000 Gauss. The extreme conditions in active regions can lead to a
-build up of magnetic energy. If the active region is unable to dissapate this
-energy, this can lead to an energetic magnetic reconnection event causing an
-explosive release of built up energy. Such eruptions can cause solar flares or
-coronal mass ejections and pose a danger to earth.\\
-\citep{Mewaldt2005, council_severe_2008}. \\
+A self-regenerating dynamo within the Sun produces a rich and complex solar
+magnetic field. Perhaps the most obvious manifestations of this magnetic field
+are active regions, which are produced by rising toroidal magnetic flux ropes
+that penetrate the solar surface. These active regions are home to extreme
+magnetic fields with strengths typically exceeding 1000 Gauss. If an active
+region cannot effectively dissipate the electric currents that flow within, a build-up
+of magnetic energy can lead to an explosive magnetic reconnection event. These
+reconnection events can result in solar flares or coronal mass ejections that
+can be dangerous when directed towards Earth. Such events, and associated
+geomagnetic storms, have been known to result in an array of technological
+disruptions, including blackouts \citep{odenwald_day_2015}, loss of satellites
+\citep{carlowicz_did_1997}, and even the detonation of sea mines
+\citep{knipp_little-known_2018}. Furthermore, these events have the potential to
+cause radiation exposure to astronauts \citep{hu_modeling_2009} and could cause
+significant damage to terrestrial electrical grids
+\citep{council_severe_2008}. \\
 
 
+Solar magnetograms, images of the magnetic field of the Sun, are a vital tool
+for predicting such events and identifying high-risk active regions before they
+erupt
+\citep{song_statistical_2009,yuan_solar_2010,lan_automated_2012,bobra_solar_2015,
+chen_identifying_2019}. However, solar magnetograms are only available for the
+`nearside': the hemisphere of the Sun that faces the Earth. Due to the rotation
+of the Sun, active regions that emerge on the `farside' could be facing the
+Earth only seven days after becoming visible. A method for producing farside
+magnetograms is therefore necessary to provide warning of dangerous farside
+magnetic activity before it reaches the Earth. \\
 
-X-rays released by coronal mass ejections can heat the Earth's atmosphere
-atmosphere causing drag on satellites and can pose a radiation hazard to
-Astronauts. Coronal mass ejections that collide with the Earth create a
-geomagnetic storm with the potnetial to overwhelm terrestrial electrical grids
-causing blackouts. This has historically resulted in blackouts for example in
-Quebec \citep{odenwald_day_2015}
 
-magnetograms are a vital tool for predicting such events, and the related
-magnetic flux ... etc are used as predictors.
-While magnetograms are available for the nearside, these 
-
-Solar magnetograms, images of the magnetic field of the Sun, can be used to
-identify potentially high-risk active regions before they erupt
-\citep{bobra_solar_2015}. predictors such as magnetic flux etc ...
-
-However, these magnetograms are only available for the
-`nearside': the hemisphere of the Sun that faces the Earth. Due to the rotation of
-the Sun, active regions that emerge on the `farside' could be facing the Earth
-only seven days after becoming visible. A method for imaging the farside
-regions is necessary to identify dangerous farside magnetic activity before it
-reaches the Earth. \\
- 
-NASA's Solar Terrestrial Relations Observatory (STEREO)\footnote{STEREO consists of
-two spacecraft, STEREO ahead (A) and STEREO behind (B).} has provided some
-monitoring of the solar farside throughout it's mission. However STEREO is not
-capable of producing magnetograms, and is also only has a partial view of the solar
+NASA's Solar Terrestrial Relations Observatory (STEREO) has provided some
+monitoring of the solar farside throughout its mission. However, STEREO is not
+capable of producing magnetograms and only has a partial view of the solar
 farside, a view that will only decrease until it passes the Earth in 2023.
 Furthermore, one of the two spacecraft comprising the STEREO mission (STEREO-B)
 has already lost contact with Earth, while the other (STEREO-A) is already 16
@@ -240,54 +214,53 @@ it returns to the farside. \\
 
 
 With the currently available resources, the only method that allows constant
-monitoring of the solar farside is elioseismic holography
+monitoring of the solar farside is helioseismic holography
 \citep{lindsey_seismic_2000}. This is a helioseismic technique that maps the
-farside by timing accoustic waves, known as p-modes, as they travel from the
+farside by timing acoustic waves, known as p-modes, as they travel from the
 nearside to the farside and back again. Disturbances on the farside are then
 observable by the variation in this travel time. However, inferring the magnetic
 field from these is a challenge. \citet{Gonzalez_Hernandez_2007} attempted to
 calibrate the magnetic flux to the seismic signatures and was able to find a
 loose correlation between the two. The quality of this correlation was poor
-however and provides limited information about the farside magnetic field. It is
-possible that some indirect relationship between seismic seismic signature and
-the farside magnetic field does exist, however to find such a relationship a
-much more general model must be applied.\\
+however and provides limited information about the farside magnetic field. A
+complex and indirect relationship between seismic signature and the farside
+magnetic field may yet exist, however finding such a relationship requires a
+much more general model.\\
 
 
 Deep learning models offer the ability to find complex and indirect
-relationships due to a large number of parameters. Due to the large quantities
-of data available, increased accessibilty to better hardware and the recent
-improvements in deep learning, over the past few years deep learning has become
-much more common as a tool for solar physics. \citet{Kim2019} used a deep
-learning model known as a conditional Generative Adversarial Network (cGAN) to
-learn a mapping between extreme ultraviolet (EUV) images and magnetograms. This
-was than applied to EUV images taken by STEREO-A to generate partially farside
-magnetograms over the course of it's mission. However due to the afforementioned
-shortcomings of STEREO, this provides limited utility for monitoring the farside.\\
+relationships due to their universality and the large number of parameters
+involved. Due to the large quantities of data available, increased accessibility
+to better hardware and the recent improvements in deep learning algorithms, the
+past few years have seen deep learning become much more commonplace as a tool
+for solar physics. Recently, \citet{Kim2019} used a deep learning model known
+as a conditional Generative Adversarial Network (cGAN) to learn a mapping
+between extreme ultraviolet (EUV) images and magnetograms. This was then applied
+to EUV images taken by STEREO-A to generate partially farside magnetograms over
+the course of its mission. However, due to the aforementioned drawbacks related
+to the STEREO mission, this provides limited utility for monitoring the farside.
+In another example, \citet{felipe_improved_2019} used a deep learning algorithm
+to detect farside active regions from seismic maps. This improved on previous
+approaches and was able to predict active regions with higher sensitivity.
+However, this work did not attempt to predict the farside magnetic field,
+limiting the ability to predict extreme solar events. \\
 
-\citet{felipe_improved_2019} also used a deep neural network to detect farside
-active regions from seismic maps. This improved on previous approaches and was
-able to predict active regions with a higher sensitivity. However they do not
-predict the level of magnetic activity on the farside, limiting the ability to
-predict extreme solar events. \\
 
-
-In this thesis we describe and implement a method to translate farside seismic
-maps to farside magnetgorams. Our method consists of two steps. First, we train
+In this thesis, we describe and implement a method to translate farside seismic
+maps to farside magnetograms. Our method consists of two steps. First, we train
 a cGAN to generate magnetograms from EUV images using data from the Solar
 Dynamics Observatory (SDO). This cGAN is then applied to EUV images from
 STEREO-A to create a data set of partially farside synthetic magnetograms.
 Secondly, we use these synthetic magnetograms to train a separate cGAN to
-generate magnetograms from farside seismic maps. In Chapter
-\ref{chap:background}, we provide a background into the science behind our
-method is provided along with a brief overview of the process. Chapter
-\ref{chap:data} details how we prepare the data for deep learning. Chapter
-\ref{chap:training} describes the architecture of our deep learning models and
-describe the process of training them. In Chapter
-\ref{chap:results_and_analysis} we analyse the performance of our model, and
-discuss its ability to predict magnetic activity. In Chapter
-\ref{chap:discussion} we discuss the our results as well as potential shortcomes
-before concluding in Chapter \ref{chap:conclusion}.
+generate magnetograms from farside seismic maps. Chapter \ref{chap:background}
+provides a background into the science behind our method and finishes with a
+brief overview of our approach. Chapter \ref{chap:data} details how we collect
+and prepare our data for deep learning. Chapter \ref{chap:training} describes
+the architecture of our deep learning model as well as the process of training
+them. In Chapter \ref{chap:results_and_analysis}, we analyse the performance of
+our model and its ability to predict magnetic activity. Finally, Chapter
+\ref{chap:discussion} provides a discussion of our results as well as potential
+shortcomings before concluding in Chapter \ref{chap:conclusion}.
 
 %
 %
