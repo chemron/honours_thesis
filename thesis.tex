@@ -172,17 +172,35 @@ unsigned magnetic field - a key predictor of solar eruptions.
 %
 %
 
-%TODO: rewrite! this is just getting it down quickly
-A complex and self-regenerating dynamo produces a continuously changing solar
-magnetic field beneath the Sun's surface. Flux ropes produced by this field may
-% what are flux ropes
+
+\begin{itemize}
+  \item dangers of the sun
+  \item monitering the magnetic activity on the farside of the sun is vital
+  \item NASA's STEREO mission moniters the farside of the Sun
+  \item not capable of taking mangetograms  
+  \item farside seismic maps
+  \item Ganzalez Hernadez et al tried to calibrate the magnetic flux as a
+  function of the seismic signature
+  \item positive correlation was found between the seismic signal and magnetic
+  flux, but the correlation found was poor.
+  \item deep learning methods offer the ability to find complex and indirect relationships
+  that may improve the model due to the large number of parameters 
+  \item for example kim et al did the stereo thing
+  \item however stereo is lacking
+  \item felipe
+  \item magnetic field
+  \item what we did
+\end{itemize}
+
+The rich and complex solar magnetic field is the result of a self-regenerating
+dynamo within the Sun. Flux ropes produced by a toroidal field may % what are flux ropes
 rise and penetrate through the solar surface, forming an active region. These
-active regions can have magnetic fields exceeding 1000 Gauss. The extreme
-conditions in active regions can create a build up of magnetic energy. If the
-active region is unable to dissapate this energy, this can lead to an energetic
-magnetic reconnection event causing an explosive release of built up energy.
-Such erruptions can cause solar flares or coronal mass ejections and pose a
-danger to earth.\\
+active regions are home to extreme magnetic fields, with strengths typically
+exceeding 1000 Gauss. The extreme conditions in active regions can lead to a
+build up of magnetic energy. If the active region is unable to dissapate this
+energy, this can lead to an energetic magnetic reconnection event causing an
+explosive release of built up energy. Such eruptions can cause solar flares or
+coronal mass ejections and pose a danger to earth.\\
 
 X-rays released by coronal mass ejections can heat the Earth's atmosphere
 atmosphere causing drag on satellites and can pose a radiation hazard to
@@ -206,37 +224,54 @@ only seven days after becoming visible. A method for imaging the farside
 regions is necessary to identify dangerous farside magnetic activity before it
 reaches the Earth. \\
 
+NASA's Solar Terrestrial Relations Observatory 
 
-The STEREO mission consits of two space craft which observe the Sun on a
-heliocentric orbit. these spacecraft rotate about the Sun relative to Earth and
-observe the farside at some points in their mission.  \citet{Kim2019} were able to
-create magnetograms based on extreme ultraviolet (EUV) images taken by NASA's
-Solar Terrestrial Relations Observatory (STEREO)\footnote{STEREO
-consists of two spacecraft, STEREO ahead (A) and STEREO behind (B), however,
-contact with STEREO-B was lost in 2016, and so the images used were taken by
-STEREO-A.}. The orbit of STEREO-A allows it to move around the Sun relative to
-the Earth, and take farside EUV images during some points of its orbit,
-which can then be used to generate farside magnetograms. However STEREO-A
-currently only has a partial view of the solar farside, a view that will only decrease
-until it passes the Earth in 2023. By then, STEREO-A will be more than 16 years
-into its planned 2-year mission and may have lost contact with the Earth.
-Furthermore \citet{Kim2019} used a saturation point of 100 Gauss when generating
-these magnetograms. As many active regions have magnetic fields stronger than
-1000 G, this severely limits the ability to predict extreme events.\\
+A (STEREO-A)\footnote{STEREO consists of
+two spacecraft, STEREO ahead (A) and STEREO behind (B), however, contact with
+STEREO-B was lost in 2016, and so the images used were taken by STEREO-A.}, to
+generate magnetograms from STEREO-A data. The orbit of STEREO is such that it
+moves about the Sun relative to Earth, giving it some view of the farside
+throughout it's mission, hence providing farside magnetograms at some points in
+it's orbit. However STEREO-A currently only has a partial view of the solar
+farside, a view that will only decrease until it passes the Earth in 2023.
+
+
+
+
+\citet{Kim2019} used a deep learning model known as a conditional Generative
+Adversarial Network (cGAN) to learn a mapping between extreme ultraviolet (EUV)
+images and magnetograms. This was than applied to EUV images taken by NASA's
+Solar Terrestrial Relations Observatory A (STEREO-A)\footnote{STEREO consists of
+two spacecraft, STEREO ahead (A) and STEREO behind (B), however, contact with
+STEREO-B was lost in 2016, and so the images used were taken by STEREO-A.}, to
+generate magnetograms from STEREO-A data. The orbit of STEREO is such that it
+moves about the Sun relative to Earth, giving it some view of the farside
+throughout it's mission, hence providing farside magnetograms at some points in
+it's orbit. However STEREO-A currently only has a partial view of the solar
+farside, a view that will only decrease until it passes the Earth in 2023. By
+then, STEREO-A will be more than 16 years into its planned 2-year mission and
+may have lost contact with the Earth. Furthermore \citet{Kim2019} used a
+saturation point of 100 Gauss when generating these magnetograms. As many active
+regions have magnetic fields stronger than 1000 G, this severely limits the
+ability to predict extreme events.\\
 
 
 An alternative way to image the farside of the sun is given by farside
-helioseismic holography. This is a helioseismic technique
+helioseismic holography \citep{lindsey_seismic_2000}. This is a helioseismic
+technique that maps the farside by timing accoustic waves, known as p-modes, as
+they travel from the nearside to the farside and back again. Disturbances on the
+farside are then observable by the variation in this travel time.
+\citep{felipe_improved_2019} 
 
-We employ a method to generate synthetic magnetograms from farside seismic maps
-- images that measure perturbations on the far hemisphere by computing the
-travel-time of acoustic waves, known as p-modes, that travel through the
-interior of the Sun \citep{Lindsey2017}. Our method consists of two steps.
-First, we train a cGAN to generate magnetograms from EUV images using data from
-the Solar Dynamics Observatory (SDO). This cGAN is then applied to EUV images
-from STEREO-A to create a data set of partially farside synthetic magnetograms.
-Secondly, we use these synthetic magnetograms to train a separate cGAN to
-generate magnetograms from farside seismic maps.
+
+
+We employ a
+method to generate synthetic magnetograms from farside seismic maps. Our method
+consists of two steps. First, we train a cGAN to generate magnetograms from EUV
+images using data from the Solar Dynamics Observatory (SDO). This cGAN is then
+applied to EUV images from STEREO-A to create a data set of partially farside
+synthetic magnetograms. Secondly, we use these synthetic magnetograms to train a
+separate cGAN to generate magnetograms from farside seismic maps.
 
 
 
@@ -284,6 +319,7 @@ the Solar Dynamics Observatory (SDO). This cGAN is then applied to EUV images
 from STEREO-A to create a data set of partially farside synthetic magnetograms.
 Secondly, we use these synthetic magnetograms to train a separate cGAN to
 generate magnetograms from farside seismic maps.
+
 
 
 
