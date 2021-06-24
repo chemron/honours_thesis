@@ -526,7 +526,6 @@ dynamo model comes from sunspot observations. A successful dynamo model must be
 able to replicate the almost 400 years of scientific observations from
 \citet{galilei_sunspots_2010} to the present day. Importantly, such a model
 must account for the following phenomena:
-
 \begin{enumerate}
   \item Sunspot activity takes place over 11 year `solar cycles', where the size
   and number of sunspots rises to a `solar maximum', then falls to a `solar
@@ -1250,9 +1249,8 @@ learn non-linear mappings from the input data. Complex relationships between the
 inputs and outputs can then be modeled by combining many of these non-linear
 `triggers'. Rectified Linear Units (ReLUs) are perhaps the most widely used
 activation function in modern neural networks and have been shown to outperform
-traditional sigmoid activation functions \citep{glorot2011}. 
-
-Figure \ref{fig:activation} shows the sigmoid (left) and ReLU (right) activation
+traditional sigmoid activation functions \citep{glorot2011}. Figure
+\ref{fig:activation} shows the sigmoid (left) and ReLU (right) activation
 functions.\\
 
 
@@ -1639,7 +1637,7 @@ while the cost function for the generator becomes
 \begin{align}
   C_G(D, G, \bm{\theta}_D, \bm{\theta}_G, \bm{x})
   &= \log[D(\bm{x}\mid \bm{c})] + \log[1 - D(G(\bm{c}))]\,.
-\end{align}
+\end{align}\\
 
 
 Image-to-image cGANs have a large potential for disruption in solar physics due
@@ -1862,7 +1860,7 @@ distinct datasets
 \end{enumerate}
 As detailed in Chapter \ref{chap:training}, the farside EUV images will be used
 to generate magnetograms, which can then be used to train an image-to-image cGAN
-to generate magnetograms from farside seismic maps. 
+to generate magnetograms from farside seismic maps. \\
 
 
 To maximise the effectiveness of each cGAN, we need to make the images consistent
@@ -1882,7 +1880,7 @@ input and output images. We must therefore account for the following effects
   \item instrument saturation, and
   \item the amplitude of pixel values between image data-sets.
 \end{enumerate}
-In this chapter we detail how we obtain our data and prepare it for training,
+In this chapter we detail how we obtain the data and prepare it for training,
 accounting for the above effects.
 
 % \begin{itemize}
@@ -2067,7 +2065,7 @@ Therefore to effectively compare different images of the Sun we must take into
 account the projection used to construct the image.
 
 \subsection{Nearside Data}
-Fortunately,  both SDO EUV images and magnetograms use the same projection. For
+Both SDO EUV images and magnetograms use the same projection. For
 these images, each pixel directly corresponds to a pixel on the camera sensor,
 which in the case of SDO and STEREO-A images is a charge-coupled device or
 CCD \citep{kaiser_stereo_2008,lemen_atmospheric_2012}. As the CCD is a flat plane,
@@ -2084,20 +2082,18 @@ angles on the celestial sphere to at least five significant figures
 helioprojective-cartesian projection, and measures positions in terms of the
 longitude \(\theta_x\) and latitude \(\theta_y\) of the celestial sphere.\\
 
-SDO uses two distinct instruments to create the EUV and magnetogram data
-(Atmospheric Imaging Assembly \citep{lemen_atmospheric_2012} and the
-Helioseismic and Magnetic Imager \citep{scherrer_helioseismic_2012}
-respectively) which have different orientations. The helioprojective latitude
-and longitude were found for each pixel using image metadata which was then used
-to rotate the images such that the uppermost section of the image corresponded
-to the northernmost region of the solar disk, thus aligning the images
-consistently.\\
-
-However, the distance to the Sun changes throughout SDO's orbit due to the
-eccentricity of the Earth, changing the relative size of the solar disk. To remove
-this discrepancy, while also removing unnecessary pixels, the images were
+SDO Magnetograms are taken by the Helioseismic and Magnetic Imager
+\citep{scherrer_helioseismic_2012}, while the EUV images are taken by the
+Atmospheric Imaging Assembly \citep{lemen_atmospheric_2012}. To account for the
+difference in orientation of these two instruments, the images were rotated such
+that the uppermost section of each image corresponded to the northernmost region
+of the solar disk. To find the suitable angle of rotation, the helioprojective
+latitude and longitude were found for each pixel using image metadata.
+Furthermore, the distance to the Sun changes throughout SDO's orbit due to the
+eccentricity of the Earth, changing the relative size of the solar disk. To
+remove this discrepancy, while also removing unnecessary pixels, the images were
 cropped to the radius of the Sun, again using information extracted from the
-image metadata. This process was less straightforward for the farside data.
+image metadata. This process was more complex for the farside data.
 
 % not sure if I want to keep it like this or change it to below:
 %   \item Fortunately both EUV and magnetogram images are taken by SDO at very similar
@@ -2167,7 +2163,7 @@ the surface of the Sun, then
   d &= D_0 \cos\theta - \sqrt{D_\odot^2 \left( \cos^2\theta - 1 \right) + R_\odot } \, , \\
   \intertext{where}
   \theta &= \cos^{-1}\left(\cos\theta_y \cos\theta_x \right) \, .
-\end{align}
+\end{align} \\
 
 Similarly, we can convert from heliocentric-cartesian coordinates to Carrington heliographic
 coordinates as follows:
@@ -2191,11 +2187,9 @@ and after this transformation. \\
 %TODO: overlay stereo and seismic maps or at least show stereo as well. Also
 %maybe inbetween image
 
-Now with consistent projections, the STEREO-A EUV images were prepared in the
-same manner as for the nearside, by first rotating the images such that the
-northernmost region of the solar disk was at the uppermost point in the image,
-then cropping the images to the radius of the Sun. This step was not required
-for the re-projected seismic maps as they were already correctly aligned as a
+The STEREO-A EUV images were then prepared in the same manner as the nearside
+data, by first rotating then cropping the images. This step was not required for
+the re-projected seismic maps, as they were already correctly aligned as a
 by-product of the transformation. With all images correctly aligned, it is now
 necessary to take into account effects from the individual imaging instruments.
 
@@ -2226,11 +2220,11 @@ necessary to take into account effects from the individual imaging instruments.
 % Corrupted images or images with data artifacts
 
 \label{sec:Data prep}
-Before using the images we need to first take into account various factors and
-inconsistencies that arise during the imaging process. Of particular importance
-is the EUV data which comes from two data sources, SDO and STEREO-A. To use
-data from both sources interchangeably, we must make the images consistent between
-these datasets.
+Before using the images we need to account for various factors and
+inconsistencies in the imaging process. Of particular importance is the EUV data
+which comes from two data sources: SDO and STEREO-A. To use data from both
+sources interchangeably, we must make the images consistent between these
+datasets.
 
 \subsection{Extreme Ultraviolet Data}
 \label{sec:UV_prep}
@@ -2255,9 +2249,9 @@ $\eta$ would ideally be large for wavelengths close to
 Approximating $\eta$ to be zero for $\lambda \neq \SI{304}{\angstrom}$, Equation
 \ref{eqn:pixel value} reduces to
 \begin{align}
-  p(\bm{x}) &= \eta(\SI{304}) \int_{\text{pixel } \bm{x}} I(304, \bm{\theta}) d\bm{\theta} \\
+  p(\bm{x}) &= \eta(\SI{304}{\angstrom}) \int_{\text{pixel } \bm{x}} I(\SI{304}{\angstrom}, \bm{\theta}) d\bm{\theta} \\
   \intertext{and so,}
-  p(\bm{x}) &\propto \Phi(\bm{x}, 304) \, , \label{eqn:pixel propto flux}
+  p(\bm{x}) &\propto \Phi(\bm{x}, \SI{304}{\angstrom}) \, , \label{eqn:pixel propto flux}
   \intertext{where}
   \Phi(\bm{x}, \lambda)& = \int_{\text{pixel } \bm{x}} I(\lambda, \bm{\theta}) d\bm{\theta}
 \end{align}
@@ -2269,16 +2263,16 @@ EUV flux to a reasonable approximation.\\
 Each raw image is processed to remove data artifacts caused by the imaging,
 and the resulting image is then made available for use. This image processing is
 not perfect however, and we still have make some corrections ourselves before we
-are ready to use the images.
+are ready to use the images.\\
 
 From the 4313 SDO EUV images used between 2010 and 2020, the pixel values for
-the AIA data range from \(\SI[]{-166}[]{DN}\) to \(\SI[]{16383}[]{DN}\). To get
+the AIA data range from \(\SI[]{-166}[]{DN}\) to \(\SI[parse-numbers=false]{2^{14} - 1}[]{DN}\). To get
 a handle on this data, a range of the pixel value percentiles were calculated
 for each image. Figure \ref{fig:aia_percentiles} shows these percentiles plotted
 as a function of time. Corrupted or otherwise poor quality images could then be
 identified due to the large irregularity in the percentiles of those images, as
 can be seen in Figure \ref{fig:aia_outliers}. After reviewing the offending
-images, a simple threshold was used to remove the outliers.
+images, a simple threshold was used to remove the outliers.\\
 
 Also apparent from Figure \ref{fig:aia_outliers} is the decreasing exposure of
 the images between 2010 and 2020. This is consistent with the degradation of the
@@ -2305,9 +2299,9 @@ indicative of the background Sun as opposed to individual active regions, and
 would therefore better capture the degradation of the instrument over time. It
 should be noted however that the 75th percentile was still affected by the solar
 activity, and some of this information was inadvertently removed in this
-process. This will be further discussed in Chapter
-\ref{chap:results_and_analysis}. The percentiles of the data after applying this
-weighting are shown in Figure \ref{fig:aia_no_degradation}. \\
+process. This did not affect our inferences, but will be discussed further in
+Chapter \ref{chap:results_and_analysis}. The percentiles of the data after
+applying this weighting are shown in Figure \ref{fig:aia_no_degradation}. \\
 
 To ensure consistency between the two EUV datasets, we need to normalise and
 correct the STEREO-A data in the same method as the SDO data. Figure
@@ -2334,7 +2328,7 @@ at roughly the same time. \\
 
 One last discrepancy between the two datasets is the saturation points at which
 the CCD cannot record any value above. While both instruments initially have a
-saturation point at $\approx \SI[]{2e4}[]{DN}$ (see Figures
+saturation point at $ \sim \SI[parse-numbers=false]{2^{14}}[]{DN}$ (see Figures
 \ref{fig:aia_percentiles} and \ref{fig:stereo_data_prep}), this has been
 distorted during our image processing, as can be seen in Figures
 \ref{fig:aia_no_degradation} and \ref{fig:stereo_no_degradation}. To make this
@@ -2345,15 +2339,13 @@ which was \SI[]{32}[]{DN}. The upper bound can be seen in Figure
 \ref{fig:stereo_no_degradation}. To avoid losing information about regions of
 intense solar activity, it was important to make this upper bound as high as
 possible while keeping the two datasets consistent. This constraint did not
-apply to a lower bound, which was chosen to have a value of \SI{0}{DN}. Finally,
-both datasets were normalised by dividing by the upper bound such that all
-pixels had a value between 0 and 1. Figure \ref{fig:sdo_stereo_comparison} shows
-a comparison between the STEREO-A and SDO datasets after normalisation. As can
-be seen, the datasets seem to be largely consistent with each other.
-Furthermore, not all information about the long-term solar activity has been
-lost through this normalisation process, as the general trend of the solar cycle
-is still visible, with solar activity peaking in 2014. With the EUV data
-normalised, we now turn to the Magnetogram and seismic data.
+apply to a lower bound, which was chosen to have a value of \SI{0}{DN}. Both
+datasets were normalised by dividing by the upper bound such that all pixels had
+a value between 0 and 1. The STEREO-A and SDO datasets appeared consistent after
+normalisation as can be seen in Figure \ref{fig:sdo_stereo_comparison}. Furthermore,
+the general trend of the solar cycle was retained despite the normalisation
+process, with solar activity peaking in 2014. We now turn to the Magnetogram and
+seismic data.
 
 
 
@@ -2454,8 +2446,8 @@ normalised, we now turn to the Magnetogram and seismic data.
 
 
 \subsection{Magnetogram and Seismic Data}
-Figure \ref{fig:hmi_p} shows the percentiles of pixel values for the SDO
-magnetogram data. Each pixel on a magnetogram image measures the average
+We show the percentiles of pixel values from the SDO magnetogram data in Figure
+\ref{fig:hmi_p}. Each pixel on a magnetogram image measures the average
 line-of-sight magnetic field ($\mathbf{B}\cdot\mathbf{\hat{r}}$) in units of
 Gauss (G) on the surface of the Sun subtended by the pixel. Similarly, Figure
 \ref{fig:seismic_p} shows the percentiles of pixel values for the seismic maps.
