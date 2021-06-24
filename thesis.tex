@@ -1662,35 +1662,43 @@ maps, and secondly, we use these samples to learn a mapping from seismic
 maps to farside magnetograms. \\
 
 To solve the first problem, we make use of the Solar-Terrestrial Relations
-Observatory (STEREO). STEREO consists of two spacecraft each in a heliocentric
-orbit, STEREO-A and STEREO-B. These two spacecraft orbit the Sun at slightly
-different rates to Earth, with orbital periods of 346 and 388 days respectively.
-As such, the positions of these satellites rotate about the Sun relative to the
-Earth, allowing them to image the farside for some intervals of the mission.
-While contact was lost with STEREO-B during 2014, STEREO-A is still operational
-and continues to provide data. While neither of the STEREO spacecraft are
-capable of producing magnetograms, the Extreme Ultraviolet Imager onboard can
-image the Sun at a wavelength of \SI{304}{\angstrom}. To create the required
-sample of farside magnetograms, we first learn a mapping between extreme
-ultraviolet (EUV) images and magnetograms, using a similar method to
-\citet{Kim2019}.\\
+Observatory (STEREO) \citep{kaiser_stereo_2008}. STEREO consists of two
+spacecraft each in a heliocentric orbit, STEREO-A and STEREO-B. These two
+spacecraft orbit the Sun at slightly different rates to Earth, with orbital
+periods of 346 and 388 days respectively. As such, the positions of these
+satellites rotate about the Sun relative to the Earth, allowing them to image
+the farside for some intervals of the mission. While contact was lost with
+STEREO-B during 2014, STEREO-A is still operational and continues to provide
+data. While neither of the STEREO spacecraft are capable of producing
+magnetograms, the Extreme Ultraviolet Imager onboard can image the Sun at a
+wavelength of \SI{304}{\angstrom}. To create the required sample of farside
+magnetograms, we first learn a mapping between extreme ultraviolet (EUV) images
+and magnetograms, using a similar method to \citet{Kim2019}.\\
 
 
 The Solar Dynamics Observatory (SDO) \citep{pesnell_solar_2012} provides the
 necessary data to learn such a mapping. SDO orbits the Earth with a suite of
 instruments including the Atmospheric Imaging Assembly
 \citep{lemen_atmospheric_2012} and the Helioseismic and Magnetic Imager
-\citep{scherrer_helioseismic_2012}. Pertinent to this research, the Atmospheric
-Imaging Assembly is capable of taking EUV images of the full solar disk at a
-wavelength of \SI{304}{\angstrom}, while the Helioseismic and Magnetic Imager is
-capable of taking full-disk magnetograms which measure the line-of-sight
-magnetic field. To learn a mapping between \SI{304}{\angstrom} EUV images and
-magnetograms, we train a cGAN which we hereafter call the `UV-GAN' using data
-from SDO. We then use the UV-GAN to generate `STEREO magnetograms' from STEREO-A
-\SI{304}{\angstrom} EUV images. Finally, these STEREO magnetograms are used in
-conjunction with farside seismic maps to train a new cGAN (Seismic-GAN) to
-generate farside magnetograms from seismic maps. Figure \ref{fig:simple_diagram}
-shows a summary of the project pipeline. \\
+\citep{scherrer_helioseismic_2012}. Of particular relevance to this research,
+the Atmospheric Imaging Assembly is capable of taking EUV images of the full
+solar disk at a wavelength of \SI{304}{\angstrom}, while the Helioseismic and
+Magnetic Imager is capable of taking full-disk magnetograms which measure the
+line-of-sight magnetic field. To learn a mapping between \SI{304}{\angstrom} EUV
+images and magnetograms, we train a cGAN which we hereafter call the `UV-GAN'
+using data from SDO. Specifically, the generative network takes an SDO
+\SI{304}{\angstrom} EUV image as input and outputs a synthetic magnetogram. The
+discriminative network is also given the SDO EUV image along with either the
+synthetic magnetogram or the true SDO magnetogram, and outputs an array of
+numbers, corresponding to its `belief' that the magnetogram input is True.
+After training the UV-GAN, we use its generative network to produce `STEREO
+magnetograms' using STEREO-A \SI{304}{\angstrom} EUV images as input. Finally,
+these STEREO magnetograms are used in conjunction with farside seismic maps to
+train a new cGAN (Seismic-GAN) to generate farside magnetograms from seismic
+maps, which operates in the same manner as the UV-GAN with the exception that
+it uses Seismic maps in place of EUV images, and the STEREO magnetograms are
+treated as the `true' magnetograms. Figure \ref{fig:simple_diagram} shows a
+summary of the project pipeline. \\
 \begin{figure}
   \centering
   \begin{tikzpicture}[node distance=4cm]
