@@ -338,19 +338,16 @@ heating the Sun from the inside, giving rise to the luminous hot ball of plasma
 that we observe today. \\
 
 
-Observation of the Sun is typically done through the use of either ground or
-space-based telescopes. The Sun's atmosphere can be imaged at a range of depths
-by viewing the Sun at different wavelengths, due to the variation in the Sun's
-temperature and composition. Of particular note in this thesis is light with a
-wavelength of \(\SI{304}{\angstrom}\), which is emitted in the chromosphere (the
-layer of atmosphere between the photosphere and corona) by \(\chem{He \, II}\)
-at a temperature of around \(\SI{50000}{\kelvin}\)
-\citep{herbert_friedman_solar_1962}. \\
-
-While electromagnetic radiation is effective for imaging the solar atmosphere,
-past the photosphere (the Sun's visual surface, and henceforth referred to as
-the surface) the Sun is no longer transparent to light, and so information about
-the nature of the Sun below this surface must be inferred indirectly. \\
+Ground and space-based telescopes can probe into the solar atmosphere at various
+depths by imaging the Sun at specific wavelengths. Of particular note in this
+thesis, \(\chem{He \, II}\) emits light at a wavelength of
+\(\SI{304}{\angstrom}\) at temperatures near \(\SI{50000}{\kelvin}\)
+\citep{herbert_friedman_solar_1962}. In the Sun, this corresponds to light
+emitted from the chromosphere, the layer of atmosphere between the photosphere
+and corona. While electromagnetic radiation is effective for imaging the solar
+atmosphere, past the photosphere (the Sun's visual surface, and henceforth
+referred to as the surface) the Sun becomes optically thick. Accordingly,
+indirect methods are required to probe further.\\
 
 
 %
@@ -374,23 +371,29 @@ Sun due to the changing speed of sound, eventually making their way back to the
 surface. When they reach the surface, they are reflected back towards the
 centre, effectively trapping them in a resonating cavity. \\
 
-In addition to p-modes, two other types of modes exist in the Sun: gravity-modes
-(g modes) and surface gravity modes (f-modes). G modes are confined to the
-convectively stable radiative zone (from the core to a radius of $\SI{0.7}
-{R_\odot}$), with buoyancy as the restoring force. F-modes also have buoyancy as
-their restoring force, but instead travel along the surface of the Sun. \\
+Gravity waves can also resonate within the Sun as gravity-modes (g-modes). These
+waves rely on buoyancy as a restoring force and are restricted to convectively
+stable regions of the Sun, becoming evanescent in the convective zone.
+Therefore, while g-modes offer the potential to probe the inner core of the Sun,
+they are severely damped after passing through the convective zone and reaching
+the surface, with observational upper bounds of only a few \SI{}{mm.s^{-1}}
+\citep{appourchaux_quest_2010}. Gravity waves can also propagate along the
+surface as surface gravity waves, with associated resonant modes known as
+surface gravity modes (f-modes). However, f-modes are confined to the surface of
+the Sun and are unable to probe the solar interior \citep{basu_global_2016}.\\
 
 Each mode can be characterised by three quantum numbers: the radial order,
 \(n\), the angular degree \(l\) (\(l \geq 0\)), and the azimuthal order m (\(-l
-\leq m \leq l\)). Each mode has a resonant frequency \(\omega_{nlm}\) that
-increases monotonically with \(n\), and can be measured by taking a Fourier
-transform of the observed oscillations. In spherically symmetric conditions, the
-frequencies of these modes would be independent of \(m\), however, this is not
-observed, with the internal rotation of the Sun breaking this symmetry. p-modes
-make up the high-frequency modes (with \(n>0\)), while g modes make up the
-low-frequency modes (with \(n<0\)). F-modes are then the intermediate mode, with
-\(n=0\). Figure \ref{fig:hsm_power} shows a power spectrum of the p-mode
-oscillations, as a function of frequency and angular degree. \\
+\leq m \leq l\)). The resonant frequency \(\omega_{nlm}\) of each mode increases
+monotonically with \(n\) and can be measured by taking a Fourier transform of
+the observed oscillations. In spherically symmetric conditions, the frequencies
+of these modes would be independent of \(m\), however, this is not observed,
+with the internal rotation of the Sun breaking this symmetry. p-modes make up
+the high-frequency modes (with \(n>0\)), while g-modes make up the low-frequency
+modes (with \(n<0\)). F-modes are then the intermediate mode, with \(n=0\)
+\citep{thompson_helioseismology_2004}. Figure \ref{fig:hsm_power} shows a power
+spectrum of the p-mode oscillations, as a function of frequency and angular
+degree. \\
 
 \begin{figure}[t]
   \centering
@@ -411,26 +414,24 @@ oscillations, as a function of frequency and angular degree. \\
 
 \end{figure}
 
-These modes are influenced by the structure and gravity inside the Sun, as well
-as the large scale flows and magnetic fields. When the perturbations from these
+The modes are influenced by the structure and gravity inside the Sun, as well as
+the large scale flows and magnetic fields. When the perturbations from these
 resonating waves reach the surface of the Sun, the motion creates surface
 oscillations, while the local change in pressure causes a fluctuation in the
-temperature. Detecting the modes can therefore be achieved by observing either the
-luminosity or the Doppler shift.\\
+temperature. Detecting the modes can therefore be achieved by observing either
+the luminosity or the Doppler shift.\\
 
 The goal of helioseismology is to observe these modes and deduce the causal
 factors that influence them, thereby obtaining information about the solar
-interior. While g modes offer the potential to probe the inner core of the Sun,
-the amplitude of the resulting perturbations will be very low by the time they
-reach the surface. Consequently, the detection of g modes has so far proved
-elusive \citep{appourchaux_quest_2010}, with only a few possible exceptions (for
-example, \citealp{fossat_asymptotic_2017}). p-modes on the other hand, while
-unable to probe as deep into the Sun, have proven much easier to observe and
-examine \citep{deubner_observations_1975}. \\
-
-By measuring the frequency of p-modes in the Sun, helioseismology can be used to determine
-the speed of sound as a function of the radius, \(c\left(r\right)\)
-\citep{christensen-dalsgaard_speed_1985}, which can in itself be used to
+interior. If observed, g-modes would offer the ability to probe deep within the
+solar interior. However unambiguous detection of these modes has so far proved
+elusive due to their small surface amplitude, with a few possible exceptions
+\citealp{garcia_tracking_2007,fossat_asymptotic_2017}. While p-modes are unable
+to probe as deeply into the Sun, they have proven much easier to observe and
+examine \citep{deubner_observations_1975}. By measuring the frequency of
+observed p-modes, helioseismology can be used to determine the speed of sound as
+a function of the radius, \(c\left(r\right)\)
+\citep{christensen-dalsgaard_speed_1985}. The sound speed can then be used to
 determine the temperature as a function of the radius, \(T\left(r\right)\), due
 to the relationship
 \begin{align}
@@ -503,31 +504,18 @@ generated by the solar dynamo.
 %
 \label{sec:dynamo}
 %TODO: make sure this lines up
-\footnotetext{\url{gong.nso.edu}}
-
-By using the Zeeman effect---the splittings of the spectral lines in the presence of
-a strong magnetic field---we can observe magnetic fields on the surface of
-the Sun \citep{zeeman_over_1896}. This was first done by \citet{hale_probable_1908}, who noticed the
-intense magnetic fields of sunspots and presently can be used to make full-disk
-solar magnetograms, such as the one shown in Figure \ref{fig:hmi}.
-\\
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=0.4\linewidth]{hmi.jpg}
-  \caption{A Magnetogram taken by the Solar Dynamics Observatory's Helioseismic
-  Magnetic Imager on 17 November 2014. \textit{Image courtesy of NASA}.}
-  \label{fig:hmi}
-\end{figure}
-
-
+\footnotetext{\url{gong.nso.edu}} Strong magnetic fields cause splittings of
+spectral lines allowing for the detection of magnetic fields at a distance
+\citep{zeeman_over_1896}. This was first applied to the Sun by
+\citet{hale_probable_1908} who noticed the intense magnetic fields of sunspots.
 These sunspots are now known to be surface manifestations of a large scale solar
 magnetic field consisting of a poloidal (north-south) and toroidal (east-west)
 component originating inside the Sun. \citet{JosephLarmor1919} suggested that
-these large scale magnetic fields are generated by the inductive motion of the highly
-conductive plasma, as part of a solar `dynamo'. For such a dynamo to exist, it
-must convert the kinetic energy of the differentially rotating plasma into a
-self-regenerating magnetic field, with the poloidal component somehow creating
-and strengthening the toroidal component and vice versa. \\
+these large scale magnetic fields are generated by the inductive motion of the
+highly conductive plasma, as part of a solar `dynamo'. For such a dynamo to
+exist, it must convert the kinetic energy of the differentially rotating plasma
+into a self-regenerating magnetic field, with the poloidal component somehow
+creating and strengthening the toroidal component and vice versa. \\
 
 
 
@@ -551,9 +539,8 @@ must account for the following phenomena:
   wide, mirrored across each side of the equator. These bands converge toward the equator
   over the course of the solar cycle, ultimately covering around \(\pm 15\degree\)
   in latitude before starting over again in the next cycle
-  \citep{carrington_observations_1863}. This is known as Sp\"orer's law.
-
-  \item Sunspots tend to form in pairs of opposite polarity. Throughout
+  \citep{carrington_observations_1863}.
+  \item Sunspots tend to form in pairs of opposite polarity. Throughout the
   solar cycle, the polarity of the leading sunspots of each pair (with respect
   to the rotation of the Sun) is typically the same across the hemisphere and
   opposite to the leading sunspots in the opposite hemisphere
@@ -606,8 +593,8 @@ poloidal (\(P\)) and toroidal (\(T\)) fields been generated as follows:
 where (\(^+\)) and (\( ^-\)) are the signs of the magnetic fields. \\
 
 Putting even more constraints on a dynamo model, \citet{cowling1933} showed that
-`An axis-symmetric magnetic field cannot be maintained by dynamo action'.
-Subsequent `antidynamo' theorems by \citet{backus1956} and others have
+an axis-symmetric magnetic field cannot be maintained by dynamo action.
+Subsequent `antidynamo' theorems \citet{backus1956,zeldovich_magnetic_1980} have
 concluded that a dynamo powering the Sun's magnetic field must not possess a
 high degree of symmetry and so necessarily must be the result of a more complex
 mechanism.\\
@@ -627,7 +614,7 @@ equation of magnetohydrodynamics is the ideal induction equation, which can be e
 % \ref{sec:induction_eqn}.
 Any successful dynamo theory must therefore provide a
 velocity field, \(\bm{v}\), and a magnetic field, \(\bm{B}\), that satisfies
-this equation. \\
+this equation while amplifying and sustaining the field. \\
 
 Using the induction equation it can be shown that in the limit of infinite
 electrical conductivity, magnetic field lines are `frozen' into the Sun's plasma
@@ -638,17 +625,17 @@ on the magnetic field. These magnetic field lines may therefore organise into
 `flux tubes': cylindrical boundaries along magnetic field lines that move with
 the plasma. \\
 
-As depicted in Figure \ref{fig:dynamo}(b), because of this effect, as well as
-the differential rotation of the Sun, the plasma pulls on initially poloidal
-field lines more strongly the closer they are to the equator. After many
-rotations, this results in the twisting of the poloidal field lines into
-toroidal ones (Figure \ref{fig:dynamo}c). This process is called the
-\textomega-effect. The depth where this mechanism occurs is subject to some
-debate, with dynamo theories placing it in either the tachocline (for example
-\citealt{deluca_dynamo_1988}) or the convective zone (for example
-\citealp{chen_emergence_2017}). The \textomega-effect accounts for the first
-half of the dynamo mechanism (\(P \rightarrow T\)) and is relatively well
-understood.\\
+
+This effect combined with the differential rotation of the Sun causes the plasma
+to pull on initially poloidal field lines with more force the closer they are to
+the equator (Figure \ref{fig:dynamo} b). After many rotations, this results in
+the twisting of the poloidal field lines into toroidal ones (Figure
+\ref{fig:dynamo} c). This process is called the \textomega-effect. The depth
+where this mechanism occurs is subject to some debate, with dynamo theories
+placing it in either the tachocline (for example \citealt{deluca_dynamo_1988})
+or the convective zone (for example \citealp{chen_emergence_2017}). The
+\textomega-effect accounts for the first half of the dynamo mechanism (\(P
+\rightarrow T\)) and is relatively well understood.\\
 
 %
 While the mechanism for generating a poloidal field from a toroidal field (\(T
@@ -674,53 +661,52 @@ where \(\mu_0 \) is the magnetic permeability, \(k_B\) is Boltzmann's constant,
 and external density, and \(T_i\) and \(T_e\) are the internal and external
 temperatures.\\
 
-\noindent As the first term on the right-hand side of Equation \ref{eqn:density balance}
+\noindent As the first term on the left-hand side of Equation \ref{eqn:density balance}
 is always positive, we have:
 \begin{align}
   \label{eqn:density_temp}
   \rho_i T_i &< \rho_e T_e\,.
 \end{align}
-If the internal and external temperatures are equal, the internal density will
-be less than the external density. Furthermore, if the flux rope is rising through
-the Sun, it will typically have a higher temperature than its surroundings as
-it comes from a hotter region of the Sun. Therefore, Equation
-\ref{eqn:density_temp} reduces to:
+Assuming thermal equilibrium, we have
+\begin{align}
+  T_i = T_e \, ,
+\end{align}
+thus Equation \ref{eqn:density_temp} reduces to
 \begin{align}
   \rho_i < \rho_e\,,
 \end{align}
 and so the flux rope will experience an upward buoyancy force. This
-buoyancy force competes with a magnetic tension in the flux rope, causing it to
+buoyancy force competes with the magnetic tension of the flux rope, causing it to
 stretch as rises. \\
 
-As such a flux rope begins to rise, it may begin to twist due to
-cork-screw-shaped `cyclonic' vortices in the turbulent flow in the convective
-region \citep{parker_formation_1955}. The Coriolis effect causes vortices in the
+As such a flux rope begins to rise, it may twist due to cork-screw-shaped
+`cyclonic' vortices in the turbulent flow in the convective region
+\citep{parker_formation_1955}. The Coriolis effect causes vortices in the
 northern hemisphere to spin in the opposite direction to those in the southern
 hemisphere due to the rotation of the Sun, analogous to how cyclones behave on
 the Earth. These twisting flux ropes would break off from the toroidal field,
-and form loops in the meridional plane as can be seen in Figure
-\ref{fig:dynamo}(c). Importantly, this process would break the axis symmetry
-prohibited by the aforementioned antidynamo theorems, and also explain the
-equatorial tilt that constitutes Joy's law. The net effect of these loops around
-the Sun would be to create a toroidal current according to Ampere's law, which
-in turn would contribute to the large scale poloidal magnetic field. This
-process was first introduced by \citet{parker_hydromagnetic_1955} and comprises
-the \textalpha-effect. In principle, a combination of the \textalpha-effect and
-the \textomega-effect can complete the dynamo process shown in Equation
-\ref{eqn:dynamo process}. As the flux rope breaks the surface, it forms an
-`\(\Omega\)-loop' and creates an active region with sunspots of opposite
-polarity at each entry point. \\
+and form loops in the meridional plane (Figure \ref{fig:dynamo} c). Importantly,
+this process would break the axis symmetry prohibited by the aforementioned
+antidynamo theorems, and explain the equatorial tilt that constitutes Joy's law.
+The net effect of these loops around the Sun would be to create a toroidal
+current according to Ampere's law that contributes to the large scale poloidal
+magnetic field. This process is known as the \textalpha-effect
+\citep{parker_hydromagnetic_1955}. In principle, a combination of the
+\textalpha-effect and the \textomega-effect can complete the dynamo process
+shown in Equation \ref{eqn:dynamo process}. As the flux rope breaks the surface,
+it forms an `\(\Omega\)-loop' and creates an active region with sunspots of
+opposite polarity at each entry point. \\
 
 While the stability and rise of these flux ropes is now reasonably well
 understood, the process in which the large scale magnetic field produces the
-necessarily concentrated toroidal flux ropes remains unknown. However at the
-very least, if we assume that sunspots rise approximately radially and that
-a stronger toroidal field generates stronger and more frequent sunspots, the
-location and strength of sunspots can provide a map of the toroidal magnetic
-field. Under this assumption, `Butterfly' diagrams, such as the ones shown in
-Figures \ref{fig:butterfly diagram} and \ref{fig:mag_butterfly}, provide a
-useful tool for mapping the long term trends and of the toroidal magnetic field
-throughout each solar cycle, aiding numerical simulations. \\
+necessarily concentrated toroidal flux ropes remains unknown. However, if
+we assume that sunspots rise radially and that the toroidal field strength is
+correlated to the strength and frequency of sunspots, we can map the toroidal
+magnetic field knowing only the location and strength of sunspots. Under this
+assumption, `Butterfly' diagrams, such as the ones shown in Figures
+\ref{fig:butterfly diagram} and \ref{fig:mag_butterfly}, provide a useful tool
+for mapping the long term trends and of the toroidal magnetic field throughout
+each solar cycle, aiding numerical simulations. \\
 
 \begin{figure}[t]
   \centering
@@ -735,14 +721,15 @@ throughout each solar cycle, aiding numerical simulations. \\
 
 
 Another process that contributes toward the poloidal magnetic field is the
-Babcock-Leighton mechanism. Due to the tilt observed in Joy's-law, some
-component of the magnetic dipole in a bipolar-sunspot-pair is in the north-south
-direction. As the sunspot pair disperses over time, the surface flows release
-some amount of this dipole moment, contributing to the overall poloidal field
-\citep{babcock_topology_1961,leighton_transport_1964}. This can be seen in
-Figure \ref{fig:mag_butterfly}, near the top of each hemisphere. In principle,
-this can in itself lead to a working dynamo, by generating the poloidal field
-from the toroidally generated sunspots. \\
+Babcock-Leighton mechanism
+\citep{babcock_topology_1961,leighton_transport_1964}. Due to the tilt observed
+in Joy's-law, some component of the magnetic dipole in a bipolar-sunspot-pair is
+in the north-south direction. As the sunspot pair disperses over time, the
+surface flows release some amount of this dipole moment, contributing to the
+overall poloidal field . This can be seen in Figure \ref{fig:mag_butterfly}
+near the top of each hemisphere. In principle, this can in itself lead to a
+working dynamo, by generating the poloidal field from the toroidally generated
+sunspots. \\
 
 
 Despite many years of research into the solar dynamo, there is much that still
@@ -761,11 +748,69 @@ remains unclear, with many questions remaining. In particular, this includes:
 
   \item What is the cause of periods such as the Maunder Minimum?
 \end{enumerate}
-A better understanding of the dynamo will lead to a better understanding of the Sun
-and all stars in general. Furthermore, a stronger grasp of the working of the
-solar magnetic field, and therefore of sunspots, will be critical in our ability
-to predict and prepare for extreme space weather events.
+To answer these questions and obtain a deeper understanding of the solar dynamo,
+more data is needed to constrain dynamo models. Solar magnetograms can be
+valuable in providing such constraints
+\citep{hagenaar_properties_2003,zhang_new_2010} and test simulations of the
+evolution of active regions \citep{valori_nonlinear_2011}, which may provide
+clues into the dynamo process that created them. Furthermore, magnetograms can
+be used in conjunction with dynamo models to make long-term predictions of solar
+magnetic activity \citep{kitiashvili_long-term_2019}. A better understanding of
+the dynamo will therefore lead to a greater understanding of the workings of the
+Sun and will be critical in our ability to predict and prepare for extreme space
+weather events.
 
+% A
+% stronger grasp of the working of the solar magnetic field 
+
+
+% , and therefore of
+% sunspots, will be critical in our ability to predict and prepare for extreme
+% space weather events.
+
+% Furthermore, a stronger grasp of the working of the
+% solar magnetic field, and therefore of sunspots, will be critical in our ability
+% to predict and prepare for extreme space weather events.
+
+
+% to test dynamo
+% while tracking the evolution of individual active regions and comparing this to
+% simulations can provide clues into the dynamo process that created them
+% \citep{valori_nonlinear_2011}.
+
+% as active regions are created by the dynamo process, tracking their evolution
+% may provide clues into the dynamo process that created them \citep{valori_nonlinear_2011}.
+
+
+% and can be used in conjunction
+% with dynamo models to make long-term predictions about solar magnetic activity
+% \citep{kitiashvili_long-term_2019}.  
+
+
+% Furthermore, magnetograms provide the ability
+% to track the evolution of individual active regions, which carry signatures of the dynamo
+% process that created them \citep{valori_nonlinear_2011}. \\
+
+
+% However the surface magnetogram data of the Sun is incomplete, with magnetograms only
+% taken for the nearside. 
+
+% A better understanding of the dynamo will lead to a better understanding of the Sun
+% and all stars in general. 
+
+% \begin{itemize}
+%   \item to be able to answer these questions and gain a deeper understanding of
+%   the dynamo mechanism, and therefore the Sun in general, more data is needed
+%   to constrain.
+%   \item the best way to determine the answers to these questions is with more
+%   data to further constrain the models of the Sun
+%   \item currently only the nearside magnetic field can consistently be measured
+%   \item we only have partial information about the magnetic field
+%   \item only nearside
+%   \item farside magnetograms may prove useful in order to provide continuous
+%   boundary conditions
+%   \item 
+% \end{itemize}
 
 
 
@@ -975,7 +1020,7 @@ t)}^2\).\\
     interior \citep{Lindsey2017}. \subref{fig:egression} Disturbances on the solar surface (dark blue) can be
     computationally propagated backward in time to a sampling surface. The
     acoustic power is then given by the squared magnitude of this coherent
-    acoustic egression.\citep{Lindsey2011} }
+    acoustic egression \citep{Lindsey2011}.}
 \end{figure}
 
 
@@ -1183,7 +1228,7 @@ allowing much of the data to be fed through in parallel.
 
 
 
-\subsubsection{Fully Connected Layer}
+\subsubsection{Fully Connected Layers}
 Neurons in a fully connected layer are modelled after the perceptron, originally
 conceived by \citet{rosenblatt1958}, and take the form shown in Equation
 \ref{eqn:perceptatron}. This consists of a weighted sum over the inputs $x_i$,
@@ -1249,7 +1294,7 @@ parameters of the model, i.e.
   \label{fig:fully_connected}
 \end{figure}
 
-\subsubsection{Convolutional layers}
+\subsubsection{Convolutional Layers}
 \label{sec:convolutional}
 Convolutional layers in neural networks are typically (although not necessarily)
 used when analysing inputs with more than one dimension, such as images or
