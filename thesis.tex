@@ -250,7 +250,7 @@ In this thesis, we describe and implement a method to translate farside seismic
 maps to farside magnetograms. Our method consists of two steps. First, we train
 a cGAN to generate magnetograms from EUV images using data from the Solar
 Dynamics Observatory (SDO). This cGAN is then applied to EUV images from
-STEREO-A to create a data set of partially farside synthetic magnetograms.
+STEREO-A to create a dataset of partially farside synthetic magnetograms.
 Secondly, we use these synthetic magnetograms to train a separate cGAN to
 generate magnetograms from farside seismic maps. Chapter \ref{chap:background}
 provides a background into the science behind our method and finishes with a
@@ -728,7 +728,7 @@ in the north-south direction. As the sunspot pair disperses over time, the
 surface flows release some amount of this dipole moment, contributing to the
 overall poloidal field . This can be seen in Figure \ref{fig:mag_butterfly}
 near the top of each hemisphere. In principle, this can in itself lead to a
-working dynamo, by generating the poloidal field from the toroidally generated
+working dynamo by generating the poloidal field from the toroidally generated
 sunspots. \\
 
 
@@ -822,7 +822,7 @@ weather events.
 %  Solar flares
 %   coronal mass ejection's
 %  STEREO spacecraft (3d model of coronal mass ejections)
-%     Effects on earth
+%     Effects on Earth
 %  How it is modelled
 %  Magnetograms
 % Currently they use the flux transport model (ADAPT)
@@ -971,7 +971,7 @@ In Section \ref{sec:HSM} we discussed global helioseismology, the
 study of the precise frequencies of the Sun's resonant modes. This can be used
 to infer properties about the Sun, such as structure or rotation, as a function
 of radial depth and latitude, but gives no details about how these aspects may
-change with latitude. Local helioseismology on the other hand instead looks at
+change with latitude. Local helioseismology instead looks at
 spatially compact anomalies in the observed p-modes, caused by some disturbance
 \citep{braun_absorption_1988}. Where global helioseismology is analogous to
 `hearing' the Sun, local helioseismology is analogous to `seeing' the Sun. Of
@@ -1034,7 +1034,7 @@ where \(c_0\) and \(\theta_0\) are the speed of sound and the angle from the nor
 in the initial medium, while \(c\) and \(\theta\) are the speed of sound and
 angle from the normal in the medium the wave travels to
 respectively\footnote{The normal referenced is the normal to the surface
-separating the two mediums,}. Rearranging this in terms of a constant \(K = \sin
+separating the two mediums.}. Rearranging this in terms of a constant \(K = \sin
 \theta_0 / c_0 \), we get
 \begin{align}
   \sin \theta = Kc \,.
@@ -1058,11 +1058,11 @@ Active regions are strong absorbers of acoustic waves unless the waves approach
 in a direction close to the normal of the surface \citep{Braun1989,
 lindsey_seismic_2000, braun_surface-focused_2008}, as is the case of those with
 skip distances like that of the ones shown in Figure \ref{fig:pupil}. However,
-while they do not absorb these approximately normally incident waves, they do
-impart a phase shift of a fraction of a radian upon them, which in turn, causes
-the echo to reach the nearside a few seconds earlier than it otherwise would
-have. This may be due to a physical depression observed in sunspots, called
-the Wilson depression \citep{Lindsey_2010}.\\
+while they do not absorb these approximately normal incident waves, they do
+impart a phase shift of a fraction of a radian upon them, which in turn causes
+the echo to reach the nearside a few seconds earlier than it otherwise would.
+This may be due to a physical depression observed in sunspots, called the Wilson
+depression \citep{Lindsey_2010}.\\
 
 To detect farside active regions, the p-modes travelling
 from the nearside to the focus are compared to the echo that comes back to the
@@ -1101,8 +1101,7 @@ such as the one shown in Figure \ref{fig:skips}, we have an opening angle of
   \caption[]{
     \subref{fig:pupil} Diagram showing the paths taken by the wavefronts
     travelling to the focus (green) before echoing back from the focus (yellow)
-    \citep{Lindsey2011}.\\
-    \subref{fig:phase_map} Images showing both a farside seismic map created using
+    \citep{Lindsey2011}.\subref{fig:phase_map} Images showing both a farside seismic map created using
     farside helioseismic holography (yellow) and a nearside magnetogram (blue).
     As the Sun rotates, active regions can be seen moving from the farside to
     nearside. The seismic map is measured by the time perturbation, \(\tau\) caused by
@@ -1121,12 +1120,14 @@ travel time of the acoustic waves. \\
 
 
 While there is a known correlation between the seismic signatures and the
-magnetic flux of an active region \citep{Gonzalez_Hernandez_2007}, a direct relationship
-between the phase shift and the magnetic field is unknown, preventing accurate
-prediction of potentially dangerous active regions. However, due to the large amounts of data
-available, recent machine learning techniques offer the potential of finding
-such a relationship.
-
+magnetic flux of an active region \citep{Gonzalez_Hernandez_2007}, a direct
+relationship between the phase shift and the magnetic field is unknown,
+preventing accurate prediction of potentially dangerous active regions. Deep
+learning techniques offer the potential of finding such a relationship due to
+the large quantity of data available. Furthermore, recent advancements in the
+deep learning field have given rise to techniques to artificially create new
+data, which may provide the ability to generate magnetograms from farside
+seismic maps.
 
 
 %
@@ -1169,7 +1170,7 @@ Training is therefore the process of tuning the parameters of the neural
 network until it behaves as desired. \\
 
 The past two decades have seen significant improvements in computational
-capability and the availability of large data sets. Recent improved deep
+capability and the availability of large datasets. Recent improved deep
 learning algorithms have capitalised on this, using their immense flexibility to
 tackle problems such as object detection \citep{krizhevsky_imagenet_2017} or
 speech recognition \citep{toth_phone_2015}. To understand how these algorithms
@@ -1202,9 +1203,9 @@ which case each pixel would have three values (one for the intensity of each
 colour). In this case, three channels would be used, with each channel
 representing the intensity of the given colour.\\
 
-Data is often sent into the network in `batches'. This adds another dimension
-to the input corresponding to the size of the batch. This has the advantage of
-allowing much of the data to be fed through in parallel.
+% Data is often sent into the network in `batches'. This adds another dimension
+% to the input corresponding to the size of the batch. This has the advantage of
+% allowing much of the data to be fed through in parallel.
 
   \begin{figure}[t]%
     \centering
@@ -1244,10 +1245,14 @@ This can be represented with a graph such as the one in Figure
 \ref{fig:perceptatron}. The use of the activation function was originally
 inspired by the activation of organic neurons \citep{hodgkin1952}, with the idea
 that the artificial neuron is only `activated' when the weighted sum of the
-inputs is high enough. Rectified Linear Units (ReLUs) are perhaps the most
-widely used activation function in modern neural networks and have been shown to
-outperform traditional sigmoid activation functions \citep{glorot2011}. Figure
-\ref{fig:activation} shows the sigmoid (left) and ReLU (right) activation
+inputs is high enough. In practice, activation functions allow the network to
+learn non-linear mappings from the input data. Complex relationships between the
+inputs and outputs can then be modeled by combining many of these non-linear
+`triggers'. Rectified Linear Units (ReLUs) are perhaps the most widely used
+activation function in modern neural networks and have been shown to outperform
+traditional sigmoid activation functions \citep{glorot2011}. 
+
+Figure \ref{fig:activation} shows the sigmoid (left) and ReLU (right) activation
 functions.\\
 
 
@@ -1296,10 +1301,10 @@ parameters of the model, i.e.
 
 \subsubsection{Convolutional Layers}
 \label{sec:convolutional}
-Convolutional layers in neural networks are typically (although not necessarily)
-used when analysing inputs with more than one dimension, such as images or
-videos. A neural network consisting of mostly convolutional layers is called a
-convolutional neural network. \\
+Convolutional layers in neural networks are typically used when analysing inputs
+with more than one dimension, such as images or videos. A neural network
+consisting of mostly convolutional layers is called a convolutional neural
+network. \\
 
 
 \citet{hubel_receptive_1959} found that neurons in a cat's visual cortex fired
@@ -1313,8 +1318,11 @@ some size, and the dot product between the filter and the section of input is
 computed, which then makes up part of the input for the following layer (see
 Figure \ref{fig:convolution}). This gives a measure for the difference between
 the filter and the input area, with the idea that the filter will pick up some
-feature from the input, for example, an edge in an image. This process typically
-reduces the size of inputs between layers, and in this case, is called
+feature from the input, for example, an edge in an image. Thus, convolutional
+layers can identify spatial features in the input data, which can then be fed
+into fully connected layers depending on the desired output. \\
+
+This process typically reduces the size of inputs between layers, and in this case, is called
 downsampling. If the input is first `padded' with extra zeros, the same process
 can increase the size of the inputs between layers in which case the process is
 called upsampling or deconvolution (see Figure \ref{fig:upsampling}).
@@ -1344,12 +1352,10 @@ connected layers are used.
   layer]{\subref{fig:convolution} Diagram of a convolutional layer showing the
   input (blue) and the output (green). A filter is applied to a subset of the
   input (shaded blue) and the dot product between the entries of the filter and
-  input is returned (shaded green). \\
-  \subref{fig:upsampling} Diagram of an upsampling layer, showing the input
+  input is returned (shaded green). \subref{fig:upsampling} Diagram of an upsampling layer, showing the input
   (blue) with padding (white) and the output (green). Convolution is applied to
   this in the same way as in \subref{fig:convolution}, however, the padding
-  allows for the output to be larger than the original input.\\
-  \textit{Both images generated from:}
+  allows for the output to be larger than the original input. \textit{Both images generated from:}
   \url{github.com/vdumoulin/conv_arithmetic}.}
   \end{figure}
 
@@ -1391,17 +1397,17 @@ input/output pairs in the training data.
   C_T = \frac{1}{n_D} \sum\limits_{p} C_p \label{eqn:total cost}
 \end{align}
 
-These cost functions will often take the form of either the quadratic cost, also
-known as the mean squared error, (Equation \ref{eqn:quadratic}), or the cross
-entropy\footnote{Usually cross entropy is used when the outputs can be
-represented as probability functions, i.e. \( 0 < y_i < 1\) and \(\sum y_i =
-1\)} (Equation \ref{eqn:cross-entropy}).
-\begin{align}
-  C_p(\bm{\theta}, \bm{y}, \bm{y'}) &= \frac{1}{2} \sum\limits_{i}
-    \left(y'_i - y_i\right)^2 && \text{Quadratic cost} \label{eqn:quadratic}\\
-  C_p(\bm{\theta}, \bm{y}, \bm{y'}) &= - \sum\limits_{i}
-  y'_i \log{y_i} && \text{Cross-entropy} \label{eqn:cross-entropy}
-\end{align}
+% These cost functions will often take the form of either the quadratic cost, also
+% known as the mean squared error, (Equation \ref{eqn:quadratic}), or the cross
+% entropy\footnote{Usually cross entropy is used when the outputs can be
+% represented as probability functions, i.e. \( 0 < y_i < 1\) and \(\sum y_i =
+% 1\)} (Equation \ref{eqn:cross-entropy}).
+% \begin{align}
+%   C_p(\bm{\theta}, \bm{y}, \bm{y'}) &= \frac{1}{2} \sum\limits_{i}
+%     \left(y'_i - y_i\right)^2 && \text{Quadratic cost} \label{eqn:quadratic}\\
+%   C_p(\bm{\theta}, \bm{y}, \bm{y'}) &= - \sum\limits_{i}
+%   y'_i \log{y_i} && \text{Cross-entropy} \label{eqn:cross-entropy}
+% \end{align}
 By minimising the cost function using gradient descent, the neural network
 ideally learns the parameters that give a sensible output. To use traditional
 gradient descent, the gradient of the total cost function would be calculated at
@@ -1417,7 +1423,9 @@ the gradient of:
 \begin{align}
   C_B = \frac{1}{n_B} \sum\limits_{B} C_p \label{eqn:average cost}\,,
 \end{align}
-where \(n_B\) is the number of input/output pairs in the batch. Backpropagation
+where \(n_B\) is the number of input/output pairs in the batch. The batch can be
+treated as an additional dimension to the input allowing the data to be passed
+through the network in parallel, improving efficiency. Backpropagation
 \citep{rumelhart_learning_1986} is typically used to calculate the gradient of
 this average cost function.
 
@@ -1513,36 +1521,44 @@ step in the \(-\nabla C_B\) direction of parameter space. \\
 
 Deep learning techniques based on the fully connected or convolutional neural
 networks described above have been very successful at labelling problems such as
-speech recognition, \citep{Hinton2012}, or image classification,
-\citep{Krizhevsky2012}. However using these techniques to \textit{generate}
-data had only experienced limited success before the recent introduction of
-generative adversarial networks (GANs).\\
+speech recognition \citep{Hinton2012} or image classification
+\citep{Krizhevsky2012}. However, using these techniques to generate \textit{new}
+data with the same charcatceristics as a training set had only experienced
+limited success before the recent introduction of generative adversarial
+networks (GANs).\\
 
 \subsection{Generative Adversarial Networks}
 \label{sec:gan}
-\citet{Goodfellow2014} introduced GANs as a way of generating
-new data that `imitates' data from a given set. Rather than use a single
-network, a GAN uses two separate neural networks, a generative network (the
-generator) and a discriminative network (the discriminator), that compete
-against each other such that the success of one network becomes the loss for the
-other. In this process, the generative network learns to generate data similar
-to the dataset while the discriminative network learns to distinguish between
-samples either taken from the data distribution or generated by the generative
-network \citep{Goodfellow2014}. The objective of the generative network is
-therefore to increase the error rate of the discriminative network. Notably, the
-generator never actually sees the data it's trying to emulate, only the success
-of the discriminator network. The only input to the generator is random noise,
-which allows it to generate a new output each time. \\
+\citet{Goodfellow2014} introduced GANs as a way of generating new data that
+`imitates' data from a given set. This deep learning technique has seen
+remarkable success in recent years, with GAN's capable of producing art
+\cite{elgammal_can_2017}, realistic faces \cite{karras_style-based_2019} and
+music \citep{yu_conditional_2021}. Rather than use a single network, a GAN uses
+two separate neural networks, a generative network (the generator) and a
+discriminative network (the discriminator), that compete against each other such
+that the success of one network becomes the loss for the other. In this process,
+the generative network learns to generate data similar to the dataset while the
+discriminative network learns to distinguish between samples either taken from
+the data distribution or generated by the generative network
+\citep{Goodfellow2014}. The objective of the generative network is therefore to
+increase the error rate of the discriminative network. Notably, the generator
+never actually sees the data it's trying to emulate, only the success of the
+discriminator network. The only input to the generator is random noise, which
+allows it to generate a new output each time. \\
 
-An analogy of this process given by \citet{Goodfellow2014} is that the generative
-network is a counterfeiter, trying to produce a fake currency without being
-detected, while the discriminative network is the police, trying to detect the
-counterfeit currency.\\
+An analogy of this process given by \citet{Goodfellow2014} is that the
+generative network is a counterfeiter, trying to produce a fake currency without
+being detected, while the discriminative network is the police, trying to detect
+the counterfeit currency. In this case, the counterfeiter doesn't know what the
+currency looks like but learns to produce realistic currency based solely on
+how successful the police are at detecting it. In this way, both the generator
+(counterfeiter) and discriminator (police) learn to improve as a result of the
+constant struggle between them.\\
 
-In a traditional GAN, the input of the generator, G, is some noise, \(\bm{z}\),
-drawn from some predefined prior (\(\bm{z} \sim  p_z(\bm{z})\)), while
+In a traditional GAN, the input of the generator, $G$, is some noise, \(\bm{z}\),
+drawn from some prior (\(\bm{z} \sim  p_z(\bm{z})\)), while
 the output, \(G(\bm{z})\) is a mapping to the data distribution. Meanwhile the
-input to the discriminator, D, is either samples, \(\bm{x}\), from the data
+input to the discriminator, $D$, is either samples, \(\bm{x}\), from the data
 distribution, \(p_x\), or outputs of the generator, \(G(\bm{z})\). The output of
 the discriminator, \(D(\bm{y})\), then represents the probability that the input
 came from the data distribution (\( \bm{y} \sim p_{data}\)) and not from the
@@ -1574,22 +1590,25 @@ the following cost function at the start of training:
   &= -\log[D(G(\bm{z}))]\,.
 \end{align}
 
-Typically, training is done by alternating between training the generative network
-and training the discriminative network until convergence. However, GANs that
-operate as described above are unable to take in any auxiliary information that
-could allow it to condition the output of the generator.
+Typically, training is done by alternating between training the generative
+network and training the discriminative network until convergence. After
+training, the generative and discriminative networks can be separated such that
+there are two end products: a discriminator that can determine whether an input
+matches the dataset and a generator that can generate new data from some noise.
+However, a GAN that operates as described is unable to take in any auxiliary
+information that could allow it to condition the output of the generator.
 
 \subsection{Conditional Generative Adversarial Networks}
 \label{sec:cgan}
 In \citeyear{mirza_conditional_2014}, \citeauthor{mirza_conditional_2014} first
 introduced the idea of a conditional generative adversarial network (cGAN) as a
 way to condition a GAN on some additional information, \(\bm{c}\), such as a
-label or related data. While a traditional GAN is unsupervised and only needs an
-input dataset which it learns to emulate, a cGAN is supervised and requires a
-labelled dataset, i.e. many \((\bm{x}, \bm{c})\) pairs. This extra information
-is fed into both networks allowing it to associate its output with this
-additional information. A comparison between a GAN
-and a cGAN is shown in Figure \ref{fig:gans}.\\
+label or related data. While a traditional GAN is only needs an input dataset
+which it learns to emulate (unsupervised learning), a cGAN requires a labelled
+dataset, i.e. many \((\bm{x}, \bm{c})\) pairs (supervised learning). This extra
+information is fed into both networks allowing it to associate its output with
+this additional information. A comparison between a GAN and a cGAN is shown in
+Figure \ref{fig:gans}.\\
 
 
 \begin{figure}[t]
@@ -1645,7 +1664,7 @@ maps to farside magnetograms. \\
 To solve the first problem, we make use of the Solar-Terrestrial Relations
 Observatory (STEREO). STEREO consists of two spacecraft each in a heliocentric
 orbit, STEREO-A and STEREO-B. These two spacecraft orbit the Sun at slightly
-different rates to earth, with orbital periods of 346 and 388 days respectively.
+different rates to Earth, with orbital periods of 346 and 388 days respectively.
 As such, the positions of these satellites rotate about the Sun relative to the
 Earth, allowing them to image the farside for some intervals of the mission.
 While contact was lost with STEREO-B during 2014, STEREO-A is still operational
@@ -1828,7 +1847,7 @@ shows a summary of the project pipeline. \\
 %
 
 To generate farside magnetograms from farside seismic maps, we first create two
-distinct data sets
+distinct datasets
 \begin{enumerate}
   \item a nearside dataset consisting of EUV and magnetogram image pairs, and
   \item a farside dataset consisting of seismic map and EUV image pairs.
@@ -1870,7 +1889,7 @@ accounting for the above effects.
 %         \end{itemize}
 %   \item magnetograms measure the radial magnetic field, using filtegrams
 %   \item % https://link.springer.com/content/pdf/10.1007/s11207-011-9834-2.pdf
-%   \item figure showing positions and trajectory of stereo, sun earth, SDO and
+%   \item figure showing positions and trajectory of stereo, sun Earth, SDO and
 %         imaginary satellite for acoustic maps
 %   \item figure (maybe the same one) showing plot of stereo position in
 %   \item position data from http://www.srl.caltech.edu/STEREO/docs/position.html
