@@ -1251,7 +1251,15 @@ inputs and outputs can then be modeled by combining many of these non-linear
 activation function in modern neural networks and have been shown to outperform
 traditional sigmoid activation functions \citep{glorot2011}. Figure
 \ref{fig:activation} shows the sigmoid (left) and ReLU (right) activation
-functions.\\
+functions. Leaky ReLUs are also used in this research, which have a small
+positive gradient for values less than one, for example,
+\begin{align}
+  \varphi (x) = \begin{cases} 
+    x & x > 0 \\
+    0.01x & x \leq 0 \\
+ \end{cases} \, .
+\end{align}
+\\
 
 
 \begin{figure}[t]
@@ -1449,8 +1457,7 @@ The goal of backpropagation is therefore to calculate the derivative in Equation
 \ref{eqn:backprop_deriv} for each parameter \(\theta_i \in \bm{\theta} \)
 \citep{Goodfellow-et-al-2016}. \\
 
-From Equations \ref{eqn:quadratic} and \ref{eqn:cross-entropy}, we know that the
-cost function is dependent on the output of the network, \(\bm{y}\), and the
+The cost function is dependent on the output of the network, \(\bm{y}\), and the
 desired output, \(\bm{y'}\). While \(\bm{y'}\) is fixed and does not depend on
 the parameters of the network, the output \(\bm{y}\) is the activation of the
 last layer of neurons (i.e. \(\bm{y} = \bm{x}^{[n_L]}\)), and is itself a
@@ -1473,8 +1480,7 @@ be directly computed using Equation \ref{eqn:matrix_repr}, the derivative
 
 If \(x_i^{[L+1]} = x_i^{[n_L]} = y_i\) (i.e. the neuron \(x_i^{[L+1]}\) is an
 output neuron in the last layer), then the cost function will be defined
-explicitly in terms of the activation of this neuron (Equations
-\ref{eqn:quadratic} and \ref{eqn:cross-entropy}), and we can easily calculate
+explicitly in terms of the activation of this neuron and we can easily calculate
 the derivative,
 \begin{align}
   \partialderivative{C_p}{x_i^{[n_L]}} = C_p'\left(x_i^{[n_L]}\right)\,.
@@ -2579,28 +2585,34 @@ The architecture for each cGAN was based on the one used by \citet{Kim2019}. In
 their paper, they describe a cGAN similar to the UV-GAN we train which generates
 magnetograms from EUV solar images. However, while the cGAN used by
 \citet{Kim2019} was only capable of predicting magnetic field strengths of at
-most 100 G, ours does not have this issue. Our model consists of a U-net style generator network
-\citep{ronneberger_u-net_2015}, and a fully convolutional discriminator network. Figure
-\ref{fig:solar_gans_diagram} shows a diagram of each cGAN.
+most 100 G, ours does not have this issue.
+% Our model consists of a U-net style generator network
+% \citep{ronneberger_u-net_2015}, and a fully convolutional discriminator
+% network. 
+Figure \ref{fig:solar_gans_diagram} shows a diagram of each cGAN.
 
 
 \subsection{Generator}
 The generator network must be capable of translating the conditional image
 (either an EUV image or seismic map) into a magnetogram. For this purpose, we
-chose a U-net \citep{ronneberger_u-net_2015}. U-nets were originally developed
-for biomedical image segmentation, however have been used in a wide range of
-astrophysics applications (for example
-\citet{felipe_improved_2019,bekki_quantifying_2021,baso_solar_2019}). U-nets
-consist of a downsampling path where the width and height of each layer are
-reduced at each step, followed by an upsampling path where the width and height
-increase at each step until reaching the original size. Many `skip
-connections' join layers of the same size at either side of the `U'. The model used
-in this work is shown in Figure \ref{fig:gen_model}. By implementing a U-net the
-generator can perform image-to-image translation that retains the shape and
-large scale structures of the input image while still capturing complex
-relationships between the input and output. While the generator network must be
-able to translate between image types, the discriminator network must be able to
-evaluate the quality of its input.
+chose to use a U-net \citep{ronneberger_u-net_2015}. U-nets were originally
+developed for biomedical image segmentation and have been used in a wide range
+of astrophysics applications (for example
+\citet{felipe_improved_2019,bekki_quantifying_2021,baso_solar_2019}) due to the
+physical interpretability of their output. \\
+
+U-nets consist of a downsampling path where the width and height of each layer
+are reduced at each step, followed by an upsampling path where the width and
+height increase at each step until reaching the original size. Many `skip
+connections' join layers of the same size at either side of the `U'. The model
+used in this work is shown in Figure \ref{fig:gen_model}. By implementing a
+U-net the generator can perform image-to-image translation that retains the
+shape and large scale structures of the input image while still capturing
+complex relationships between the input and output. Crucially this process
+preserves the position of the input, such that a point on the output will
+directly correspond to the same point of the input. While the generator network
+must be able to translate between image types, the discriminator network must be
+able to evaluate the quality of its input.
 
   \begin{figure}
     \centering
@@ -2793,16 +2805,15 @@ magnetogram.
 
 We trained the Seismic-GAN with the same parameters as the UV-GAN using 4288
 seismic map/STEREO magnetogram image pairs. The maximum allowable time delay
-between the seismic maps and STEREO magnetograms was choosen to be seven days in
-order to maximise the quantity of data available. Once again images from
-November or December each year were set aside for evaluation. After this initial
-training, the Seismic-GAN was able to produce images that appeared physically
-realistic however did not seem to be correlated to the true magnetic field. This
-indicates that the cGAN did not actually learn any relationship between the
-seismic images and the magnetic field, and only learnt how to produce an image
-that `looked' like a magnetogram. An example of one of these generated
-magnetograms along with the equivalent STEREO magnetogram is in Figure
-\ref{fig:default}. \\
+between the seismic maps and STEREO magnetograms was chosen to be seven days to
+maximise the quantity of data available. Once again images from November or
+December each year were set aside for evaluation. After this initial training,
+the Seismic-GAN was able to produce images that appeared physically realistic
+however did not seem to be correlated to the true magnetic field. This indicates
+that the cGAN did not actually learn any relationship between the seismic images
+and the magnetic field, and only learnt how to `dream up' an image that looked
+like a magnetogram. An example of one of these generated magnetograms along with
+the equivalent STEREO magnetogram is in Figure \ref{fig:default}. \\
 
 
 %TODO: consider instead making this about decreasing the time delay
@@ -2825,7 +2836,7 @@ to five days. %TODO: CHECK THIS
 % using the same parameters as before.
 This left 2899 seismic map/STEREO magnetogram image pairs, which were used to
 re-train the Seismic-GAN. Unfortunately this resulted in mode-collapse, where
-the Generator found a local minimum by producing (almost) the same output
+the generator found a local minimum by producing (almost) the same output
 image regardless of the input. Figure~\ref{fig:mode_collapse} shows two seismic
 maps and the corresponding synthetic magnetograms produced by this cGAN. Despite
 the two seismic maps being taken five years apart, both generated magnetograms
@@ -3146,7 +3157,7 @@ magnetogram twelve days later.
     \label{fig:smag_2011_11_15}%
     \includegraphics[height=1.8in]{SMAG_2011_11_15.png}% 
   }%
-  \caption[]{\subref{fig:uv_mag_2011_11_15} is a ssynthetic STEREO magnetogram
+  \caption[]{\subref{fig:uv_mag_2011_11_15} is a synthetic STEREO magnetogram
   generated by the UV-GAN, from a EUV image taken on the 15th of November 2011.
   \subref{fig:smap_2011_11_15} is the equivalent seismic map.
   \subref{fig:smag_2011_11_15} is the synthetic magnetogram generated by the
