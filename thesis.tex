@@ -126,8 +126,8 @@ height=1cm, text centered, draw=black, fill=gray!30, text width=3cm]
 
 \chapter*{Abstract}
 Active regions on the Sun's surface can lead to large eruptions with the
-potential to cause significant hazards on Earth. Images of the magnetic field on
-the Sun's surface, known as magnetograms, are a vital tool for predicting these
+potential to cause significant hazards on Earth. Synoptic maps of the solar
+magnetic field, known as magnetograms, are a vital tool for predicting these
 events. While these are readily available for the near hemisphere of the Sun,
 there is currently no reliable way to generate magnetograms for the far
 hemisphere. Consequently, dangerous farside active regions may rotate towards
@@ -135,7 +135,7 @@ Earth with little warning. Here we describe a method to generate synthetic
 farside magnetograms using a deep learning method applied to helioseismology
 data. While the synthetic magnetograms fail to accurately determine the position
 or shape of active regions, they successfully predict sharp changes in the total
-unsigned magnetic field - a key predictor of solar eruptions.
+unsigned magnetic field\textemdash a key predictor of solar eruptions.
 
 % \chapter*{Acknowledgements}
 %TODO:
@@ -173,26 +173,26 @@ unsigned magnetic field - a key predictor of solar eruptions.
 %
 
 A self-regenerating dynamo within the Sun produces a rich and complex solar
-magnetic field. Perhaps the most obvious manifestations of this magnetic field
-are active regions, which are produced by rising toroidal magnetic flux ropes
-that penetrate the solar surface. These active regions are home to extreme
+magnetic field. Active regions, and the sunspots within, are surface
+manifestations of this magnetic field produced by rising toroidal magnetic flux
+ropes that penetrate the solar surface. These active regions are home to extreme
 magnetic fields with strengths typically exceeding 1000 Gauss. If an active
-region cannot effectively dissipate the electric currents that flow within, a build-up
-of magnetic energy can lead to an explosive magnetic reconnection event. These
-reconnection events can result in solar flares or coronal mass ejections that
-can be dangerous when directed towards Earth. Such events, and associated
-geomagnetic storms, have been known to result in an array of technological
-disruptions, including blackouts \citep{odenwald_day_2015}, loss of satellites
-\citep{carlowicz_did_1997}, and even the detonation of sea mines
-\citep{knipp_little-known_2018}. Furthermore, these events have the potential to
-cause radiation exposure to astronauts \citep{hu_modeling_2009} and could cause
-significant damage to terrestrial electrical grids
-\citep{council_severe_2008}. \\
+region cannot effectively dissipate the electric currents that flow within, a
+build-up of magnetic energy can lead to an explosive magnetic reconnection
+event. These reconnection events can result in solar flares or coronal mass
+ejections that can be dangerous when directed towards Earth. Such events, and
+associated geomagnetic storms, have been known to result in an array of
+technological disruptions, including blackouts \citep{odenwald_day_2015}, loss
+of satellites \citep{carlowicz_did_1997}, and even detonation of underwater
+naval mines \citep{knipp_little-known_2018}. Furthermore, these events have the
+potential to cause radiation exposure to astronauts \citep{hu_modeling_2009} and
+significant damage to terrestrial electrical grids \citep{council_severe_2008}.
+\\
 
 
-Solar magnetograms, images of the magnetic field of the Sun, are a vital tool
-for predicting such events and identifying high-risk active regions before they
-erupt
+Solar magnetograms, images of the magnetic field on the surface of the Sun, are
+a vital tool for predicting such events and identifying high-risk active regions
+before they erupt
 \citep{song_statistical_2009,yuan_solar_2010,lan_automated_2012,bobra_solar_2015,
 chen_identifying_2019}. However, solar magnetograms are only available for the
 `nearside': the hemisphere of the Sun that faces the Earth. Due to the rotation
@@ -208,7 +208,7 @@ capable of producing magnetograms and only has a partial view of the solar
 farside, a view that will only decrease until it passes the Earth in 2023.
 Furthermore, one of the two spacecraft comprising the STEREO mission (STEREO-B)
 has already lost contact with Earth, while the other (STEREO-A) is already 16
-years into a planned 2-year mission, and may lose contact with Earth by the time
+years into a planned 2-year mission and may lose contact with Earth by the time
 it returns to the farside. \\
 
 
@@ -246,21 +246,23 @@ However, this work did not attempt to predict the farside magnetic field,
 limiting the ability to predict extreme solar events. \\
 
 
-In this thesis, we describe and implement a method to translate farside seismic
-maps to farside magnetograms. Our method consists of two steps. First, we train
-a cGAN to generate magnetograms from EUV images using data from the Solar
-Dynamics Observatory (SDO). This cGAN is then applied to EUV images from
-STEREO-A to create a dataset of partially farside synthetic magnetograms.
-Secondly, we use these synthetic magnetograms to train a separate cGAN to
-generate magnetograms from farside seismic maps. Chapter \ref{chap:background}
-provides a background into the science behind our method and finishes with a
-brief overview of our approach. Chapter \ref{chap:data} details how we collect
-and prepare our data for deep learning. Chapter \ref{chap:training} describes
-the architecture of our deep learning model as well as the process of training
-them. In Chapter \ref{chap:results_and_analysis}, we analyse the performance of
-our model and its ability to predict magnetic activity. Finally, Chapter
-\ref{chap:discussion} provides a discussion of our results as well as potential
-shortcomings before concluding in Chapter \ref{chap:conclusion}.
+In this thesis, we describe and implement a method to produce farside
+magnetograms from farside seismic maps. Crucially, these magnetograms are
+physically interpretable giving us the ability to determine their accuracy and
+reliability. Our method consists of two steps. First, we train a cGAN to
+generate magnetograms from EUV images using data from the Solar Dynamics
+Observatory (SDO). This cGAN is then applied to EUV images from STEREO-A to
+create a dataset of partially farside synthetic magnetograms. Secondly, we use
+these synthetic magnetograms to train a separate cGAN to generate magnetograms
+from farside seismic maps. Chapter \ref{chap:background} provides a background
+into the science behind our method and finishes with a brief overview of our
+approach. Chapter \ref{chap:data} details how we collect and prepare our data
+for deep learning. Chapter \ref{chap:training} describes the architecture of our
+deep learning model as well as the process of training them. In Chapter
+\ref{chap:results_and_analysis}, we analyse the performance of our model and its
+ability to predict magnetic activity. Finally, Chapter \ref{chap:discussion}
+provides a discussion of our results as well as potential shortcomings before
+concluding in Chapter \ref{chap:conclusion}.
 
 %
 %
@@ -305,7 +307,7 @@ at high speeds. This can trigger the creation of more stars, which may go on to
 also produce supernovae, giving rise to self-propagating star formation
 \citep{mueller_propagating_1976}. The Solar System itself was likely formed in
 this process, as part of a since dispersed cluster with a mass of around
-\(\SI{3000}{\,M_\odot} \)\citep{williams_astrophysical_2010,zwart_lost_2009}. \\
+\(\SI{3000}{\,M_\odot} \)\citep{zwart_lost_2009, williams_astrophysical_2010}. \\
 
 As the Sun-forming fragment of molecular cloud collapses, it spins faster due to
 the conservation of angular momentum. The molecules within begin colliding at an
@@ -361,7 +363,7 @@ noticed oscillations of the Sun's surface varied with a period of \(\sim
 further work found that the observed motion was due to the superposition of
 resonant modes of oscillation in the Sun \citep{ulrich_five-minute_1970}. These
 oscillations were later found to be a surface signature of pressure modes
-(p-modes) \citep{deubner_observations_1975}; standing waves generated by the
+(p-modes) \citep{deubner_observations_1975}: standing waves generated by the
 turbulent convective motion a few hundred kilometres below the surface. Pressure
 is the dominant restoring force of p-modes (hence the name), effectively making
 them sound waves (albeit at a far lower frequency than what is audible), with
@@ -426,7 +428,7 @@ factors that influence them, thereby obtaining information about the solar
 interior. If observed, g-modes would offer the ability to probe deep within the
 solar interior. However unambiguous detection of these modes has so far proved
 elusive due to their small surface amplitude, with a few possible exceptions
-\citealp{garcia_tracking_2007,fossat_asymptotic_2017}. While p-modes are unable
+\citep{garcia_tracking_2007,fossat_asymptotic_2017}. While p-modes are unable
 to probe as deeply into the Sun, they have proven much easier to observe and
 examine \citep{deubner_observations_1975}. By measuring the frequency of
 observed p-modes, helioseismology can be used to determine the speed of sound as
@@ -593,7 +595,7 @@ where (\(^+\)) and (\( ^-\)) are the signs of the magnetic fields. \\
 
 Putting even more constraints on a dynamo model, \citet{cowling1933} showed that
 an axis-symmetric magnetic field cannot be maintained by dynamo action.
-Subsequent `antidynamo' theorems \citet{backus1956,zeldovich_magnetic_1980} have
+Subsequent `antidynamo' theorems \citep{backus1956,zeldovich_magnetic_1980} have
 concluded that a dynamo powering the Sun's magnetic field must not possess a
 high degree of symmetry and so necessarily must be the result of a more complex
 mechanism.\\
@@ -738,10 +740,10 @@ remains unclear, with many questions remaining. In particular, this includes:
   field to a poloidal one?
 
   \item Is the Babcock-Leighton mechanism a crucial part of the dynamo
-  mechanism, or just a side-effect of decaying Sunspots?
+  mechanism, or just a side-effect of decaying sunspots?
 
   \item How constraining is the butterfly diagram? I.e can the structure of the toroidal field be
-  directly inferred from the distribution of the Sunspots?
+  directly inferred from the distribution of the sunspots?
 
   \item Is the tachocline a crucial part of the dynamo mechanism?
 
@@ -871,11 +873,11 @@ The release of energy in these magnetic reconnection events creates a localised
 flash of intense light in the corona, constituting a solar flare
 \citep{priest_solar_1984}. X-rays from such a flare can heat the outer
 atmosphere of the Earth and increase the drag on satellites at low orbits
-\citep{Oliveira2019}, while energetic protons released by a solar flare can
-pose a radiation hazard to potential astronauts \citep{Mewaldt2005,
-lamarche1996}. This is of particular relevance now, with the recent announcement
-of planned missions to land astronauts on the Moon again by 2024, and Mars in
-the 2030s \citep{smith_artemis_2020}. \\
+\citep{Oliveira2019}, while energetic protons released by a solar flare can pose
+a radiation hazard to potential astronauts \citep{lamarche1996, Mewaldt2005}.
+This is of particular relevance now, with the recent announcement of planned
+missions to land astronauts on the Moon again by 2024, and Mars in the 2030s
+\citep{smith_artemis_2020}. \\
 
 
 Coronal mass ejections pose an even greater hazard to human activity. When a
@@ -2562,7 +2564,7 @@ Seismic-GAN and describe how these deep neural networks were trained.
   discriminator network attempts to determine if a given input was a true magnetogram,
   based on the same EUV image. At each iteration, an SDO EUV/magnetogram pair is
   passed through the UV-GAN, and the descriminator updates the networks.
-  \subref{fig:seismic_GAN_diagram} A diagram of the Seismic-GAN. The seismic-GAN
+  \subref{fig:seismic_GAN_diagram} A diagram of the Seismic-GAN. The Seismic-GAN
   operates similar to the UV-GAN except that the inputs are a seismic image and
   a STEREO magnetogram - itself generated by the UV-GAN.}
   \label{fig:solar_gans_diagram}
@@ -2977,12 +2979,12 @@ assess the validity of our model.
 %TODO: reword maybe
 
 \section{UV-GAN}
-We find that the UV-GAN is able to successfully qualitatively reproduce the
-position and shape of active regions upon inspection of the validation data (for
-example, see Figure \ref{fig:aia_hmi_mag}). It is unable to determine the
-absolute magnetic field strength however and often struggles to reproduce the
-polarity of individual sunspots, but seems to guess the polarity according to
-Hale's law (see Section \ref{sec:dynamo}).
+We find that the UV-GAN can qualitatively reproduce the position and shape of
+active regions upon inspection of the validation data (for example, see Figure
+\ref{fig:aia_hmi_mag}). It is unable to determine the absolute magnetic field
+strength however and often struggles to reproduce the polarity of individual
+sunspots, but seems to guess the polarity according to Hale's law (see Section
+\ref{sec:dynamo}).
 %TODO: reword
 We desire a metric for determining the accuracy of our predictions, in
 particular, how capable it is at predicting extreme magnetic fields. 
@@ -3006,10 +3008,12 @@ where \(B_z\) is the line-of-sight magnetic field, i.e. the pixel values of the
 magnetograms. For individual active regions, this is typically used as a
 predictor for solar flares
 \citep{song_statistical_2009,yuan_solar_2010,lan_automated_2012,chen_identifying_2019}.
-By comparing the total unsigned magnetic flux of the true SDO magnetograms to
-the unsigned magnetic flux of the predicted magnetograms, we evaluate the
-accuracy and predictive capability of the synthetic magnetograms. We approximate
-the total unsigned magnetic flux by 
+We evaluate the accuracy and predictive capability of the synthetic magnetograms
+by comparing the total unsigned magnetic flux of the true SDO magnetograms to
+the unsigned magnetic flux of the magnetograms generated from the STEREO-A EUV
+data. Note that the UV-GAN did not use any of the STEREO-A data during training,
+making the dataset suitable for validation. We approximate the total unsigned
+magnetic flux by 
 \begin{align}
   T_{\text{flux}} \approx \sum\limits_p \absolutevalue{B_z(p)} A(p) \, ,
 \end{align}
@@ -3019,7 +3023,7 @@ calculate the total unsigned magnetic flux we first calculate $A(p)$ for each
 pixel.\\
 
 For a given pixel at position \( (x, y) \) in the magnetogram, the equivalent
-helioprojective coordinates \((\theta_x, \theta_y)\)are given by
+helioprojective coordinates \((\theta_x, \theta_y)\) are given by
 \begin{align}
   \theta_x &= \Delta x (x - c_x) \, \text{, and} \\
   \theta_y &= \Delta y (y - c_y) \, ,
@@ -3067,7 +3071,7 @@ in magnetic flux consistent with the true magnetograms as well as much of the
 short and large scale structure. Of particular note, the UV-GAN was able to
 reproduce the large-scale trend given by the solar cycle. This is despite
 inadvertently removing some of this information while normalising the EUV data
-(See Section \ref{sec:UV_prep}). Most importantly the UV-GAN was able to predict
+(see Section \ref{sec:UV_prep}). Most importantly the UV-GAN was able to predict
 the sharp changes in unsigned magnetic flux, including when these sharp changes
 corresponded to X-class solar flares. We now move on to the Seismic-GAN. 
 
@@ -3112,8 +3116,8 @@ the Seismic-GAN appear realistic, i.e. the magnetograms produced have the
 characteristics of true magnetograms, with the shapes and polarities appearing
 very similar to what you could expect on a true magnetogram. The fine grain
 structure does not appear to correlate at all with the true structure however
-and the seismic-GAN appears to be `guessing' the details. Furthermore, the
-ability of the seismic-GAN to predict the occurrence of active regions is mixed
+and the Seismic-GAN appears to `dream up' the details. Furthermore, the
+ability of the Seismic-GAN to predict the occurrence of active regions is mixed
 at best, for example in Figure \ref{fig:seismic_2011_11_15} the seismic
 magnetogram does correctly identify two active regions however misses one and
 predicts an active region where none exist. While we would have liked these to
@@ -3124,14 +3128,23 @@ magnetograms.\\
 
 Figure \ref{fig:flux_sdo_seismic} shows the unsigned magnetic flux of the
 magnetograms as a function of time, again with vertical lines indicating X-class
-solar flares. As the Seismic-Gan is trained on data from the UV-GAN, it is unable
-to produce magnetograms more realistic than those of the UV-GAN unless by
-chance. As such the magnetic flux corresponding to the Seismic-GAN has the same
-bias as with the UV-GAN. While the UV-GAN was able to reproduce much of the
-short time scale variations seen in the true magnetic flux, this is not the case
-for the Seismic-GAN. This is likely due to the way the seismic maps are created,
-with the final image being an integration over 24 hours, while the SDO images
-are essentially instantaneous snapshots. Additionally, while the UV-GAN was able to
+solar flares\footnote{Note that this is different to the figure shown during the
+seminar. A bug was discovered on 15/6/21 which affected how the synthetic
+magnetograms from the Seismic-GAN were produced, resulting in different
+predictions and a different magnetic flux.}. While this Figure was produced for
+the whole dataset, only magnetograms taken during November and December each
+year were kept aside for validation. As these validation magnetograms appear
+consistent with the rest of the dataset, it is unlikely that the model overfits
+the data.\\
+
+As the Seismic-Gan is trained on data from the UV-GAN, it is unable to produce
+magnetograms more realistic than those of the UV-GAN unless by chance. As such
+the magnetic flux corresponding to the Seismic-GAN has the same bias as with the
+UV-GAN. While the UV-GAN was able to reproduce much of the short time scale
+variations seen in the true magnetic flux, this is not the case for the
+Seismic-GAN. This is likely due to the way the seismic maps are created, with
+the final image being an integration over 24 hours, while the SDO images are
+essentially instantaneous snapshots. Additionally, while the UV-GAN was able to
 reproduce the general shape of the solar cycle, this long-term variation was
 much less pronounced for the Seismic-GAN. Despite these flaws, solar flares
 occurances had associated peaks indicating the potential usefulness of these
@@ -3161,18 +3174,20 @@ magnetogram twelve days later.
   generated by the UV-GAN, from a EUV image taken on the 15th of November 2011.
   \subref{fig:smap_2011_11_15} is the equivalent seismic map.
   \subref{fig:smag_2011_11_15} is the synthetic magnetogram generated by the
-  seismic-GAN based on the seismic map.}
+  Seismic-GAN based on the seismic map.}
   \label{fig:seismic_2011_11_15}
 \end{figure}
 
 \begin{figure}
   \centering
   \includegraphics[width=\linewidth]{Flux_SDO_Seismic_average.png}
-  \caption{The total unsigned magnetic flux according to SDO (blue) and the
-  seismic-GAN using Helioseismic data (orange)\protect\footnotemark. Solid lines
+  \caption[]{The total unsigned magnetic flux according to SDO (blue) and the
+  Seismic-GAN using Helioseismic data (orange). Solid lines
   represent the average across 27 days (roughly one rotational period) while
   dots represent individual magnetograms. The vertical grey lines indicate
-  X-class solar flares.}
+  X-class solar flares. It should be noted that only the magnetograms from
+  November and December were part of the validation set, with the remaining
+  magnetograms used in training.}
   \label{fig:flux_sdo_seismic}
 \end{figure}
 
@@ -3201,10 +3216,6 @@ magnetogram twelve days later.
   \label{fig:2018_peak}
 \end{figure}
 
-\footnotetext{Note that this is different to the figure shown during the
-seminar. A bug was discovered on 15/6 which affected how the synthetic
-magnetograms from the Seismic-GAN were produced, resulting in different
-predictions and a different magnetic flux.} %TODO: make sure this lines up
 
 
 %
@@ -3221,12 +3232,13 @@ predictions and a different magnetic flux.} %TODO: make sure this lines up
 %
 
 
-With the currently available data, inferring the solar farside magnetic field is
-a challenging task. Here we report the ability to generate realistic-looking
-magnetograms using only data extracted from nearside dopplergram observations.
-While these magnetograms do not appear to accurately represent the farside
-magnetic field, they predict an unsigned magnetic flux that peaks during times
-of intense - and often flare producing - solar activity.\\
+Inferring the solar farside magnetic field is a challenging task with the
+currently available data. Here we report the ability to generate
+realistic-looking magnetograms using only data extracted from nearside
+dopplergram observations. While these magnetograms do not appear to accurately
+represent the farside magnetic field, they predict an unsigned magnetic flux
+that peaks during times of intense\textemdash and often flare
+producing\textemdash solar activity.\\
 
 The inherent difficulty of this problem resulted in various limitations to our
 method. Perhaps the most obvious limitation was the lack of any true farside
@@ -3261,26 +3273,26 @@ days of computation time using an expensive GPU. \\
 
 
 Further restricting the amount of available information was the normalisation of
-the EUV data discussed in Section \ref{sec:UV_prep}. As part of this process,
-the EUV data was normalised by dividing by a rolling average of the 75th
-percentile pixel value. While this mainly affected the background solar
-activity, rather than the activity near active regions, this removed information
-relating to the general trend of the solar cycle (see Figure
-\ref{fig:aia_no_degradation}). To better account for the decrease, the
-percentiles could have been fitted with a combinatation of a normal distribution
-and exponential decay. By doing this, the normal distribution would take
-into account the effects from the solar cycle while the exponential decay would
-capture the instrument degradation - and could be used to adjust for it. This
-would have been more difficult to make consistent with the STEREO-A data however
-which was a necessary step in producing the farside magnetogram training set.
-Despite this, the UV-GAN was able to reproduce the general trend of the
-solar cycle as can be seen in Figure \ref{fig:flux_sdo_uv}. \\
+the EUV data discussed in Section \ref{sec:UV_prep}. The EUV data were
+normalised by dividing by a rolling average of the 75th percentile pixel value
+to account for instrument degradation. While this mainly affected the background
+solar activity, rather than the activity near active regions, this removed
+information relating to the general trend of the solar cycle (see Figure
+\ref{fig:aia_no_degradation}). An alternative would have been to fit the
+percentiles with a combination of a normal distribution and exponential decay to
+better account for the degradation. The normal distribution would then take into
+account the effects from the solar cycle while the exponential decay would
+capture the instrument degradation - and could be used to adjust for it. Making
+this consistent with the STEREO-A data would be more difficult however which
+was essential to producing STEREO magnetograms. The UV-GAN was able to reproduce
+the general trend of the solar cycle despite this normalisation process, as can
+be seen in Figure \ref{fig:flux_sdo_uv}. \\
 
 
 As the Seismic-GAN was trained on the synthetic `STEREO magnetograms', a further
 limitation came from the time delay between the seismic maps and STEREO-A data.
 As explained in Section \ref{sec:data_collection} this time delay was based on
-the average rotation of Sunspots. However due to the differential rotation of
+the average rotation of sunspots. However due to the differential rotation of
 the Sun, this still meant that some active regions may be in different locations
 after the delay, and more importantly, active regions may have decayed or new
 ones emerged during this period. As the data from STEREO-A was the only viable
@@ -3289,7 +3301,10 @@ unfortunately necessary. This creates a trade-off between the time delay and the
 amount of data, while allowing only small time delays gives more accurate data
 this also restricts the quantity of data. After some trial and error (see
 Section \ref{sec:train_seismic}) we used data with a time delay of less than
-seven days. \\
+seven days. This created some mismatch in the dataset, where active regions
+visible in the STEREO magnetograms were no longer visible in the seismic maps
+and vice-versa. This may have caused situations where the cGAN would 'dream up'
+active regions where none existed. \\
 
 
 Many of these issues may have been solved if we simply used a neural network to
@@ -3306,6 +3321,75 @@ information however. To overcome this, the cGAN could be given the magnetogram
 half a rotation earlier as an additional input. The cGAN would then only have to
 learn about changes in the magnetic field rather than having to produce a
 magnetogram from scratch. \\
+
+
+While there has been considerable progress over the past century towards
+understanding the solar magnetic field, much is still unknown and many questions
+remain. In the most optimistic scenario, a successful Seismic-GAN would provide
+accurate farside magnetograms that would allow for further constraints of solar
+dynamo models, providing continuous boundary conditions and a continuous mapping
+of the toroidal magnetic field. These magnetograms would also assist in
+understanding the emergence and evolution of active regions by permitting the
+tracking of active regions as they rotate around the Sun, in turn providing
+clues about the toroidal field that created them. Furthermore, interrogating
+this model could inform models of the Sun and lead to a better understanding of
+the interactions between p-modes and active regions.
+
+% \citep{hagenaar_properties_2003,zhang_new_2010} and test simulations of the
+% evolution of active regions \citep{valori_nonlinear_2011}, which may provide
+% clues into the dynamo process that created them. Furthermore, magnetograms can
+% be used in conjunction with dynamo models to make long-term predictions of solar
+% magnetic activity \citep{kitiashvili_long-term_2019}. A better understanding of
+% the dynamo will therefore lead to a greater understanding of the workings of the
+% Sun and will be critical in our ability to predict and prepare for extreme space
+% weather events.
+% In the most
+
+% this comment is important: you need to link this back to what is not known about
+% the sun, and ask yourself:
+
+% "in the most optimistic setting possible, where your networks worked perfectly
+% etc etc, what things could you have tested about the sun using your model? would
+% the coefficients of the network be informative about understanding what kind of
+% physcial models of the sun are suitable? would the long-term predictions (or
+% historical predictions) be useful for understanding the maunder minimum? to know
+% what dynamo models could be excluded?
+
+% You *NEED* to write some paragraphs about this,.. even though we both agree it
+% is "shooting for the moon a bit", because if you write nothing then the
+% assessors will have to weight you down heavily on not linking back to the actual
+% science. And that then gives you the opportunity to say what other extensions of
+% this work could be useful. Your conclusions should link back to the science,
+% too. 
+
+
+% Despite many years of research into the solar dynamo, there is much that still
+% remains unclear, with many questions remaining. In particular, this includes:
+% \begin{enumerate}
+%   \item What mechanism is predominantly responsible for converting a toroidal
+%   field to a poloidal one?
+
+%   \item Is the Babcock-Leighton mechanism a crucial part of the dynamo
+%   mechanism, or just a side-effect of decaying sunspots?
+
+%   \item How constraining is the butterfly diagram? I.e can the structure of the toroidal field be
+%   directly inferred from the distribution of the sunspots?
+
+%   \item Is the tachocline a crucial part of the dynamo mechanism?
+
+%   \item What is the cause of periods such as the Maunder Minimum?
+% \end{enumerate}
+% To answer these questions and obtain a deeper understanding of the solar dynamo,
+% more data is needed to constrain dynamo models. Solar magnetograms can be
+% valuable in providing such constraints
+% \citep{hagenaar_properties_2003,zhang_new_2010} and test simulations of the
+% evolution of active regions \citep{valori_nonlinear_2011}, which may provide
+% clues into the dynamo process that created them. Furthermore, magnetograms can
+% be used in conjunction with dynamo models to make long-term predictions of solar
+% magnetic activity \citep{kitiashvili_long-term_2019}. A better understanding of
+% the dynamo will therefore lead to a greater understanding of the workings of the
+% Sun and will be critical in our ability to predict and prepare for extreme space
+% weather events.
 
 
 
@@ -3452,6 +3536,26 @@ report the ability to generate synthetic farside magnetograms using only seismic
 maps - farside images of the Sun created by helioseismic holography. While the
 magnetograms have mixed results when locating active regions, they predict an
 unsigned magnetic flux that peaks during times of intense solar activity.
+
+
+% Farside magnetograms would provide an earlier warning of dangerous active
+% regions before they rotate to the nearside. Futhermore, a better understanding
+% of the solar dynamo woud not only lead to a better understanding of the Sun and
+% Sun-like stars, but would allow for better long-term predictions of solar
+% magnetic activity. This knowlege is critical in our ability to predict and
+% prepare for extreme space-weather events.
+
+% While there has been considerable progress over the past century towards
+% understanding the solar magnetic field, much is still unknown and many questions
+% remain. In the most optimistic scenario, a successful Seismic-GAN would provide
+% accurate farside magnetograms that would allow for further constraints of solar
+% dynamo models, providing continuous boundary conditions and a continuous mapping
+% of the toroidal magnetic field. These magnetograms would also assist in
+% understanding the emergence and evolution of active regions by permitting the
+% tracking of active regions as they rotate around the Sun, in turn providing
+% clues about the toroidal field that created them. Furthermore, interogatting
+% this model could inform models of the Sun and lead to a better understanding of
+% the interactions between p-modes and active regions.
 
 
 \bibliographystyle{mnras.bst}
