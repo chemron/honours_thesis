@@ -227,21 +227,21 @@ field may yet exist, however finding such a relationship requires a much more
 general model.\\
 
 
-The flexibility of deep learning models allows them to find complex and
-indirect relationships in data. Due to the large quantity of data available,
-increased accessibility to better hardware and the recent improvements in deep
-learning algorithms, the past few years have seen deep learning become much more
-commonplace as a tool for solar physics. Recently, \citet{Kim2019} used a deep
-learning model known as a conditional Generative Adversarial Network (cGAN) to
-learn a mapping between extreme ultraviolet (EUV) images and magnetograms. This
-was then applied to EUV images taken by STEREO-A to generate partial-farside
-magnetograms over the course of its mission. However, due to the aforementioned
-drawbacks related to the STEREO mission, this provides limited utility for
-monitoring the farside. In another example, \citet{felipe_improved_2019} used a
-deep learning algorithm to detect farside active regions from seismic maps. This
-improved on previous approaches and was able to predict active regions with
-higher sensitivity. However, this work did not attempt to predict the farside
-magnetic field, limiting the ability to predict extreme solar events. \\
+The flexibility of deep learning models allows them to find complex and indirect
+relationships in data. The past few years have seen deep learning become much
+more commonplace as a tool for solar physics due to the large quantity of data
+available, increased accessibility to better hardware and recent improvements in
+deep learning algorithms. Recently, \citet{Kim2019} used a deep learning model
+known as a conditional Generative Adversarial Network (cGAN) to learn a mapping
+between extreme ultraviolet (EUV) images and magnetograms. This was then applied
+to EUV images taken by STEREO-A to generate partial-farside magnetograms over
+the course of its mission. However, due to the aforementioned drawbacks related
+to the STEREO mission, this provides limited utility for monitoring the farside.
+In another example, \citet{felipe_improved_2019} used a deep learning algorithm
+to detect farside active regions from seismic maps. This improved on previous
+approaches and was able to predict active regions with higher sensitivity.
+However, this work did not attempt to predict the farside magnetic field,
+limiting the ability to predict extreme solar events. \\
 
 
 In this thesis, we describe and implement a method that allows us to predict
@@ -1254,20 +1254,19 @@ inputs and outputs can then be modeled by combining many of these non-linear
 activation function in modern neural networks and have been shown to outperform
 traditional sigmoid activation functions \citep{glorot2011}. Figure
 \ref{fig:activation} shows the sigmoid (left) and ReLU (right) activation
-functions. Leaky ReLUs are also used in this research, which have a small
-positive gradient for values less than one, for example,
+functions. Leaky ReLUs are also used in this research, which take the form
 \begin{align}
   \varphi (x) = \begin{cases} 
     x & x > 0 \\
-    0.01x & x \leq 0 \\
- \end{cases} \, .
+    m x & x \leq 0 \\
+ \end{cases} \, ,
 \end{align}
-\\
+where $m$ is some small gradient (e.g. 0.01).\\
 
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=\linewidth]{sigmoid_v_relu.pdf}
+  \includegraphics[width=0.8\linewidth]{sigmoid_v_relu.pdf}
   \caption{Comparison of ReLU (left) and sigmoid (right) activation functions.}
   \label{fig:activation}
 \end{figure}
@@ -2194,8 +2193,6 @@ of the farside). These exact values were obtained from the STEREO-A image
 metadata. The seismic maps were re-projected using this transformation with
 bi-linear interpolation. Figure \ref{fig:projection} shows a seismic map before
 and after this transformation. \\
-%TODO: overlay stereo and seismic maps or at least show stereo as well. Also
-%maybe inbetween image
 
 The STEREO-A EUV images were then prepared in the same manner as the nearside
 data, by first rotating then cropping the images. This step was not required for
