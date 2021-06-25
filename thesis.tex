@@ -3237,7 +3237,7 @@ producing\textemdash solar activity.\\
 The inherent difficulty of this problem resulted in various limitations to our
 method. Perhaps the most obvious limitation was the lack of any true farside
 magnetograms to use as a training set. Overcoming this required generating
-synthetic magnetograms based on EUV data. As these synthetic `UV' magnetograms
+synthetic magnetograms based on EUV data. As the synthetic `UV' magnetograms
 themselves were not perfect, these provide an upper bound to the quality of
 magnetograms generated from farside seismic data. In this way, the errors
 compound between training the two cGANs, notably the bias from UV magnetograms
@@ -3276,7 +3276,7 @@ information relating to the general trend of the solar cycle (see Figure
 percentiles with a combination of a normal distribution and exponential decay to
 better account for the degradation. The normal distribution would then take into
 account the effects from the solar cycle while the exponential decay would
-capture the instrument degradation - and could be used to adjust for it. Making
+capture the instrument degradation\textemdash and could be used to adjust for it. Making
 this consistent with the STEREO-A data would be more difficult however which
 was essential to producing STEREO magnetograms. The UV-GAN was able to reproduce
 the general trend of the solar cycle despite this normalisation process, as can
@@ -3285,7 +3285,7 @@ be seen in Figure \ref{fig:flux_sdo_uv}. \\
 
 As the Seismic-GAN was trained on the synthetic `STEREO magnetograms', a further
 limitation came from the time delay between the seismic maps and STEREO-A data.
-As explained in Section \ref{sec:data_collection} this time delay was based on
+As explained in Section \ref{sec:data_collection}, this time delay was based on
 the average rotation of sunspots. However due to the differential rotation of
 the Sun, this still meant that some active regions may be in different locations
 after the delay, and more importantly, active regions may have decayed or new
@@ -3297,7 +3297,7 @@ this also restricts the quantity of data. After some trial and error (see
 Section \ref{sec:train_seismic}) we used data with a time delay of less than
 seven days. This created some mismatch in the dataset, where active regions
 visible in the STEREO magnetograms were no longer visible in the seismic maps
-and vice-versa. This may have caused situations where the cGAN would 'dream up'
+and vice-versa. This may have caused situations where the cGAN would `dream up'
 active regions where none existed. \\
 
 
@@ -3306,8 +3306,8 @@ predict the unsigned magnetic flux for a given seismic image, rather than trying
 to first generate a magnetogram. This comes at the cost of interpretability
 however, generating magnetograms as we did allowed us to interrogate the outputs
 and understand why the network predicted a given flux. Perhaps a better method
-would have been to avoid the use of the EUV data altogether, and instead, train
-a cGAN to generate magnetograms from seismic data based on the nearside images
+would have been to avoid the use of the EUV data altogether and instead train
+a cGAN to generate magnetograms from seismic data based on the nearside magnetograms
 half of a rotation later. While this suffers from the same issue of emerging and
 decaying active regions, the shifting of the active regions would be consistent
 across the whole dataset. This does not solve the problem of insufficient
