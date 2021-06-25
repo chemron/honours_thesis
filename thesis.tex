@@ -102,8 +102,8 @@ height=1cm, text centered, draw=black, fill=gray!30, text width=3cm]
 
     \vspace{0.8cm}
     \Large \textit{Supervisors:}\\
-    Andrew Casey\\
-    Alina Donea
+    Dr Andrew Casey\\
+    Dr Alina Donea
 
     \vfill
     \large
@@ -125,13 +125,13 @@ height=1cm, text centered, draw=black, fill=gray!30, text width=3cm]
 \end{titlepage}
 
 \chapter*{Abstract}
-Active regions on the Sun's surface can lead to large eruptions with the
+Active regions on the Sun's surface can cause large eruptions with the
 potential to cause significant hazards on Earth. Synoptic maps of the solar
 magnetic field, known as magnetograms, are a vital tool for predicting these
-events. While these are readily available for the near hemisphere of the Sun,
+events. While these are available for the near hemisphere of the Sun,
 there is currently no reliable way to generate magnetograms for the far
 hemisphere. Consequently, dangerous farside active regions may rotate towards
-Earth with little warning. Here we describe a method to generate synthetic
+Earth with little warning. We describe a method to generate synthetic
 farside magnetograms using a deep learning method applied to helioseismology
 data. While the synthetic magnetograms fail to accurately determine the position
 or shape of active regions, they successfully predict sharp changes in the total
@@ -180,8 +180,8 @@ magnetic fields with strengths typically exceeding 1000 Gauss. If an active
 region cannot effectively dissipate the electric currents that flow within, a
 build-up of magnetic energy can lead to an explosive magnetic reconnection
 event. These reconnection events can result in solar flares or coronal mass
-ejections that can be dangerous when directed towards Earth. Such events, and
-associated geomagnetic storms, have been known to result in an array of
+ejections that can be dangerous when directed towards the Earth. Such events,
+and the associated geomagnetic storms, have been known to cause a variety of
 technological disruptions, including blackouts \citep{odenwald_day_2015}, loss
 of satellites \citep{carlowicz_did_1997}, and even detonation of underwater
 naval mines \citep{knipp_little-known_2018}. Furthermore, these events have the
@@ -198,7 +198,7 @@ chen_identifying_2019}. However, solar magnetograms are only available for the
 `nearside': the hemisphere of the Sun that faces the Earth. Due to the rotation
 of the Sun, active regions that emerge on the `farside' could be facing the
 Earth only seven days after becoming visible. A method for producing farside
-magnetograms is therefore necessary to provide warning of dangerous farside
+magnetograms is therefore necessary to provide a warning of dangerous farside
 magnetic activity before it reaches the Earth. \\
 
 
@@ -215,11 +215,11 @@ it returns to the farside. \\
 
 With the currently available resources, the only method that allows constant
 monitoring of the solar farside is helioseismic holography
-\citep{lindsey_seismic_2000}. This is a helioseismic technique that maps the
-farside by timing acoustic waves, known as p-modes, as they travel from the
-nearside to the farside and back again. Disturbances on the farside are then
-observable by the variation in this travel time. However, inferring the magnetic
-field from these is a challenge. \citet{Gonzalez_Hernandez_2007} attempted to
+\citep{lindsey_seismic_2000}. This technique maps the farside by timing acoustic
+waves, known as p-modes, as they travel from the nearside to the farside and
+back again. Disturbances on the farside are then observable by the variation in
+this travel time. However, inferring the magnetic field from the resultant
+`seismic maps' is a challenge. \citet{Gonzalez_Hernandez_2007} attempted to
 calibrate the magnetic flux to the seismic signatures and was able to find a
 loose correlation between the two. The quality of this correlation was poor
 however and provides limited information about the farside magnetic field. A
@@ -230,7 +230,7 @@ much more general model.\\
 
 Deep learning models offer the ability to find complex and indirect
 relationships due to their universality and the large number of parameters
-involved. Due to the large quantities of data available, increased accessibility
+involved. Due to the large quantity of data available, increased accessibility
 to better hardware and the recent improvements in deep learning algorithms, the
 past few years have seen deep learning become much more commonplace as a tool
 for solar physics. Recently, \citet{Kim2019} used a deep learning model known
@@ -412,7 +412,7 @@ degree. \\
   (MDI) aboard the Solar and Heliospheric Observatory (SOHO). Distributed under
   a CC BY-SA 4.0 license}. \subref{fig:sound_speed} The speed of sound
   (\(\si{km\per s}\)) inside the Sun as a function of the fractional radius
-  (\(\si{r \per R_\odot}\)) \citep{bahcall_solar_2000}.}
+  (\(\si{r \per R_\odot}\)). \textit{Image courtesy of \citet{bahcall_solar_2000}}.}
 
 \end{figure}
 
@@ -491,12 +491,13 @@ generated by the solar dynamo.
     \label{fig:tacholine_rotation}%
   }%
   \caption[]{\subref{fig:internal_rotation} The frequency of rotation of the
-    convective zone in the Sun, as inferred by global helioseismology
-    \citep{thompson_helioseismology_2004}. \subref{fig:tacholine_rotation} The
+    convective zone in the Sun, as inferred by global helioseismology.
+    \textit{Image courtesy of \citet{thompson_helioseismology_2004}.}
+    \subref{fig:tacholine_rotation} The
     frequency of rotation as a function of latitude and depth, showing differential
     rotation in the convective zone and nearly uniform rotation in the radiative
-    zone. \textit{Image Courtesy of Global Oscillation Network Group
-    (GONG)\footnotemark }.}
+    zone. \textit{Image courtesy of Global Oscillation Network Group
+    (GONG)}.}
   \label{fig:solar_rotation}
 \end{figure}
 
@@ -505,8 +506,7 @@ generated by the solar dynamo.
 \subsection{The Solar Magnetic field}
 %
 \label{sec:dynamo}
-%TODO: make sure this lines up
-\footnotetext{\url{gong.nso.edu}} Strong magnetic fields cause splittings of
+Strong magnetic fields cause splittings of
 spectral lines allowing for the detection of magnetic fields at a distance
 \citep{zeeman_over_1896}. This was first applied to the Sun by
 \citet{hale_probable_1908} who noticed the intense magnetic fields of sunspots.
@@ -716,7 +716,7 @@ each solar cycle, aiding numerical simulations. \\
   \textomega-effect, this field is pulled in the toroidal direction (b),
   eventually creating a toroidal field (c). This toroidal field results in the
   formation of sunspots (c), which in turn generate the large scale poloidal field
-  (d) \citep{carroll2006}.}
+  (d). \textit{Image courtesy of \citet{carroll2006}}.}
   \label{fig:dynamo}
 \end{figure}
 
@@ -946,10 +946,11 @@ active regions, a method of imaging the farside magnetic field is needed. \\
     \label{fig:flare_model}
   }%
   \caption{\subref{fig:flare_occurrence} The peak flare intensity compared to
-  size, for the different active region classes \citep{sammis_dependence_2000}.
-  \subref{fig:flare_model} The CSHKP model for a solar flare with a coronal mass
-  ejection. The black circles represent regions that can be directly probed with
-  hard x-ray observations \citep{Christe2017}.}
+  size, for the different active region classes. \textit{Image courtesy of
+  \citet{sammis_dependence_2000}}. \subref{fig:flare_model} The CSHKP model for
+  a solar flare with a coronal mass ejection. The black circles represent
+  regions that can be directly probed with hard x-ray observations. \textit{Image
+  courtesy of \citet{Christe2017}}.}
 \end{figure}
 
 
@@ -1017,11 +1018,12 @@ t)}^2\).\\
     \includegraphics[height=2in]{egression.jpg}%
     \label{fig:egression}%
   }%
-  \caption[]{\subref{fig:skips} Depiction of p-modes propagating through the solar
-    interior \citep{Lindsey2017}. \subref{fig:egression} Disturbances on the solar surface (dark blue) can be
+  \caption[]{\subref{fig:skips} Depiction of p-modes propagating through the
+    solar interior. \textit{Image courtesy of \citet{Lindsey2017}.}
+    \subref{fig:egression} Disturbances on the solar surface (dark blue) can be
     computationally propagated backward in time to a sampling surface. The
     acoustic power is then given by the squared magnitude of this coherent
-    acoustic egression \citep{Lindsey2011}.}
+    acoustic egression. \textit{Image courtesy of \citet{Lindsey2011}.}}
 \end{figure}
 
 
@@ -1101,12 +1103,12 @@ such as the one shown in Figure \ref{fig:skips}, we have an opening angle of
   }%
   \caption[]{
     \subref{fig:pupil} Diagram showing the paths taken by the wavefronts
-    travelling to the focus (green) before echoing back from the focus (yellow)
-    \citep{Lindsey2011}.\subref{fig:phase_map} Images showing both a farside seismic map created using
+    travelling to the focus (green) before echoing back from the focus (yellow).
+    \textit{Image courtesy of \citet{Lindsey2011}.}\subref{fig:phase_map} Images showing both a farside seismic map created using
     farside helioseismic holography (yellow) and a nearside magnetogram (blue).
     As the Sun rotates, active regions can be seen moving from the farside to
     nearside. The seismic map is measured by the time perturbation, \(\tau\) caused by
-    potential active regions \citep{Lindsey2017}.
+    potential active regions. \textit{Image courtesy of \citet{Lindsey2017}.}
     }
 \end{figure}
 
@@ -1303,7 +1305,8 @@ parameters of the model, i.e.
   \includegraphics[width=0.5\linewidth]{ann.png}
   \caption{The first two (fully connected) layers in a neural network
   represented as a graph. Each circular node represents a neuron, while the
-  arrows and weights show the connections between them \citep{michelucci2018}.}
+  arrows and weights show the connections between them. \textit{Image courtesy
+  of \citet{michelucci2018}.}}
   \label{fig:fully_connected}
 \end{figure}
 
@@ -1625,8 +1628,8 @@ Figure \ref{fig:gans}.\\
   (\(D\)) is then either the `fake' output of the GAN (\(G(\bm{z})\)) or the
   `real' data (\(\bm{x}\)). The discriminator decides if the input it has been
   given is real or fake. In the cGAN, both the generator and discriminator have
-  an additional input (\(\bm{c}\)) which `conditions' the data
-  \citep{mirza_conditional_2014}. In the case of an image-to-image GAN, this
+  an additional input (\(\bm{c}\)) which `conditions' the data. \textit{Image courtesy of
+  \citep{mirza_conditional_2014}}. In the case of an image-to-image GAN, this
   conditional data is an image, which is the only input to the generator. }
   \label{fig:gans}
 \end{figure}
